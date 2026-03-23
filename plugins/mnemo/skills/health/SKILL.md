@@ -17,13 +17,9 @@ Run a comprehensive health check on the Obsidian vault: orphans, broken links, m
 
 ## Config
 
-Read vault name from `config.json` in this skill's directory. If missing, ask the user and save:
+Read from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user for vault name and save.
 
-```json
-{
-  "vault": "main"
-}
-```
+Required fields: `vault`, `taxonomy`, `links_section`.
 
 ## Workflow
 
@@ -41,7 +37,7 @@ List notes with zero backlinks. These are invisible in Graph View.
 obsidian unresolved vault="{vault}"
 ```
 
-Show `[[wikilinks]]` that point to non-existent files. Ghost notes are NORMAL (entity discovery) — only flag if count seems excessive (>200).
+Show `[[wikilinks]]` pointing to non-existent files. Ghost notes are NORMAL (entity discovery) — only flag if count seems excessive (>200).
 
 ### Step 3: Tag Distribution
 
@@ -49,36 +45,61 @@ Show `[[wikilinks]]` that point to non-existent files. Ghost notes are NORMAL (e
 obsidian tags counts sort=count vault="{vault}"
 ```
 
-Show top tags. Flag tags used only once (potential typos).
+Show top 15 tags. Flag tags used only once (potential typos).
 
 ### Step 4: Notes by Type
 
-Count notes by `type:` frontmatter field. Expected types from config taxonomy:
+For each type in `config.taxonomy`, count notes:
 
-- `atom` — single facts
-- `molecule` — synthesized insights
-- `source` — external sources
-- `session` — work session summaries
-- `moc` — Maps of Content
-- `inbox` — unclassified captures (from mnemo:dump)
+```bash
+obsidian search query="type: atom" vault="{vault}"
+obsidian search query="type: molecule" vault="{vault}"
+obsidian search query="type: source" vault="{vault}"
+obsidian search query="type: session" vault="{vault}"
+obsidian search query="type: moc" vault="{vault}"
+obsidian search query="type: inbox" vault="{vault}"
+```
 
-Use `obsidian search` or `obsidian files` + read frontmatter.
+Count results for each. Total = sum of all + uncategorized.
 
-### Step 5: Missing `## Связи` Section
+### Step 5: Missing Links Section
 
-Find notes that do NOT contain `## Связи` heading. These are disconnected from the knowledge graph. Inbox notes are exempt.
+Search for notes that do NOT contain the configured `links_section` heading. Approach:
+
+1. Get all markdown files: `obsidian files ext=md vault="{vault}"`
+2. For each note with a known type prefix (Atom, Molecule, Source, Session, MOC):
+   - `obsidian read file="{name}" vault="{vault}"`
+   - Check if `{links_section}` heading exists in content
+3. Inbox notes are **exempt** from this check.
+
+Report notes missing the section.
 
 ### Step 6: Inbox Backlog
 
-Count notes with `type: inbox`. Remind user to classify them.
+Count from Step 4's inbox search. If > 0, remind:
+"N inbox notes waiting for classification. Run /mnemo:sort to classify."
 
 ### Step 7: Stale Notes
 
-Find notes older than 30 days with zero backlinks (not orphans from Step 1 — those have zero outgoing links, stale = zero incoming).
+Find notes with `date:` in frontmatter older than 30 days, then check backlinks:
 
-### Step 8: Output Report
+```bash
+obsidian backlinks file="{note_name}" vault="{vault}"
+```
 
-Format as:
+If zero backlinks AND date > 30 days ago → stale.
+
+### Step 8: Top Hubs
+
+For each MOC, count backlinks:
+
+```bash
+obsidian backlinks file="{moc_name}" vault="{vault}"
+```
+
+Sort by count, show top 5.
+
+### Step 9: Output Report
 
 ```
 📊 Vault Health Report ({date})
@@ -91,10 +112,10 @@ Total: {N} notes
   - Note Name 1
   - Note Name 2
 
-🟡 Missing ## Связи: {N}
+🟡 Missing {links_section}: {N}
   - Note Name 1
 
-📬 Inbox backlog: {N} notes waiting for classification
+📬 Inbox backlog: {N} notes — run /mnemo:sort to classify
 
 🔗 Unresolved wikilinks: {N}
 📏 Tags: {N} total, {N} used once
@@ -111,7 +132,8 @@ Total: {N} notes
 
 - Obsidian must be open — CLI communicates through the running app
 - `obsidian orphans` may return empty on small vaults — this is OK, not an error
-- Reference notes like `Obsidian Note Taxonomy` are NOT orphans even if few backlinks
+- Reference notes (taxonomy docs, templates) are NOT orphans even if few backlinks
 - Ghost notes (unresolved wikilinks) are a FEATURE, not a bug — they enable entity discovery
 - Use CLI for everything, MCP only for str_replace/insert (70,000x cheaper)
 - Do NOT auto-fix anything — only report. User decides what to fix
+- Step 5 is the most expensive step (reads many files) — skip if vault > 500 notes and user didn't specifically ask for it

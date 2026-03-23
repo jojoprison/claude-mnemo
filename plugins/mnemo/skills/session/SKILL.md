@@ -16,14 +16,7 @@ Create a human-readable session summary note in Obsidian after significant work.
 
 ## Config
 
-Read vault name and handoff note name from `config.json`. Defaults:
-
-```json
-{
-  "vault": "main",
-  "handoff_note": "Meta — Session Handoff"
-}
-```
+Read `vault`, `taxonomy.session`, `links_section`, and `handoff_note` from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user.
 
 ## When to Trigger
 
@@ -41,7 +34,7 @@ Analyze the conversation: what was done, key decisions, commits/PRs created, fin
 ### Step 2: Check for Duplicates
 
 ```bash
-obsidian search query="Session — {YYYY-MM-DD}" vault="{vault}"
+obsidian search query="{session_prefix}{YYYY-MM-DD}" vault="{vault}"
 ```
 
 If session note for today exists, ask: append or create separate?
@@ -49,7 +42,7 @@ If session note for today exists, ask: append or create separate?
 ### Step 3: Create Session Note
 
 ```bash
-obsidian create name="Session — {YYYY-MM-DD} {short description}" vault="{vault}" content="---
+obsidian create name="{session_prefix}{YYYY-MM-DD} {short description}" vault="{vault}" content="---
 type: session
 tags: [session, {project}, {topics}]
 date: {YYYY-MM-DD}
@@ -57,7 +50,7 @@ branch: {branch-name if exists}
 project: {project-name}
 ---
 
-# Session — {YYYY-MM-DD} {description}
+# {session_prefix}{YYYY-MM-DD} {description}
 
 {Brief summary of what was done.}
 
@@ -68,12 +61,14 @@ project: {project-name}
 ## Key decisions
 - Decision 1
 
-## Связи
+{links_section}
 - [[MOC — {relevant MOC}]]
 - [[Related Note 1]]
 - [[Ghost Notes for entities]]
 "
 ```
+
+Where `{session_prefix}` comes from `config.taxonomy.session.prefix` and `{links_section}` from `config.links_section`.
 
 ### Step 4: Verify MOC Link
 
@@ -84,7 +79,7 @@ obsidian read file="{MOC name}" vault="{vault}"
 Check if the new session note is listed. If not:
 
 ```bash
-obsidian append file="{MOC name}" vault="{vault}" content="- [[Session — {name}]]"
+obsidian append file="{MOC name}" vault="{vault}" content="- [[{session note name}]]"
 ```
 
 ### Step 5: Update Session Handoff
@@ -98,25 +93,7 @@ Update with:
 - Add new pending items from current session (if any)
 - Update context carry-over section
 
-If handoff note doesn't exist, create it:
-
-```bash
-obsidian create name="{handoff_note}" vault="{vault}" content="---
-type: meta
-tags: [meta, handoff, cross-session]
----
-
-# Meta — Session Handoff
-
-Cross-session continuity file. Read at start of each session, update at end.
-
-## Pending
-- [ ] {item} (project: {name}, date: {date})
-
-## Context
-- {what happened this session}
-"
-```
+If handoff note doesn't exist, create it (same as mnemo:setup step 7).
 
 ### Step 6: Orphan Check
 
@@ -128,7 +105,7 @@ If the newly created note appears in orphans, warn the user.
 
 ### Step 7: Confirm
 
-Output summary: note name, MOC updated, handoff updated, orphan status.
+Output summary: note name, MOC updated (yes/no), handoff updated, orphan status.
 
 ## Gotchas
 
@@ -137,5 +114,5 @@ Output summary: note name, MOC updated, handoff updated, orphan status.
 - **Branch field optional** — research sessions don't have branches
 - **Handoff file: APPEND, don't overwrite** — pending items accumulate across sessions
 - **Always check duplicate** before creating — same-day sessions may already exist
-- **## Связи is mandatory** — at least one MOC link
+- **Links section is mandatory** — at least one MOC link
 - **Ghost notes generously** — wrap projects, technologies, people in `[[wikilinks]]`

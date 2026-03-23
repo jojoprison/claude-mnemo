@@ -7,7 +7,7 @@ model: opus
 
 # mnemo:dump — Quick Capture Brain Dump
 
-Capture a thought instantly. No classification needed. Classify later with mnemo:health reminders.
+Capture a thought instantly. No classification needed. Classify later with mnemo:sort.
 
 ## Prerequisites
 
@@ -15,13 +15,13 @@ Capture a thought instantly. No classification needed. Classify later with mnemo
 
 ## Config
 
-Read vault name from `config.json`. If missing, ask user.
+Read `vault` and `taxonomy.inbox` from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user.
 
 ## Workflow
 
 ### Step 1: Accept Input
 
-Input comes as argument: `/mnemo:dump "идея: использовать HisPO для стабилизации pipeline"`
+Input as argument: `/mnemo:dump "idea: use HisPO for pipeline stabilization"`
 
 If no argument, ask: "What do you want to capture?"
 
@@ -37,29 +37,36 @@ If similar note exists — show it and ask: "Similar note found. Create new or a
 
 Extract a concise descriptive title from the input (5-8 words max).
 
-### Step 4: Create Inbox Note
+### Step 4: Extract Auto-Tags
+
+Scan input for recognizable entities (technology names, project names, people). Add as tags alongside `inbox` and `unclassified`. Maximum 2 extra tags.
+
+### Step 5: Create Inbox Note
 
 ```bash
-obsidian create name="Inbox — {short title}" vault="{vault}" content="---
+obsidian create name="{inbox_prefix}{short title}" vault="{vault}" content="---
 type: inbox
-tags: [inbox, unclassified]
+tags: [inbox, unclassified, {auto_tag_1}, {auto_tag_2}]
 date: {YYYY-MM-DD}
 ---
 
-# Inbox — {short title}
+# {inbox_prefix}{short title}
 
 {original input text}
 "
 ```
 
-### Step 5: Confirm
+Where `{inbox_prefix}` comes from `config.taxonomy.inbox.prefix` (default: `Inbox — `).
 
-Output: `📬 Saved: "Inbox — {title}". Classify later with /mnemo:health.`
+### Step 6: Confirm
+
+Output: `📬 Saved: "{title}". Classify later with /mnemo:sort.`
 
 ## Gotchas
 
-- **No `## Связи` section** — inbox is the ONLY type exempt from this rule
+- **No links section** — inbox is the ONLY type exempt from this rule
 - **No classification** — the whole point is zero friction. Don't try to guess atom/molecule/source
 - **Still check for duplicates** — `obsidian search` before create, always
-- **No frontmatter beyond minimum** — just type, tags, date. Nothing else
-- **Short titles** — "Inbox — HisPO для pipeline стабилизации", NOT "Inbox — идея о том что можно использовать HisPO алгоритм из LongCat для стабилизации нашего pipeline в antomate проекте"
+- **Minimal frontmatter** — just type, tags, date. Nothing else
+- **Short titles** — "Inbox — HisPO for pipeline stabilization", NOT "Inbox — idea about using HisPO algorithm from LongCat for stabilizing our pipeline in the antomate project"
+- **Auto-tags are bonus** — max 2, only obvious ones. Don't overthink

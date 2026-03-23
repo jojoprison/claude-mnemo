@@ -1,7 +1,7 @@
 {
   "name": "mnemo",
-  "version": "0.1.0",
-  "description": "Persistent memory layer for Claude Code via Obsidian — vault health, hidden link discovery, brain dump, session continuity, Gmail bridge. CLI-first, any taxonomy.",
+  "version": "0.2.0",
+  "description": "Persistent memory layer for Claude Code via Obsidian — 8 skills for vault health, knowledge search, connection discovery, brain dump, inbox triage, session continuity, email bridge, and interactive setup. CLI-first, any taxonomy.",
   "author": {
     "name": "jojoprison",
     "url": "https://github.com/jojoprison"
@@ -31,6 +31,8 @@
     "ai-memory",
     "ai-agent",
     "productivity",
-    "mnemosyne"
+    "mnemosyne",
+    "inbox-triage",
+    "knowledge-search"
   ]
 }

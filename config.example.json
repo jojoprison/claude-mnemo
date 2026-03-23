@@ -8,7 +8,8 @@
     "moc": { "prefix": "MOC — ", "tag": "moc" },
     "inbox": { "prefix": "Inbox — ", "tag": "inbox" }
   },
+  "links_section": "## Links",
   "handoff_note": "Meta — Session Handoff",
-  "gmail_mark_read": false,
-  "cli_first": true
+  "gmail_enabled": false,
+  "gmail_mark_read": false
 }

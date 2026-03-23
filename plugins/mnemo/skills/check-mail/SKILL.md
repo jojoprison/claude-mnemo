@@ -14,19 +14,11 @@ Scan Gmail inbox, save important emails as Obsidian notes, flag deadlines.
 
 - **Obsidian must be open**
 - **gws CLI installed and authorized** — `gws gmail list` must work
+- **Gmail enabled in config** — `gmail_enabled: true` in `~/.mnemo/config.json`
 
 ## Config
 
-Read from `config.json`:
-
-```json
-{
-  "vault": "main",
-  "gmail_mark_read": false
-}
-```
-
-`gmail_mark_read` MUST be `false` by default. Only change if user explicitly requests.
+Read from `~/.mnemo/config.json`. Required: `vault`, `gmail_enabled`. If `gmail_enabled` is false or missing, tell user to run `/mnemo:setup`.
 
 ## Workflow
 
@@ -47,14 +39,14 @@ For each email, classify:
 For each important email:
 
 ```bash
-obsidian create name="Inbox — Email: {subject short}" vault="{vault}" content="---
+obsidian create name="{inbox_prefix}Email: {subject short}" vault="{vault}" content="---
 type: inbox
 tags: [inbox, email, {sender-domain}]
 date: {YYYY-MM-DD}
 source: \"Gmail from {sender}\"
 ---
 
-# Inbox — Email: {subject}
+# {inbox_prefix}Email: {subject}
 
 **From:** {sender}
 **Date:** {email date}
@@ -81,8 +73,6 @@ obsidian daily:append vault="{vault}" content="⏰ Deadline from email: {subject
 
 ### Step 5: Summary
 
-Output:
-
 ```
 📬 Email check complete
 
@@ -91,7 +81,7 @@ Saved: {N} important
 Skipped: {N} (newsletters/notifications)
 
 Saved:
-1. "Inbox — Email: {subject}" — from {sender}
+1. "{inbox_prefix}Email: {subject}" — from {sender}
 2. ...
 
 Deadlines found: {N}
@@ -99,7 +89,7 @@ Deadlines found: {N}
 
 ### Step 6: DO NOT Mark as Read
 
-**CRITICAL: NEVER mark emails as read.** This is a hard rule. Even if user says "mark as read" — confirm twice before doing it.
+**CRITICAL: NEVER mark emails as read.** This is a hard rule controlled by `gmail_mark_read` in config (default: `false`). Even if user says "mark as read" — confirm twice before doing it.
 
 ## Gotchas
 
@@ -107,5 +97,5 @@ Deadlines found: {N}
 - **gws CLI must be authorized** — if `gws gmail list` fails, tell user to run `gws gmail auth`
 - **Summarize, don't copy** — email body goes as summary, not raw paste (privacy + tokens)
 - **Not every email is worth saving** — be selective, only truly important ones
-- **Inbox type** — saved emails are `type: inbox`, classify later with mnemo:health
-- **No ## Связи for inbox notes** — standard inbox exemption
+- **Inbox type** — saved emails are `type: inbox`, classify later with /mnemo:sort
+- **No links section for inbox notes** — standard inbox exemption
