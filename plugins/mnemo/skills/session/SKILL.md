@@ -109,6 +109,8 @@ Output summary: note name, MOC updated (yes/no), handoff updated, orphan status.
 
 ## Gotchas
 
+- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+
 - **Obsidian must be open**
 - **No session notes for trivial work** — only significant sessions
 - **Branch field optional** — research sessions don't have branches

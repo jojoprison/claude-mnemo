@@ -1,6 +1,6 @@
 {
   "name": "mnemo",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Persistent memory layer for Claude Code via Obsidian — 8 skills for vault health, knowledge search, connection discovery, brain dump, inbox triage, session continuity, email bridge, and interactive setup. CLI-first, any taxonomy.",
   "author": {
     "name": "jojoprison",

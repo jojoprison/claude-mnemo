@@ -49,18 +49,19 @@ Show top 15 tags. Flag tags used only once (potential typos).
 
 ### Step 4: Notes by Type
 
-For each type in `config.taxonomy`, count notes:
+Use tags (indexed, reliable) instead of fulltext search:
 
 ```bash
-obsidian search query="type: atom" vault="{vault}"
-obsidian search query="type: molecule" vault="{vault}"
-obsidian search query="type: source" vault="{vault}"
-obsidian search query="type: session" vault="{vault}"
-obsidian search query="type: moc" vault="{vault}"
-obsidian search query="type: inbox" vault="{vault}"
+obsidian tags counts sort=count vault="{vault}"
 ```
 
-Count results for each. Total = sum of all + uncategorized.
+From the output, extract counts for taxonomy tags: `#atom`, `#molecule`, `#source`, `#session`, `#moc`, `#inbox`. These correspond to `config.taxonomy.*.tag` values.
+
+Total notes count:
+
+```bash
+obsidian files ext=md vault="{vault}" total
+```
 
 ### Step 5: Missing Links Section
 

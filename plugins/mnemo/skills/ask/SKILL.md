@@ -74,6 +74,8 @@ Ask: "Want me to search deeper, or connect any of these notes?"
 
 ## Gotchas
 
+- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+
 - **CLI for search, not MCP** — obsidian CLI search is 70,000x cheaper
 - **Max 7 notes read** — don't blow context reading the entire vault
 - **Always cite sources** — every claim must reference a specific note

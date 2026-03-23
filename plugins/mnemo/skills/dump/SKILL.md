@@ -64,6 +64,8 @@ Output: `📬 Saved: "{title}". Classify later with /mnemo:sort.`
 
 ## Gotchas
 
+- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+
 - **No links section** — inbox is the ONLY type exempt from this rule
 - **No classification** — the whole point is zero friction. Don't try to guess atom/molecule/source
 - **Still check for duplicates** — `obsidian search` before create, always

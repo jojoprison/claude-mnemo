@@ -96,6 +96,8 @@ Remaining in inbox: 1
 
 ## Gotchas
 
+- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+
 - **One note at a time** — don't batch classify, user confirms each
 - **Preserve original date** — from inbox note frontmatter, not today's date
 - **Delete old inbox note** — don't leave duplicates

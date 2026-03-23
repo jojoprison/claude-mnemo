@@ -91,6 +91,8 @@ If user confirms:
 
 ## Gotchas
 
+- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+
 - Maximum 5-7 suggestions — don't overwhelm
 - Don't suggest links to orphan notes (they need their own fixing first)
 - Ghost notes are NORMAL — don't flag `[[Technology]]` as "unresolved"
