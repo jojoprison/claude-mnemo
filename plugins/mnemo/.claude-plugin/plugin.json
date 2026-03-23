@@ -1,0 +1,24 @@
+{
+  "name": "mnemo",
+  "version": "0.1.0",
+  "description": "Persistent memory layer for Claude Code via Obsidian",
+  "author": {
+    "name": "jojoprison",
+    "url": "https://github.com/jojoprison"
+  },
+  "homepage": "https://github.com/jojoprison/claude-mnemo",
+  "repository": "https://github.com/jojoprison/claude-mnemo",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-skills",
+    "obsidian",
+    "memory",
+    "second-brain",
+    "knowledge-management",
+    "zettelkasten",
+    "vault-health",
+    "session-notes",
+    "brain-dump"
+  ]
+}

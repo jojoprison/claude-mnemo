@@ -1,0 +1,27 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-mnemo",
+  "description": "Persistent memory layer for Claude Code — Obsidian vault management, session continuity, quick capture, and knowledge graph health",
+  "owner": {
+    "name": "jojoprison",
+    "url": "https://github.com/jojoprison"
+  },
+  "plugins": [
+    {
+      "name": "mnemo",
+      "description": "Persistent memory skills for Claude Code via Obsidian — vault health, connection discovery, quick capture, session notes, email bridge",
+      "version": "0.1.0",
+      "source": "./plugins/mnemo",
+      "category": "productivity",
+      "keywords": [
+        "obsidian",
+        "memory",
+        "knowledge-management",
+        "second-brain",
+        "vault-health",
+        "session-notes",
+        "zettelkasten"
+      ]
+    }
+  ]
+}

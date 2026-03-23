@@ -1,0 +1,14 @@
+{
+  "vault": "main",
+  "taxonomy": {
+    "atom": { "prefix": "Atom — ", "tag": "atom" },
+    "molecule": { "prefix": "Molecule — ", "tag": "molecule" },
+    "source": { "prefix": "Source — ", "tag": "source" },
+    "session": { "prefix": "Session — ", "tag": "session" },
+    "moc": { "prefix": "MOC — ", "tag": "moc" },
+    "inbox": { "prefix": "Inbox — ", "tag": "inbox" }
+  },
+  "handoff_note": "Meta — Session Handoff",
+  "gmail_mark_read": false,
+  "cli_first": true
+}
