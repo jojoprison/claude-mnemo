@@ -217,7 +217,7 @@ Next session reads this file and picks up where you left off. No more "what was 
 
 ## 📋 Requirements
 
-- [Claude Code](https://claude.ai/code) (Pro, Max, or Team subscription)
+- [Claude Code](https://claude.ai/code) (any auth: Pro/Max/Team subscription or API key)
 - [Obsidian](https://obsidian.md) (free) — **must be running**
 - [Obsidian CLI](https://github.com/kepano/obsidian-cli) — `obsidian` command in PATH
 - [gws CLI](https://github.com/nicholasgasior/gws) — only for `mnemo:check-mail`
@@ -463,7 +463,7 @@ mnemo не навязывает структуру заметок. Измени 
 
 ## 📋 Требования
 
-- [Claude Code](https://claude.ai/code) (подписка Pro, Max или Team)
+- [Claude Code](https://claude.ai/code) (любая авторизация: подписка Pro/Max/Team или API ключ)
 - [Obsidian](https://obsidian.md) (бесплатно) — **должен быть запущен**
 - [Obsidian CLI](https://github.com/kepano/obsidian-cli) — команда `obsidian` в PATH
 - [gws CLI](https://github.com/nicholasgasior/gws) — только для `mnemo:check-mail`
