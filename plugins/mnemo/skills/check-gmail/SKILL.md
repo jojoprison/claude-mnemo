@@ -1,12 +1,12 @@
 ---
-name: check-mail
-description: "Use when checking email and saving important messages to Obsidian vault. Uses gws CLI for Gmail. NEVER marks emails as read without explicit user request."
+name: check-gmail
+description: "Use when checking Gmail and saving important messages to Obsidian vault. Uses gws CLI. NEVER marks emails as read without explicit user request."
 user-invocable: true
 context: fork
 model: opus
 ---
 
-# mnemo:check-mail — Gmail to Obsidian Bridge
+# mnemo:check-gmail — Gmail to Obsidian Bridge
 
 Scan Gmail inbox, save important emails as Obsidian notes, flag deadlines.
 

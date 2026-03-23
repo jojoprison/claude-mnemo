@@ -65,7 +65,7 @@ What heading do you use for note cross-references?
 ### Step 5: Gmail Integration
 
 ```
-Do you want to enable mnemo:check-mail (Gmail → Obsidian)?
+Do you want to enable mnemo:check-gmail (Gmail → Obsidian)?
 This requires gws CLI to be installed and authorized.
 
 [y/N] > n
@@ -126,7 +126,7 @@ Your skills:
   /mnemo:session   — session notes + handoff
   /mnemo:ask       — search & synthesize
   /mnemo:sort      — classify inbox notes
-  /mnemo:check-mail — Gmail bridge (disabled)
+  /mnemo:check-gmail — Gmail bridge (disabled)
 
 Config saved to: ~/.mnemo/config.json
 Handoff note created: Meta — Session Handoff

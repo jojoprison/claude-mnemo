@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-03-24
+
+### Changed
+- Renamed `mnemo:check-mail` → `mnemo:check-gmail` (only works with Gmail via gws CLI)
+- Updated all references across README, CHANGELOG, setup skill
+
 ## [0.2.0] - 2026-03-24
 
 ### Added
@@ -28,7 +34,7 @@ All notable changes to this project will be documented in this file.
   - `mnemo:connect` — hidden link discovery between notes
   - `mnemo:dump` — zero-friction brain dump (inbox capture)
   - `mnemo:session` — session summary notes + cross-session handoff
-  - `mnemo:check-mail` — Gmail → Obsidian bridge with deadline detection
+  - `mnemo:check-gmail` — Gmail → Obsidian bridge with deadline detection
 - Plugin marketplace support (`claude plugin marketplace add`)
 - `config.example.json` with taxonomy configuration
 - README with English and Russian documentation

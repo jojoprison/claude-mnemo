@@ -31,7 +31,7 @@ You work → mnemo remembers → Your vault grows → You find things later
 | 📥 **dump** | `/mnemo:dump` | Zero-friction brain dump — capture now, classify later |
 | 📂 **sort** | `/mnemo:sort` | Classify inbox notes into proper types (atom, molecule, source...) |
 | 📝 **session** | `/mnemo:session` | Auto-generates session summary + cross-session handoff |
-| 📬 **check-mail** | `/mnemo:check-mail` | Gmail → Obsidian bridge with deadline detection |
+| 📬 **check-gmail** | `/mnemo:check-gmail` | Gmail → Obsidian bridge with deadline detection |
 | ⚙️ **setup** | `/mnemo:setup` | Interactive onboarding — vault name, taxonomy, language, integrations |
 
 ### Why Not Just Use Obsidian Plugins?
@@ -156,7 +156,7 @@ Creates a full session note with frontmatter, tags, and `## Связи` section.
 ### 📬 Check email
 
 ```
-/mnemo:check-mail
+/mnemo:check-gmail
 ```
 
 ```
@@ -230,7 +230,7 @@ Next session reads this file and picks up where you left off. No more "what was 
 - [Claude Code](https://claude.ai/code) (any auth: Pro/Max/Team subscription or API key)
 - [Obsidian](https://obsidian.md) (free) — **must be running**
 - [Obsidian CLI](https://github.com/kepano/obsidian-cli) — `obsidian` command in PATH
-- [gws CLI](https://github.com/nicholasgasior/gws) — only for `mnemo:check-mail`
+- [gws CLI](https://github.com/nicholasgasior/gws) — only for `mnemo:check-gmail`
 
 ## 📁 Project Structure
 
@@ -249,7 +249,7 @@ claude-mnemo/
 │           ├── dump/SKILL.md       # /mnemo:dump — quick capture
 │           ├── sort/SKILL.md       # /mnemo:sort — inbox triage
 │           ├── session/SKILL.md    # /mnemo:session — session notes
-│           ├── check-mail/SKILL.md # /mnemo:check-mail — Gmail bridge
+│           ├── check-gmail/SKILL.md # /mnemo:check-gmail — Gmail bridge
 │           └── setup/SKILL.md      # /mnemo:setup — onboarding
 ├── config.example.json           # Config template
 ├── CONTRIBUTING.md               # How to add skills
@@ -291,7 +291,7 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 | 📥 **dump** | `/mnemo:dump` | Brain dump без классификации — захвати мысль сейчас, классифицируй потом |
 | 📂 **sort** | `/mnemo:sort` | Классификация inbox-заметок в правильные типы (atom, molecule, source...) |
 | 📝 **session** | `/mnemo:session` | Автоматическая сессионная заметка + cross-session handoff (передача контекста) |
-| 📬 **check-mail** | `/mnemo:check-mail` | Gmail → Obsidian мост с обнаружением дедлайнов |
+| 📬 **check-gmail** | `/mnemo:check-gmail` | Gmail → Obsidian мост с обнаружением дедлайнов |
 | ⚙️ **setup** | `/mnemo:setup` | Интерактивный онбординг — имя vault, таксономия, язык, интеграции |
 
 ### Почему не обычные плагины Obsidian?
@@ -459,7 +459,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 ### 📬 Проверка почты
 
 ```
-/mnemo:check-mail
+/mnemo:check-gmail
 ```
 
 ```
@@ -533,7 +533,7 @@ mnemo не навязывает структуру заметок. Измени 
 - [Claude Code](https://claude.ai/code) (любая авторизация: подписка Pro/Max/Team или API ключ)
 - [Obsidian](https://obsidian.md) (бесплатно) — **должен быть запущен**
 - [Obsidian CLI](https://github.com/kepano/obsidian-cli) — команда `obsidian` в PATH
-- [gws CLI](https://github.com/nicholasgasior/gws) — только для `mnemo:check-mail`
+- [gws CLI](https://github.com/nicholasgasior/gws) — только для `mnemo:check-gmail`
 
 ## 📁 Структура проекта
 
@@ -552,7 +552,7 @@ claude-mnemo/
 │           ├── dump/SKILL.md       # /mnemo:dump — быстрый захват
 │           ├── sort/SKILL.md       # /mnemo:sort — классификация inbox
 │           ├── session/SKILL.md    # /mnemo:session — сессионные заметки
-│           ├── check-mail/SKILL.md # /mnemo:check-mail — Gmail мост
+│           ├── check-gmail/SKILL.md # /mnemo:check-gmail — Gmail мост
 │           └── setup/SKILL.md      # /mnemo:setup — онбординг
 ├── config.example.json           # Шаблон конфигурации
 ├── CONTRIBUTING.md               # Как добавить скиллы
