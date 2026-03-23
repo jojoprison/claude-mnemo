@@ -25,8 +25,10 @@ Read from `~/.mnemo/config.json`. Required: `vault`, `gmail_enabled`. If `gmail_
 ### Step 1: Fetch Unread Emails
 
 ```bash
-gws gmail list --unread --max 10
+gws gmail +triage
 ```
+
+This shows unread inbox summary (sender, subject, date) in table format.
 
 ### Step 2: Classify Importance
 
