@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-03-24
+
+### Added
+- `mnemo:save` — memory routing cascade with graceful degradation
+  - Routes to: Obsidian → claude-mem → memory/ → CLAUDE.md
+  - Each backend independent — if one fails, others still work
+  - Auto-classifies input (fact→Atom, insight→Molecule, decision, gotcha, source)
+  - Configurable via `cascade` section in config.json
+- `cascade` config section for enabling/disabling memory backends
+- docs/save.md with full documentation
+
+### Changed
+- All skills: IPC error handling in Gotchas (v0.2.4)
+- health: tag-based counting instead of unreliable fulltext search (v0.2.4)
+- check-gmail: correct gws command `+triage` (v0.2.3)
+- Skill count: 8 → 9
+
 ## [0.2.1] - 2026-03-24
 
 ### Changed

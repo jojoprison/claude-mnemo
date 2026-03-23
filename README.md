@@ -4,7 +4,7 @@
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-blueviolet?style=flat-square)](https://claude.ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![Skills](https://img.shields.io/badge/Skills-8-blue?style=flat-square)](plugins/mnemo/skills/)
+[![Skills](https://img.shields.io/badge/Skills-9-blue?style=flat-square)](plugins/mnemo/skills/)
 [![Obsidian](https://img.shields.io/badge/Obsidian-compatible-7C3AED?style=flat-square&logo=obsidian&logoColor=white)](https://obsidian.md)
 
 **[English](#-what-it-does)** | **[Русский](#-что-делает)**
@@ -13,7 +13,7 @@
 
 ## 🧠 What It Does
 
-**mnemo** gives Claude Code a persistent memory through your Obsidian vault. Eight skills that handle the boring parts of knowledge management so you can focus on thinking.
+**mnemo** gives Claude Code a persistent memory through your Obsidian vault. Nine skills that handle the boring parts of knowledge management so you can focus on thinking.
 
 Most "second brain" tools assume you have time to organize. mnemo assumes you don't.
 
@@ -32,6 +32,7 @@ You work → mnemo remembers → Your vault grows → You find things later
 | 📂 **sort** | `/mnemo:sort` | Classify inbox notes into proper types (atom, molecule, source...) |
 | 📝 **session** | `/mnemo:session` | Auto-generates session summary + cross-session handoff |
 | 📬 **check-gmail** | `/mnemo:check-gmail` | Gmail → Obsidian bridge with deadline detection |
+| 💾 **save** | `/mnemo:save` | Memory routing cascade — saves to Obsidian + claude-mem + memory/ with graceful degradation |
 | ⚙️ **setup** | `/mnemo:setup` | Interactive onboarding — vault name, taxonomy, language, integrations |
 
 ### Why Not Just Use Obsidian Plugins?
@@ -43,7 +44,7 @@ Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it h
 ```
 ┌──────────────┐     ┌───────────────┐     ┌──────────────┐
 │  Claude Code  │────▶│  mnemo skills  │────▶│  Obsidian CLI │
-│  (you talk)   │     │  (8 skills)    │     │  (vault ops)  │
+│  (you talk)   │     │  (9 skills)    │     │  (vault ops)  │
 └──────────────┘     └───────────────┘     └──────────────┘
                             │
                     ~/.mnemo/config.json
@@ -250,6 +251,7 @@ claude-mnemo/
 │           ├── sort/SKILL.md       # /mnemo:sort — inbox triage
 │           ├── session/SKILL.md    # /mnemo:session — session notes
 │           ├── check-gmail/SKILL.md # /mnemo:check-gmail — Gmail bridge
+│           ├── save/SKILL.md       # /mnemo:save — memory routing cascade
 │           └── setup/SKILL.md      # /mnemo:setup — onboarding
 ├── config.example.json           # Config template
 ├── CONTRIBUTING.md               # How to add skills
@@ -273,7 +275,7 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 
 ## 🧠 Что делает
 
-**mnemo** даёт Claude Code постоянную память через Obsidian vault. Восемь скиллов, которые берут на себя рутину управления знаниями, чтобы ты мог сосредоточиться на мышлении.
+**mnemo** даёт Claude Code постоянную память через Obsidian vault. Девять скиллов, которые берут на себя рутину управления знаниями, чтобы ты мог сосредоточиться на мышлении.
 
 Большинство инструментов «второго мозга» предполагают, что у тебя есть время всё организовать. mnemo предполагает, что нет.
 
@@ -292,6 +294,7 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 | 📂 **sort** | `/mnemo:sort` | Классификация inbox-заметок в правильные типы (atom, molecule, source...) |
 | 📝 **session** | `/mnemo:session` | Автоматическая сессионная заметка + cross-session handoff (передача контекста) |
 | 📬 **check-gmail** | `/mnemo:check-gmail` | Gmail → Obsidian мост с обнаружением дедлайнов |
+| 💾 **save** | `/mnemo:save` | Каскадное сохранение — Obsidian + claude-mem + memory/ с graceful degradation |
 | ⚙️ **setup** | `/mnemo:setup` | Интерактивный онбординг — имя vault, таксономия, язык, интеграции |
 
 ### Почему не обычные плагины Obsidian?
