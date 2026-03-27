@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-03-28
+
+### Added
+- `/mn:` command aliases for autocomplete — 8 thin command wrappers in `commands/mn/`
+  - `/mn:session`, `/mn:save`, `/mn:ask`, `/mn:health`, `/mn:sort`, `/mn:connect`, `/mn:setup`, `/mn:review`
+  - Same pattern as compound-engineering `/ce:` prefix
+  - Commands delegate to corresponding skills via Skill tool
+  - Enables autocomplete dropdown when typing `/mn:` in Claude Code
+- `mnemo:review` skill — session completeness analyzer
+  - Scans conversation for done items, missed items, hanging threads
+  - Outputs actionable table with follow-up recommendations
+- Plugin renamed `mnemo` → `mn` for shorter invocation
+
+### Changed
+- Removed `dump` and `check-gmail` skills (consolidated into `save` and external `gws`)
+- Skill count: 9 → 8 (dump/check-gmail removed, review added)
+
 ## [0.3.0] - 2026-03-24
 
 ### Added
