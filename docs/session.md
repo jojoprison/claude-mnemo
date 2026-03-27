@@ -7,7 +7,7 @@ Creates a session summary note in Obsidian after significant work. The killer fe
 ## Usage
 
 ```
-/mnemo:session
+/mn:session
 ```
 
 No arguments. Summarizes the current conversation automatically.
@@ -63,5 +63,5 @@ When the next session starts, it reads `Meta — Session Handoff`:
 
 ## Related Skills
 
-- `/mnemo:health` — verify session note isn't an orphan
-- `/mnemo:connect` — discover connections for the new session note
+- `/mn:health` — verify session note isn't an orphan
+- `/mn:connect` — discover connections for the new session note

@@ -22,7 +22,7 @@ Read `vault` and `links_section` from `config.json` in the plugin config directo
 
 ### Step 1: Accept Query
 
-Input as argument: `/mnemo:ask "what did we decide about pricing strategy?"`
+Input as argument: `/mn:ask "what did we decide about pricing strategy?"`
 
 If no argument, ask: "What would you like to find in your vault?"
 

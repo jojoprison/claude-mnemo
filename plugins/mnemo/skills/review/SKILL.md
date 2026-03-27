@@ -15,7 +15,7 @@ Analyze the current session for completeness. Find what was done, what was misse
 - User asks: "что забыли?", "что осталось?", "session review", "all done?", "ничего не пропустили?"
 - End of a long session before signing off
 - After completing a major feature/PR
-- Manually: `/mnemo:review`
+- Manually: `/mn:review`
 
 ## Workflow
 
@@ -156,5 +156,5 @@ The skill adapts to ANY project by reading CLAUDE.md at runtime. No hardcoded pr
 - **Don't over-report** — only flag things that matter. Unchecked plan AC is P3, not P1 if code + tests pass.
 - **Context compression** — in long sessions, early messages may be truncated. Use git log + file state as ground truth.
 - **Multiple projects** — if session touched multiple projects, analyze each separately.
-- **Don't duplicate** — if /mnemo:save or /mnemo:session already ran, acknowledge their output.
+- **Don't duplicate** — if /mn:save or /mn:session already ran, acknowledge their output.
 - **Respect language** — respond in the language the user uses (Russian, English, etc.)

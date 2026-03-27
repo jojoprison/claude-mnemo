@@ -15,13 +15,13 @@ Capture a thought instantly. No classification needed. Classify later with mnemo
 
 ## Config
 
-Read `vault` and `taxonomy.inbox` from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user.
+Read `vault` and `taxonomy.inbox` from `~/.mnemo/config.json`. If missing, run `/mn:setup` or ask user.
 
 ## Workflow
 
 ### Step 1: Accept Input
 
-Input as argument: `/mnemo:dump "idea: use HisPO for pipeline stabilization"`
+Input as argument: `/mn:dump "idea: use HisPO for pipeline stabilization"`
 
 If no argument, ask: "What do you want to capture?"
 
@@ -60,7 +60,7 @@ Where `{inbox_prefix}` comes from `config.taxonomy.inbox.prefix` (default: `Inbo
 
 ### Step 6: Confirm
 
-Output: `📬 Saved: "{title}". Classify later with /mnemo:sort.`
+Output: `📬 Saved: "{title}". Classify later with /mn:sort.`
 
 ## Gotchas
 

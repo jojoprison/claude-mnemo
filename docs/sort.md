@@ -7,7 +7,7 @@ Reviews unclassified inbox notes one by one and converts them to proper typed no
 ## Usage
 
 ```
-/mnemo:sort
+/mn:sort
 ```
 
 No arguments. Finds all `type: inbox` notes automatically.
@@ -50,5 +50,5 @@ Actions:
 
 ## Related Skills
 
-- `/mnemo:dump` — creates the inbox notes that sort classifies
-- `/mnemo:health` — shows inbox backlog count
+- `/mn:dump` — creates the inbox notes that sort classifies
+- `/mn:health` — shows inbox backlog count

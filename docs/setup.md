@@ -7,7 +7,7 @@ First-time configuration for mnemo. Creates `~/.mnemo/config.json` through an in
 ## Usage
 
 ```
-/mnemo:setup
+/mn:setup
 ```
 
 Run once after installing the plugin.

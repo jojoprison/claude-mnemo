@@ -7,9 +7,9 @@ Capture a thought in 2 seconds. No classification, no tags, no structure. Just d
 ## Usage
 
 ```
-/mnemo:dump "idea: use HisPO for pipeline stabilization"
-/mnemo:dump "remember to check orphans after this session"
-/mnemo:dump "interesting pattern: WeChat agent bridge = same as Telegram channels"
+/mn:dump "idea: use HisPO for pipeline stabilization"
+/mn:dump "remember to check orphans after this session"
+/mn:dump "interesting pattern: WeChat agent bridge = same as Telegram channels"
 ```
 
 ## How It Works
@@ -18,13 +18,13 @@ Capture a thought in 2 seconds. No classification, no tags, no structure. Just d
 2. Checks for duplicate notes
 3. Generates a short title (5-8 words)
 4. Creates an `Inbox — {title}` note with minimal frontmatter
-5. Done. Classify later with `/mnemo:sort`
+5. Done. Classify later with `/mn:sort`
 
 ## Example Output
 
 ```
 📬 Saved: "Inbox — HisPO for pipeline stabilization"
-   Classify later with /mnemo:sort
+   Classify later with /mn:sort
 ```
 
 ## What Gets Created
@@ -50,5 +50,5 @@ idea: use HisPO for pipeline stabilization
 
 ## Related Skills
 
-- `/mnemo:sort` — classify inbox notes later
-- `/mnemo:health` — reminds you about inbox backlog
+- `/mn:sort` — classify inbox notes later
+- `/mn:health` — reminds you about inbox backlog

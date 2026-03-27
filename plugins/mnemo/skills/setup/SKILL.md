@@ -120,18 +120,18 @@ Cross-session continuity file. Updated by mnemo:session.
 🧠 mnemo is ready!
 
 Your skills:
-  /mnemo:health    — vault audit & analytics
-  /mnemo:connect   — discover hidden links
-  /mnemo:dump      — quick brain dump
-  /mnemo:session   — session notes + handoff
-  /mnemo:ask       — search & synthesize
-  /mnemo:sort      — classify inbox notes
-  /mnemo:check-gmail — Gmail bridge (disabled)
+  /mn:health    — vault audit & analytics
+  /mn:connect   — discover hidden links
+  /mn:dump      — quick brain dump
+  /mn:session   — session notes + handoff
+  /mn:ask       — search & synthesize
+  /mn:sort      — classify inbox notes
+  /mn:check-gmail — Gmail bridge (disabled)
 
 Config saved to: ~/.mnemo/config.json
 Handoff note created: Meta — Session Handoff
 
-Try: /mnemo:health
+Try: /mn:health
 ```
 
 ## Gotchas

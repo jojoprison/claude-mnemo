@@ -7,8 +7,8 @@ Analyzes a note and discovers connections to other notes you'd never think of. S
 ## Usage
 
 ```
-/mnemo:connect "Atom — LongCat-Flash-Prover"
-/mnemo:connect "Session — 2026-03-23 Tech Research"
+/mn:connect "Atom — LongCat-Flash-Prover"
+/mn:connect "Session — 2026-03-23 Tech Research"
 ```
 
 ## How It Works
@@ -47,5 +47,5 @@ Apply these? (y/N, or pick numbers: 1,2)
 
 ## Related Skills
 
-- `/mnemo:health` — find orphans that need connecting
-- `/mnemo:ask` — search first, then connect what you find
+- `/mn:health` — find orphans that need connecting
+- `/mn:ask` — search first, then connect what you find

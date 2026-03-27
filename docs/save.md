@@ -7,9 +7,9 @@ The brain of mnemo. When you say "remember this" or "save to memory", this skill
 ## Usage
 
 ```
-/mnemo:save "we decided to use SCOPE over TextGrad for self-correction"
-/mnemo:save "gotcha: execSync with shell=true is banned in antomate"
-/mnemo:save "HisPO algorithm stabilizes RL training for MoE models"
+/mn:save "we decided to use SCOPE over TextGrad for self-correction"
+/mn:save "gotcha: execSync with shell=true is banned in antomate"
+/mn:save "HisPO algorithm stabilizes RL training for MoE models"
 ```
 
 Or just say naturally:
@@ -73,6 +73,6 @@ Don't have claude-mem? Set `"enabled": false` — everything else works.
 
 ## Related Skills
 
-- `/mnemo:dump` — for quick unstructured thoughts (save redirects here when appropriate)
-- `/mnemo:session` — saves an entire session summary (uses save internally)
-- `/mnemo:health` — verify saved notes aren't orphans
+- `/mn:dump` — for quick unstructured thoughts (save redirects here when appropriate)
+- `/mn:session` — saves an entire session summary (uses save internally)
+- `/mn:health` — verify saved notes aren't orphans

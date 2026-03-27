@@ -7,7 +7,7 @@ Comprehensive audit of your Obsidian vault: orphans, broken links, missing secti
 ## Usage
 
 ```
-/mnemo:health
+/mn:health
 ```
 
 No arguments needed. Reads vault name from `~/.mnemo/config.json`.
@@ -18,7 +18,7 @@ No arguments needed. Reads vault name from `~/.mnemo/config.json`.
 |-------|--------------|----------|
 | Orphans | Notes with zero backlinks (invisible in Graph View) | 🔴 High |
 | Missing links section | Notes without `## Links` / `## Связи` (disconnected from graph) | 🟡 Medium |
-| Inbox backlog | Unclassified inbox notes from `/mnemo:dump` | 📬 Info |
+| Inbox backlog | Unclassified inbox notes from `/mn:dump` | 📬 Info |
 | Unresolved wikilinks | `[[Ghost Notes]]` pointing to non-existent files | ℹ️ Normal |
 | Tag typos | Tags used only once (potential misspelling) | 🟡 Medium |
 | Stale notes | 30+ days old with zero backlinks | 💤 Low |
@@ -56,5 +56,5 @@ Total: 375 notes
 
 ## Related Skills
 
-- `/mnemo:connect` — fix orphans by discovering hidden connections
-- `/mnemo:sort` — classify inbox backlog
+- `/mn:connect` — fix orphans by discovering hidden connections
+- `/mn:sort` — classify inbox backlog

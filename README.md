@@ -25,19 +25,19 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 | Skill | Command | What it does |
 |-------|---------|-------------|
-| 🏥 **health** | `/mnemo:health` | Vault audit: orphans, broken links, missing sections, stale notes, growth stats |
-| 🔍 **ask** | `/mnemo:ask` | Search vault and synthesize answers from multiple notes with citations |
-| 🔗 **connect** | `/mnemo:connect` | Discovers hidden connections between notes you'd never think of |
-| 📥 **dump** | `/mnemo:dump` | Zero-friction brain dump — capture now, classify later |
-| 📂 **sort** | `/mnemo:sort` | Classify inbox notes into proper types (atom, molecule, source...) |
-| 📝 **session** | `/mnemo:session` | Auto-generates session summary + cross-session handoff |
-| 📬 **check-gmail** | `/mnemo:check-gmail` | Gmail → Obsidian bridge with deadline detection |
-| 💾 **save** | `/mnemo:save` | Memory routing cascade — saves to Obsidian + claude-mem + memory/ with graceful degradation |
-| ⚙️ **setup** | `/mnemo:setup` | Interactive onboarding — vault name, taxonomy, language, integrations |
+| 🏥 **health** | `/mn:health` | Vault audit: orphans, broken links, missing sections, stale notes, growth stats |
+| 🔍 **ask** | `/mn:ask` | Search vault and synthesize answers from multiple notes with citations |
+| 🔗 **connect** | `/mn:connect` | Discovers hidden connections between notes you'd never think of |
+| 📥 **dump** | `/mn:dump` | Zero-friction brain dump — capture now, classify later |
+| 📂 **sort** | `/mn:sort` | Classify inbox notes into proper types (atom, molecule, source...) |
+| 📝 **session** | `/mn:session` | Auto-generates session summary + cross-session handoff |
+| 📬 **check-gmail** | `/mn:check-gmail` | Gmail → Obsidian bridge with deadline detection |
+| 💾 **save** | `/mn:save` | Memory routing cascade — saves to Obsidian + claude-mem + memory/ with graceful degradation |
+| ⚙️ **setup** | `/mn:setup` | Interactive onboarding — vault name, taxonomy, language, integrations |
 
 ### Why Not Just Use Obsidian Plugins?
 
-Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, your conversation history, and your codebase. When you finish a 3-hour debugging session, `/mnemo:session` knows what you did because it was there.
+Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, your conversation history, and your codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
 ## 🏗 Architecture
 
@@ -84,7 +84,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 After install, run any skill — it will ask for your vault name on first use and save to `config.json`:
 
 ```
-/mnemo:health
+/mn:health
 > What's your Obsidian vault name? main
 > Saved to config.json. Running health check...
 ```
@@ -94,7 +94,7 @@ After install, run any skill — it will ask for your vault name on first use an
 ### 🏥 Weekly vault checkup
 
 ```
-/mnemo:health
+/mn:health
 ```
 
 ```
@@ -114,18 +114,18 @@ Total: 487 notes
 ### 📥 Quick capture on the go
 
 ```
-/mnemo:dump "idea: use HisPO from LongCat for pipeline stabilization"
+/mn:dump "idea: use HisPO from LongCat for pipeline stabilization"
 ```
 
 ```
 📬 Saved: "Inbox — HisPO for pipeline stabilization"
-   Classify later with /mnemo:health
+   Classify later with /mn:health
 ```
 
 ### 🔗 Discover hidden links
 
 ```
-/mnemo:connect "Atom — LongCat-Flash-Prover"
+/mn:connect "Atom — LongCat-Flash-Prover"
 ```
 
 ```
@@ -146,7 +146,7 @@ Apply these? (y/N, or pick numbers: 1,2)
 ### 📝 End-of-session save
 
 ```
-/mnemo:session
+/mn:session
 ```
 
 Creates a full session note with frontmatter, tags, and `## Связи` section. Automatically:
@@ -157,7 +157,7 @@ Creates a full session note with frontmatter, tags, and `## Связи` section.
 ### 📬 Check email
 
 ```
-/mnemo:check-gmail
+/mn:check-gmail
 ```
 
 ```
@@ -168,7 +168,7 @@ Deadlines found: 1 (added to daily note)
 
 ## ⚙️ Configuration
 
-Run `/mnemo:setup` for interactive configuration, or copy `config.example.json` manually:
+Run `/mn:setup` for interactive configuration, or copy `config.example.json` manually:
 
 ```bash
 mkdir -p ~/.mnemo
@@ -194,7 +194,7 @@ cp config.example.json ~/.mnemo/config.json
 }
 ```
 
-**All fields are optional.** Run `/mnemo:setup` to configure interactively, or skills will ask on first use.
+**All fields are optional.** Run `/mn:setup` to configure interactively, or skills will ask on first use.
 
 ### Custom Taxonomy
 
@@ -212,7 +212,7 @@ mnemo doesn't force a note structure. Change `taxonomy` in config to match yours
 
 ## 🔄 Cross-Session Continuity
 
-The killer feature. When a session ends, `/mnemo:session` writes a handoff note:
+The killer feature. When a session ends, `/mn:session` writes a handoff note:
 
 ```markdown
 ## Pending
@@ -244,15 +244,15 @@ claude-mnemo/
 │       ├── .claude-plugin/
 │       │   └── plugin.json      # Plugin manifest
 │       └── skills/
-│           ├── health/SKILL.md     # /mnemo:health — vault audit
-│           ├── ask/SKILL.md        # /mnemo:ask — knowledge search
-│           ├── connect/SKILL.md    # /mnemo:connect — link discovery
-│           ├── dump/SKILL.md       # /mnemo:dump — quick capture
-│           ├── sort/SKILL.md       # /mnemo:sort — inbox triage
-│           ├── session/SKILL.md    # /mnemo:session — session notes
-│           ├── check-gmail/SKILL.md # /mnemo:check-gmail — Gmail bridge
-│           ├── save/SKILL.md       # /mnemo:save — memory routing cascade
-│           └── setup/SKILL.md      # /mnemo:setup — onboarding
+│           ├── health/SKILL.md     # /mn:health — vault audit
+│           ├── ask/SKILL.md        # /mn:ask — knowledge search
+│           ├── connect/SKILL.md    # /mn:connect — link discovery
+│           ├── dump/SKILL.md       # /mn:dump — quick capture
+│           ├── sort/SKILL.md       # /mn:sort — inbox triage
+│           ├── session/SKILL.md    # /mn:session — session notes
+│           ├── check-gmail/SKILL.md # /mn:check-gmail — Gmail bridge
+│           ├── save/SKILL.md       # /mn:save — memory routing cascade
+│           └── setup/SKILL.md      # /mn:setup — onboarding
 ├── config.example.json           # Config template
 ├── CONTRIBUTING.md               # How to add skills
 ├── README.md
@@ -287,19 +287,19 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 
 | Скилл | Команда | Что делает |
 |-------|---------|-----------|
-| 🏥 **health** | `/mnemo:health` | Аудит vault: orphans, broken links, пропущенные секции, стагнирующие заметки, статистика роста |
-| 🔍 **ask** | `/mnemo:ask` | Поиск по vault и синтез ответа из нескольких заметок с цитатами |
-| 🔗 **connect** | `/mnemo:connect` | Находит скрытые связи между заметками, о которых ты бы не подумал |
-| 📥 **dump** | `/mnemo:dump` | Brain dump без классификации — захвати мысль сейчас, классифицируй потом |
-| 📂 **sort** | `/mnemo:sort` | Классификация inbox-заметок в правильные типы (atom, molecule, source...) |
-| 📝 **session** | `/mnemo:session` | Автоматическая сессионная заметка + cross-session handoff (передача контекста) |
-| 📬 **check-gmail** | `/mnemo:check-gmail` | Gmail → Obsidian мост с обнаружением дедлайнов |
-| 💾 **save** | `/mnemo:save` | Каскадное сохранение — Obsidian + claude-mem + memory/ с graceful degradation |
-| ⚙️ **setup** | `/mnemo:setup` | Интерактивный онбординг — имя vault, таксономия, язык, интеграции |
+| 🏥 **health** | `/mn:health` | Аудит vault: orphans, broken links, пропущенные секции, стагнирующие заметки, статистика роста |
+| 🔍 **ask** | `/mn:ask` | Поиск по vault и синтез ответа из нескольких заметок с цитатами |
+| 🔗 **connect** | `/mn:connect` | Находит скрытые связи между заметками, о которых ты бы не подумал |
+| 📥 **dump** | `/mn:dump` | Brain dump без классификации — захвати мысль сейчас, классифицируй потом |
+| 📂 **sort** | `/mn:sort` | Классификация inbox-заметок в правильные типы (atom, molecule, source...) |
+| 📝 **session** | `/mn:session` | Автоматическая сессионная заметка + cross-session handoff (передача контекста) |
+| 📬 **check-gmail** | `/mn:check-gmail` | Gmail → Obsidian мост с обнаружением дедлайнов |
+| 💾 **save** | `/mn:save` | Каскадное сохранение — Obsidian + claude-mem + memory/ с graceful degradation |
+| ⚙️ **setup** | `/mn:setup` | Интерактивный онбординг — имя vault, таксономия, язык, интеграции |
 
 ### Почему не обычные плагины Obsidian?
 
-Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию дебаггинга, `/mnemo:session` знает что ты делал, потому что был рядом.
+Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию дебаггинга, `/mn:session` знает что ты делал, потому что был рядом.
 
 ## 🏗 Архитектура
 
@@ -346,7 +346,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 После установки запусти любой скилл — он спросит имя vault при первом использовании и сохранит в `config.json`:
 
 ```
-/mnemo:health
+/mn:health
 > Как называется твой Obsidian vault? main
 > Сохранено в config.json. Запускаю проверку...
 ```
@@ -356,7 +356,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 ### 🏥 Еженедельная проверка vault
 
 ```
-/mnemo:health
+/mn:health
 ```
 
 ```
@@ -376,18 +376,18 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 ### 📥 Быстрый захват мысли
 
 ```
-/mnemo:dump "идея: использовать HisPO из LongCat для стабилизации pipeline"
+/mn:dump "идея: использовать HisPO из LongCat для стабилизации pipeline"
 ```
 
 ```
 📬 Сохранено: "Inbox — HisPO для стабилизации pipeline"
-   Классифицируй позже через /mnemo:sort
+   Классифицируй позже через /mn:sort
 ```
 
 ### 🔍 Поиск по базе знаний
 
 ```
-/mnemo:ask "что мы решили по стратегии ценообразования?"
+/mn:ask "что мы решили по стратегии ценообразования?"
 ```
 
 ```
@@ -406,7 +406,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 ### 🔗 Поиск скрытых связей
 
 ```
-/mnemo:connect "Atom — LongCat-Flash-Prover"
+/mn:connect "Atom — LongCat-Flash-Prover"
 ```
 
 ```
@@ -427,7 +427,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 ### 📝 Сохранение сессии
 
 ```
-/mnemo:session
+/mn:session
 ```
 
 Создаёт полную сессионную заметку с frontmatter, тегами и секцией `## Связи`. Автоматически:
@@ -438,7 +438,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 ### 📂 Классификация inbox
 
 ```
-/mnemo:sort
+/mn:sort
 ```
 
 ```
@@ -462,7 +462,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 ### 📬 Проверка почты
 
 ```
-/mnemo:check-gmail
+/mn:check-gmail
 ```
 
 ```
@@ -473,7 +473,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 
 ## 🔄 Cross-Session Continuity (передача контекста)
 
-Киллер-фича. Когда сессия заканчивается, `/mnemo:session` записывает handoff-заметку:
+Киллер-фича. Когда сессия заканчивается, `/mn:session` записывает handoff-заметку:
 
 ```markdown
 ## Pending
@@ -489,7 +489,7 @@ git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claud
 
 ## ⚙️ Конфигурация
 
-Запусти `/mnemo:setup` для интерактивной настройки, или скопируй конфиг вручную:
+Запусти `/mn:setup` для интерактивной настройки, или скопируй конфиг вручную:
 
 ```bash
 mkdir -p ~/.mnemo
@@ -515,7 +515,7 @@ cp config.example.json ~/.mnemo/config.json
 }
 ```
 
-**Все поля опциональны.** `/mnemo:setup` настроит интерактивно, или скиллы спросят при первом запуске.
+**Все поля опциональны.** `/mn:setup` настроит интерактивно, или скиллы спросят при первом запуске.
 
 ### Своя таксономия
 
@@ -549,14 +549,14 @@ claude-mnemo/
 │       ├── .claude-plugin/
 │       │   └── plugin.json      # Plugin манифест
 │       └── skills/
-│           ├── health/SKILL.md     # /mnemo:health — аудит vault
-│           ├── ask/SKILL.md        # /mnemo:ask — поиск по знаниям
-│           ├── connect/SKILL.md    # /mnemo:connect — поиск связей
-│           ├── dump/SKILL.md       # /mnemo:dump — быстрый захват
-│           ├── sort/SKILL.md       # /mnemo:sort — классификация inbox
-│           ├── session/SKILL.md    # /mnemo:session — сессионные заметки
-│           ├── check-gmail/SKILL.md # /mnemo:check-gmail — Gmail мост
-│           └── setup/SKILL.md      # /mnemo:setup — онбординг
+│           ├── health/SKILL.md     # /mn:health — аудит vault
+│           ├── ask/SKILL.md        # /mn:ask — поиск по знаниям
+│           ├── connect/SKILL.md    # /mn:connect — поиск связей
+│           ├── dump/SKILL.md       # /mn:dump — быстрый захват
+│           ├── sort/SKILL.md       # /mn:sort — классификация inbox
+│           ├── session/SKILL.md    # /mn:session — сессионные заметки
+│           ├── check-gmail/SKILL.md # /mn:check-gmail — Gmail мост
+│           └── setup/SKILL.md      # /mn:setup — онбординг
 ├── config.example.json           # Шаблон конфигурации
 ├── CONTRIBUTING.md               # Как добавить скиллы
 ├── README.md

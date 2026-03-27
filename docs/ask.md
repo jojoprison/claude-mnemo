@@ -7,9 +7,9 @@ Search across your entire vault and get a synthesized answer with source citatio
 ## Usage
 
 ```
-/mnemo:ask "what did we decide about the pricing strategy?"
-/mnemo:ask "find everything about Docker deployment"
-/mnemo:ask "summarize what we know about SCOPE engine"
+/mn:ask "what did we decide about the pricing strategy?"
+/mn:ask "find everything about Docker deployment"
+/mn:ask "summarize what we know about SCOPE engine"
 ```
 
 ## How It Works
@@ -45,5 +45,5 @@ Key points:
 
 ## Related Skills
 
-- `/mnemo:connect` — after finding related notes, connect them
-- `/mnemo:dump` — capture follow-up ideas from the answer
+- `/mn:connect` — after finding related notes, connect them
+- `/mn:dump` — capture follow-up ideas from the answer

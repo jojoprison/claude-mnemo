@@ -18,7 +18,7 @@ Scan Gmail inbox, save important emails as Obsidian notes, flag deadlines.
 
 ## Config
 
-Read from `~/.mnemo/config.json`. Required: `vault`, `gmail_enabled`. If `gmail_enabled` is false or missing, tell user to run `/mnemo:setup`.
+Read from `~/.mnemo/config.json`. Required: `vault`, `gmail_enabled`. If `gmail_enabled` is false or missing, tell user to run `/mn:setup`.
 
 ## Workflow
 
@@ -99,5 +99,5 @@ Deadlines found: {N}
 - **gws CLI must be authorized** — if `gws gmail list` fails, tell user to run `gws gmail auth`
 - **Summarize, don't copy** — email body goes as summary, not raw paste (privacy + tokens)
 - **Not every email is worth saving** — be selective, only truly important ones
-- **Inbox type** — saved emails are `type: inbox`, classify later with /mnemo:sort
+- **Inbox type** — saved emails are `type: inbox`, classify later with /mn:sort
 - **No links section for inbox notes** — standard inbox exemption

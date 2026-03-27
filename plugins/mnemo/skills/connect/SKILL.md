@@ -16,13 +16,13 @@ Analyze a note and discover connections to other notes in the vault that aren't 
 
 ## Config
 
-Read `vault` and `links_section` from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user.
+Read `vault` and `links_section` from `~/.mnemo/config.json`. If missing, run `/mn:setup` or ask user.
 
 ## Workflow
 
 ### Step 1: Identify Target Note
 
-Accept note name as argument: `/mnemo:connect "Atom — LongCat-Flash-Prover"`
+Accept note name as argument: `/mn:connect "Atom — LongCat-Flash-Prover"`
 
 If no argument, ask: "Which note should I analyze for connections?"
 

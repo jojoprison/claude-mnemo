@@ -7,7 +7,7 @@ Scans your Gmail inbox, saves important emails as Obsidian notes, and flags dead
 ## Usage
 
 ```
-/mnemo:check-gmail
+/mn:check-gmail
 ```
 
 No arguments. Scans last 10 unread emails.
@@ -73,9 +73,9 @@ Marco wants the budget report by Friday. Key numbers: ...
 - **NEVER marks as read** — iron rule, `gmail_mark_read: false` in config
 - **Summarizes, doesn't copy** — email body is summarized for privacy and tokens
 - **Selective** — only saves truly important emails, skips noise
-- **Inbox type** — classify later with `/mnemo:sort`
+- **Inbox type** — classify later with `/mn:sort`
 
 ## Related Skills
 
-- `/mnemo:sort` — classify saved email notes
-- `/mnemo:health` — shows email inbox backlog
+- `/mn:sort` — classify saved email notes
+- `/mn:health` — shows email inbox backlog
