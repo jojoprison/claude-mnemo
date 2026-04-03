@@ -114,10 +114,18 @@ Only write here if the information **prevents Claude from making errors** in fut
 - Gotchas, commands, conventions
 - NOT business context (that's Obsidian's job)
 
+**Path resolution (CRITICAL):**
+The "memory/" directory is Claude Code's **auto-memory** directory, NOT `./memory/` in the project root.
+
+To find the correct path, look for the `MEMORY.md` file that is already loaded in your conversation context. Its path follows the pattern:
 ```
-Write or append to relevant topic file in the project's memory/ directory
-(or ~/.claude/memory/ for cross-project info)
+~/.claude/projects/-{slugified-cwd}/memory/
 ```
+For example: `~/.claude/projects/-Users-jkaseq-Documents-projects-bts-holding/memory/`
+
+**NEVER create or write to `./memory/` in the project root** — that would put memory files in the git repo.
+
+Write or append to relevant topic file in that directory. Use `~/.claude/memory/` only for cross-project info.
 
 **On error:** Log `⚠️ memory/: skipped (directory not found)`, continue.
 
@@ -180,6 +188,7 @@ Or with failures:
 - **claude-mem is optional** — many users won't have it. Skip silently
 - **CLAUDE.md is almost never written to** — only 1-2 line rules that prevent actual errors. Target: <120 lines total
 - **CLI first for Obsidian** — never use MCP for search/create (70,000x cheaper)
+- **memory/ path is NOT `./memory/`** — it's `~/.claude/projects/-{slug}/memory/`. Writing to project root creates files in git. Find the correct path from MEMORY.md in context
 - **Always check duplicates** before creating Obsidian notes
 - **Ghost notes generously** — wrap entities in `[[wikilinks]]`
 - **MOC link mandatory** for Obsidian notes (except inbox)
