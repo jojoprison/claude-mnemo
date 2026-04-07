@@ -1,5 +1,5 @@
 ---
-name: connect
+name: mn:connect
 description: "Discover hidden links between Obsidian notes. Shows suggestions, does NOT auto-apply."
 user-invocable: true
 ---
