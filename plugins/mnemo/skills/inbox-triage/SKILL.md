@@ -103,4 +103,4 @@ Remaining in inbox: 1
 - **Delete old inbox note** — don't leave duplicates
 - **Always add to MOC** — classified notes must not be orphans
 - **Suggest, don't force** — user picks final type, name, tags
-- **Clean up content** — fix typos, expand abbreviations, add context if the quick dump was terse
+- **Clean up content** — fix typos, expand abbreviations, add context if the original note was terse

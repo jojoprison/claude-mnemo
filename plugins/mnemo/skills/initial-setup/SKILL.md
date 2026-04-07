@@ -62,18 +62,7 @@ What heading do you use for note cross-references?
 > 1
 ```
 
-### Step 5: Gmail Integration
-
-```
-Do you want to enable mnemo:check-gmail (Gmail → Obsidian)?
-This requires gws CLI to be installed and authorized.
-
-[y/N] > n
-```
-
-If yes, verify: `gws gmail list --max 1`
-
-### Step 6: Save Config
+### Step 5: Save Config
 
 Write `~/.mnemo/config.json`:
 
@@ -89,13 +78,11 @@ Write `~/.mnemo/config.json`:
     "inbox": { "prefix": "Inbox — ", "tag": "inbox" }
   },
   "links_section": "## Связи",
-  "handoff_note": "Meta — Session Handoff",
-  "gmail_enabled": false,
-  "gmail_mark_read": false
+  "handoff_note": "Meta — Session Handoff"
 }
 ```
 
-### Step 7: Create Handoff Note
+### Step 6: Create Handoff Note
 
 ```bash
 obsidian create name="Meta — Session Handoff" vault="{vault}" content="---
@@ -114,7 +101,7 @@ Cross-session continuity file. Updated by mnemo:session.
 "
 ```
 
-### Step 8: Done
+### Step 7: Done
 
 ```
 🧠 mnemo is ready!
