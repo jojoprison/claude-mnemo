@@ -138,13 +138,13 @@ Finds notes related by concepts, tags, or entities — then asks before applying
 
 Routes to Obsidian (Atom note) + claude-mem (semantic search) + memory/ (Claude's future context). If any backend is down, the others still work.
 
-### End-of-session review
+### End-of-session orchestrator (the only command you need)
 
 ```
 /mn:review
 ```
 
-Analyzes your entire session: what was done, what was missed, which skills should have been invoked. Offers to run missed skills in order.
+Analyzes your session, **auto-saves** decisions, **auto-creates** session notes. Then asks about remaining skills (commit, connect, health).
 
 ### Session notes + handoff
 
@@ -285,7 +285,7 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 | **sort** | `/mn:sort` | Классификация inbox-заметок в типы (atom, molecule, source...) |
 | **session** | `/mn:session` | Сессионная заметка + cross-session handoff |
 | **save** | `/mn:save` | Каскадное сохранение — Obsidian + claude-mem + memory/ |
-| **review** | `/mn:review` | Skill-aware анализ полноты сессии с execution chain |
+| **review** | `/mn:review` | Оркестратор конца сессии — автосохраняет решения, создает session notes, рекомендует оставшиеся скиллы |
 | **setup** | `/mn:setup` | Интерактивный онбординг |
 
 ### Почему не обычные плагины Obsidian?
@@ -365,13 +365,13 @@ claude plugin install mnemo@claude-mnemo
 
 Роутит в Obsidian (Atom) + claude-mem (семантический поиск) + memory/ (контекст для Claude). Если backend упал — остальные работают.
 
-### Ревью сессии
+### Ревью сессии (единственная команда на конец)
 
 ```
 /mn:review
 ```
 
-Анализирует всю сессию: что сделано, что пропущено, какие скиллы стоило вызвать. Предлагает запустить по порядку.
+Анализирует сессию, **автоматически** сохраняет решения и создает session notes. Потом спрашивает про остальное (commit, connect, health).
 
 ### Сессионные заметки
 
@@ -426,7 +426,7 @@ cp config.example.json ~/.mnemo/config.json
 | **sort** | `/mn:sort` | 将收件箱笔记分类为正确类型（atom、molecule、source...） |
 | **session** | `/mn:session` | 自动生成会话摘要 + 跨会话上下文传递 |
 | **save** | `/mn:save` | 级联保存 — Obsidian + claude-mem + memory/，优雅降级 |
-| **review** | `/mn:review` | 技能感知的会话完整性分析器，带执行链 |
+| **review** | `/mn:review` | 会话结束编排器 — 自动保存决策、创建会话笔记、推荐其余技能 |
 | **setup** | `/mn:setup` | 交互式引导配置 |
 
 ### 为什么不用 Obsidian 插件？
@@ -506,13 +506,13 @@ claude plugin install mnemo@claude-mnemo
 
 路由到 Obsidian（Atom 笔记）+ claude-mem（语义搜索）+ memory/（Claude 的未来上下文）。任何后端宕机，其他仍然工作。
 
-### 会话审查
+### 会话审查（会话结束只需这一个命令）
 
 ```
 /mn:review
 ```
 
-分析整个会话：完成了什么、遗漏了什么、应该调用哪些技能。按顺序提供运行。
+分析会话，**自动**保存决策并创建会话笔记。然后询问其余操作（commit、connect、health）。
 
 ### 会话笔记
 
