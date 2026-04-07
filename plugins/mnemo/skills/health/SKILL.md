@@ -17,7 +17,7 @@ Run a comprehensive health check on the Obsidian vault: orphans, broken links, m
 
 ## Config
 
-Read from `~/.mnemo/config.json`. If missing, run `/mn:setup` or ask user for vault name and save.
+Read from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user for vault name and save.
 
 Required fields: `vault`, `taxonomy`, `links_section`.
 
@@ -78,7 +78,7 @@ Report notes missing the section.
 ### Step 6: Inbox Backlog
 
 Count from Step 4's inbox search. If > 0, remind:
-"N inbox notes waiting for classification. Run /mn:sort to classify."
+"N inbox notes waiting for classification. Run /mnemo:sort to classify."
 
 ### Step 7: Stale Notes
 
@@ -116,7 +116,7 @@ Total: {N} notes
 🟡 Missing {links_section}: {N}
   - Note Name 1
 
-📬 Inbox backlog: {N} notes — run /mn:sort to classify
+📬 Inbox backlog: {N} notes — run /mnemo:sort to classify
 
 🔗 Unresolved wikilinks: {N}
 📏 Tags: {N} total, {N} used once

@@ -46,7 +46,7 @@ Determine what type of information is being saved:
 | **gotcha** | Obsidian Atom + memory/ + possibly CLAUDE.md | "execSync with shell=true is banned in antomate" |
 | **source** | Obsidian Source + claude-mem | External article, tool, research finding |
 | **rule** | CLAUDE.md (if error-preventing) + memory/ | "Never mark Gmail as read without explicit request" |
-| **quick thought** | Delegate to `/mn:dump` | Unstructured ideas |
+| **quick thought** | Create Obsidian inbox note | Unstructured ideas |
 
 ### Step 1: Obsidian (Primary — for the user)
 
@@ -164,7 +164,7 @@ Or with failures:
   2. claude-mem ✅ → indexed
   3. memory/   ✅ → ~/.claude/memory/topic.md updated
 
-⚠️ Run /mn:save again after restarting Obsidian to complete sync.
+⚠️ Run /mnemo:save again after restarting Obsidian to complete sync.
 ```
 
 ## Decision Matrix
@@ -178,7 +178,7 @@ Or with failures:
 | Gotcha | ✅ Atom | ✅ | ✅ | ✅ if critical |
 | Command/convention | ✅ Atom | ✅ | ✅ | ❌ |
 | Error-preventing rule | ❌ | ❌ | ✅ | ✅ |
-| Quick unstructured thought | Delegate to `/mn:dump` | ❌ | ❌ | ❌ |
+| Quick unstructured thought | ✅ Inbox | ❌ | ❌ | ❌ |
 
 ## Gotchas
 

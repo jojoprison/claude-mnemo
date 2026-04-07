@@ -1,6 +1,6 @@
 ---
 name: session
-description: "Use after completing significant work to write session summary to Obsidian. Triggers after major tasks (features, fixes, research) or manually via /mn:session."
+description: "Use after completing significant work to write session summary to Obsidian. Triggers after major tasks (features, fixes, research) or manually via /mnemo:session."
 user-invocable: true
 context: fork
 model: opus
@@ -16,13 +16,13 @@ Create a human-readable session summary note in Obsidian after significant work.
 
 ## Config
 
-Read `vault`, `taxonomy.session`, `links_section`, and `handoff_note` from `~/.mnemo/config.json`. If missing, run `/mn:setup` or ask user.
+Read `vault`, `taxonomy.session`, `links_section`, and `handoff_note` from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user.
 
 ## When to Trigger
 
 - After completing a feature / PR / fix
 - After significant research session
-- Manually via `/mn:session`
+- Manually via `/mnemo:session`
 - Do NOT trigger for trivial tasks (typo fix, one-liner)
 
 ## Workflow
