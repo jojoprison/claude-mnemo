@@ -6,4 +6,4 @@ user-invocable: true
 
 $ARGUMENTS
 
-Invoke the save skill: use the Skill tool with skill: "mnemo:memory-cascade", args: "$ARGUMENTS"
+Invoke the save skill: use the Skill tool with skill: "mnemo:memory-routing", args: "$ARGUMENTS"

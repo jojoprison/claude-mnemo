@@ -1,5 +1,5 @@
 ---
-name: session-writer
+name: session-notes
 description: "Use after completing significant work to write session summary to Obsidian. Triggers after major tasks (features, fixes, research) or manually via /mnemo:session."
 user-invocable: false
 context: fork

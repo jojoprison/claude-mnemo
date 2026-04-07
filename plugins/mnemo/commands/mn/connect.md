@@ -6,4 +6,4 @@ user-invocable: true
 
 $ARGUMENTS
 
-Invoke the connect skill: use the Skill tool with skill: "mnemo:link-discoverer", args: "$ARGUMENTS"
+Invoke the connect skill: use the Skill tool with skill: "mnemo:link-discovery", args: "$ARGUMENTS"

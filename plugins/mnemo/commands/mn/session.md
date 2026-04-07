@@ -6,4 +6,4 @@ user-invocable: true
 
 $ARGUMENTS
 
-Invoke the session skill: use the Skill tool with skill: "mnemo:session-writer", args: "$ARGUMENTS"
+Invoke the session skill: use the Skill tool with skill: "mnemo:session-notes", args: "$ARGUMENTS"
