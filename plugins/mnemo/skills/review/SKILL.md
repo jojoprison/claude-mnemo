@@ -1,5 +1,5 @@
 ---
-name: review
+name: completeness-analyzer
 description: "Use at the end of any session (or when asked 'what did we miss?', 'что забыли', 'session review', 'что осталось', 'all done?') to analyze session completeness. Discovers all available skills, detects what was used vs should have been, offers to execute missed skills in order. Always thorough."
 user-invocable: false
 ---

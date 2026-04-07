@@ -1,5 +1,5 @@
 ---
-name: sort
+name: inbox-classifier
 description: "Use when inbox notes need classification — converts inbox captures into proper typed notes (atom, molecule, source, session). Invoke after mnemo:health shows inbox backlog, or manually."
 user-invocable: false
 model: opus

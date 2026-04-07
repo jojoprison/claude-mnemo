@@ -1,5 +1,5 @@
 ---
-name: ask
+name: vault-search
 description: "Use when searching for information across the Obsidian vault — 'what did we decide about X', 'find everything about Y', 'summarize what we know about Z'. Synthesizes answers from multiple notes with source citations."
 user-invocable: false
 context: fork

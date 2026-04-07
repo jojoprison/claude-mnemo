@@ -6,4 +6,4 @@ user-invocable: true
 
 $ARGUMENTS
 
-Invoke the health skill: use the Skill tool with skill: "mnemo:health", args: "$ARGUMENTS"
+Invoke the health skill: use the Skill tool with skill: "mnemo:vault-health", args: "$ARGUMENTS"

@@ -6,4 +6,4 @@ user-invocable: true
 
 $ARGUMENTS
 
-Invoke the ask skill: use the Skill tool with skill: "mnemo:ask", args: "$ARGUMENTS"
+Invoke the ask skill: use the Skill tool with skill: "mnemo:vault-search", args: "$ARGUMENTS"

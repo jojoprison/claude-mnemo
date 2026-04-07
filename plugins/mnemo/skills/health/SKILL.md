@@ -1,5 +1,5 @@
 ---
-name: health
+name: vault-health
 description: "Use when checking Obsidian vault health, finding orphans, broken links, or getting vault statistics. Invoke weekly, after mass note creation, or when asked about vault state."
 user-invocable: false
 context: fork

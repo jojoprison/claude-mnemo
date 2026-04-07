@@ -6,4 +6,4 @@ user-invocable: true
 
 $ARGUMENTS
 
-Invoke the sort skill: use the Skill tool with skill: "mnemo:sort", args: "$ARGUMENTS"
+Invoke the sort skill: use the Skill tool with skill: "mnemo:inbox-classifier", args: "$ARGUMENTS"

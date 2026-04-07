@@ -6,4 +6,4 @@ user-invocable: true
 
 $ARGUMENTS
 
-Invoke the review skill: use the Skill tool with skill: "mnemo:review", args: "$ARGUMENTS"
+Invoke the review skill: use the Skill tool with skill: "mnemo:completeness-analyzer", args: "$ARGUMENTS"
