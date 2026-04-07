@@ -1,6 +1,7 @@
 ---
 name: setup
 description: "Use on first install or when reconfiguring mnemo. Interactive onboarding that creates config.json with vault name, taxonomy, language preferences, and integration settings."
+user-invocable: false
 model: opus
 ---
 

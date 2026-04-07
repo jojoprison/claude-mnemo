@@ -1,6 +1,7 @@
 ---
 name: save
 description: "Use when user says 'remember this', 'save to memory', 'запомни', 'в память', 'сохрани', or when significant facts, decisions, or findings need to be persisted. Routes to multiple storage backends with graceful degradation."
+user-invocable: false
 context: fork
 model: opus
 ---
