@@ -50,5 +50,5 @@ Actions:
 
 ## Related Skills
 
-- `/mn:dump` — creates the inbox notes that sort classifies
+- `/mn:save` — creating inbox notes (routes quick thoughts to inbox)
 - `/mn:health` — shows inbox backlog count

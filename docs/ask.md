@@ -46,4 +46,4 @@ Key points:
 ## Related Skills
 
 - `/mn:connect` — after finding related notes, connect them
-- `/mn:dump` — capture follow-up ideas from the answer
+- `/mn:save` — capture follow-up ideas or findings from the answer

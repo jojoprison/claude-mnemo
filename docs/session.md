@@ -33,11 +33,11 @@ Orphans: 0 new
 
 Handoff contents:
 ## Pending
-- [ ] Test mnemo:check-gmail (project: claude-mnemo)
-- [ ] Submit to awesome-claude-plugins (project: claude-mnemo)
+- [ ] Test /mn:review in real session
+- [ ] Update docs for new skill names
 
 ## Context
-- Created claude-mnemo plugin, 8 skills, tested health/dump/connect
+- Refactored claude-mnemo plugin, 8 skills, CE-pattern naming
 ```
 
 ## Cross-Session Continuity
@@ -63,5 +63,6 @@ When the next session starts, it reads `Meta — Session Handoff`:
 
 ## Related Skills
 
+- `/mn:review` — often runs session as part of its execution chain
 - `/mn:health` — verify session note isn't an orphan
 - `/mn:connect` — discover connections for the new session note

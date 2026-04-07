@@ -18,7 +18,7 @@ No arguments needed. Reads vault name from `~/.mnemo/config.json`.
 |-------|--------------|----------|
 | Orphans | Notes with zero backlinks (invisible in Graph View) | 🔴 High |
 | Missing links section | Notes without `## Links` / `## Связи` (disconnected from graph) | 🟡 Medium |
-| Inbox backlog | Unclassified inbox notes from `/mn:dump` | 📬 Info |
+| Inbox backlog | Unclassified inbox notes | 📬 Info |
 | Unresolved wikilinks | `[[Ghost Notes]]` pointing to non-existent files | ℹ️ Normal |
 | Tag typos | Tags used only once (potential misspelling) | 🟡 Medium |
 | Stale notes | 30+ days old with zero backlinks | 💤 Low |

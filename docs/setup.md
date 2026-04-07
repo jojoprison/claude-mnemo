@@ -19,7 +19,6 @@ Run once after installing the plugin.
 | Vault name | Which Obsidian vault to use | `main` |
 | Taxonomy | Note type prefixes and tags | Atom/Molecule/PARA/Custom |
 | Links section | Heading for cross-references | `## Links`, `## Связи` |
-| Gmail | Enable/disable email bridge | `true`/`false` |
 
 ## Onboarding Flow
 
@@ -29,9 +28,20 @@ Run once after installing the plugin.
 1. What's your Obsidian vault name? → main
 2. Which taxonomy? → [1] Atom/Molecule (Zettelkasten)
 3. Links section heading? → [1] ## Связи
-4. Enable Gmail? → [N]
-5. Config saved to ~/.mnemo/config.json
-6. Handoff note created in vault
+4. Config saved to ~/.mnemo/config.json
+5. Handoff note created in vault
+
+Your skills:
+  /mn:health    — vault audit & analytics
+  /mn:connect   — discover hidden links
+  /mn:session   — session notes + handoff
+  /mn:ask       — search & synthesize
+  /mn:sort      — classify inbox notes
+  /mn:save      — memory routing cascade
+  /mn:review    — session completeness review
+  /mn:setup     — this command
+
+Try: /mn:health
 ```
 
 ## Generated Config
@@ -48,15 +58,29 @@ Run once after installing the plugin.
     "inbox": { "prefix": "Inbox — ", "tag": "inbox" }
   },
   "links_section": "## Связи",
-  "handoff_note": "Meta — Session Handoff",
-  "gmail_enabled": false,
-  "gmail_mark_read": false
+  "handoff_note": "Meta — Session Handoff"
 }
 ```
+
+## Optional: Memory Cascade
+
+Add `cascade` to config for multi-backend saves via `/mn:save`:
+
+```json
+{
+  "cascade": {
+    "obsidian": { "enabled": true },
+    "claude_mem": { "enabled": true, "url": "http://127.0.0.1:37777" },
+    "memory_dir": { "enabled": true }
+  }
+}
+```
+
+Don't have claude-mem? Leave it out — save works with Obsidian alone.
 
 ## Important Notes
 
 - **Run once** — if config exists, asks before overwriting
-- **Obsidian must be open** — verifies vault name by running a test search
+- **Obsidian must be open** — verifies vault by running a test search
 - **Creates handoff note** — `Meta — Session Handoff` in your vault
 - **Doesn't create vault structure** — works with your existing vault as-is

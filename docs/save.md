@@ -73,6 +73,6 @@ Don't have claude-mem? Set `"enabled": false` — everything else works.
 
 ## Related Skills
 
-- `/mn:dump` — for quick unstructured thoughts (save redirects here when appropriate)
 - `/mn:session` — saves an entire session summary (uses save internally)
+- `/mn:review` — recommends running save if unsaved decisions detected
 - `/mn:health` — verify saved notes aren't orphans
