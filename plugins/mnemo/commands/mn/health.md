@@ -1,5 +1,5 @@
 ---
-name: mn:health
+name: health
 description: "Vault audit & analytics — orphans, broken links, stale notes, growth stats, tag distribution."
 user-invocable: true
 ---

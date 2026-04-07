@@ -1,5 +1,5 @@
 ---
-name: mn:ask
+name: ask
 description: "Search Obsidian vault — 'what did we decide about X', 'find everything about Y'. Synthesizes answers with citations."
 user-invocable: true
 ---

@@ -1,5 +1,5 @@
 ---
-name: mn:sort
+name: sort
 description: "Inbox triage — classify inbox notes into proper types (atom, molecule, source, session)."
 user-invocable: true
 ---
