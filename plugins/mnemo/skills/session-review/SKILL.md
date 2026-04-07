@@ -1,6 +1,6 @@
 ---
 name: session-review
-description: "Use at the end of any session (or when asked 'what did we miss?', 'что забыли', 'session review', 'что осталось', 'all done?') to analyze session completeness. Discovers all available skills, detects what was used vs should have been, offers to execute missed skills in order. Always thorough."
+description: "End-of-session orchestrator. Auto-saves decisions (mnemo:memory-routing) and creates session notes (mnemo:session-notes) without asking. Then recommends remaining skills. Triggers on: 'что забыли', 'session review', 'что осталось', 'all done?', 'review', end of significant work. The ONLY command users need at session end — handles everything."
 user-invocable: false
 ---
 
@@ -328,29 +328,47 @@ From CLAUDE.md, check mandatory steps:
 | Skills | {used/recommended} | |
 ```
 
-### Step 7: Execute Missed Skills
+### Step 7: Auto-Execute Core Skills
 
-After the report, offer to run recommended skills **in priority order**:
+After the report, **automatically run** save + session without asking — these are the two skills that matter most and the user expects them to happen.
+
+**Auto-run (no confirmation needed):**
+
+1. **mnemo:memory-routing** (save) — if unsaved decisions/findings detected, extract them and invoke:
+   ```
+   Skill(skill: "mnemo:memory-routing", args: "{extracted decisions and findings}")
+   ```
+2. **mnemo:session-notes** (session) — if significant work was done, invoke:
+   ```
+   Skill(skill: "mnemo:session-notes", args: "")
+   ```
+
+**Order matters:** save before session (decisions should be persisted before session note references them).
+
+**Skip auto-run if:** the skill was already invoked this session (per SKILLS_INVOKED preprocessing).
+
+### Step 8: Offer Remaining Skills
+
+For everything else, ask the user:
 
 ```
-{N} skills recommended. Execute?
+Auto-completed:
+  ✅ /mn:save — 3 decisions saved
+  ✅ /mn:session — session note created
 
-Execution plan (priority order):
-  1. [CRITICAL] /commit — uncommitted changes
-  2. [HIGH] /mnemo:save — {N} unsaved decisions
-  3. [HIGH] /mnemo:session — session notes
-  4. [MEDIUM] /simplify — cleanup pass
+Also recommended:
 
-Options:
-  A — Execute all in order
-  1,2,3... — Execute specific ones
-  N — Skip
+  1. [CRITICAL] /commit — 5 uncommitted files
+  2. [MEDIUM] /mn:connect — 2 new notes, find links?
+  3. [LOW] /mn:health — vault audit after mass creation?
+
+Run any? (1,2,3 / A=all / N=skip)
 ```
 
 **Execution rules:**
 1. Run skills sequentially using the Skill tool
 2. Brief status after each
-3. Dependency order: /commit before /ship, /mnemo:save before /mnemo:session
+3. Dependency order: /commit before /ship
 4. After all done, output updated score
 
 ## Rules

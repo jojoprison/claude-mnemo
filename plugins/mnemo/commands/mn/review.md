@@ -1,6 +1,6 @@
 ---
 name: mn:review
-description: "End-of-session review — finds done items, missed items, hanging threads, and skill gap analysis."
+description: "End-of-session orchestrator — auto-saves decisions, creates session notes, recommends remaining skills."
 user-invocable: true
 ---
 

@@ -1,8 +1,8 @@
-# mnemo:review — Skill-Aware Session Completeness Analyzer
+# mnemo:review — End-of-Session Orchestrator
 
 ## Overview
 
-End-of-session review that goes beyond "what was done" — it knows which skills exist in your system, which ones were used, and which ones you should have used. Then offers to run them.
+The only command you need at session end. Analyzes everything, **auto-saves** unsaved decisions, **auto-creates** session notes, then recommends remaining skills. One command replaces manually running save + session + connect + health.
 
 ## Usage
 
@@ -91,16 +91,42 @@ Should use: /mn:session, /mn:save
 ### Score: 5/10
 ```
 
+## Auto-Execution (v0.5.9)
+
+Review now **auto-runs** two core skills without asking:
+
+| Skill | When | What happens |
+|-------|------|-------------|
+| `/mn:save` | Unsaved decisions/findings detected | Extracts and saves to Obsidian + claude-mem + memory/ |
+| `/mn:session` | Significant work done | Creates session note + handoff |
+
+**Skips** if the skill was already invoked this session (checked via JSONL preprocessing).
+
+After auto-run, asks about remaining skills:
+```
+Auto-completed:
+  ✅ /mn:save — 3 decisions saved
+  ✅ /mn:session — session note created
+
+Also recommended:
+  1. [CRITICAL] /commit — 5 uncommitted files
+  2. [MEDIUM] /mn:connect — 2 new notes, find links?
+
+Run any? (1,2 / A=all / N=skip)
+```
+
 ## Important Notes
 
 - **Always thorough** — no quick mode, full analysis every time
+- **Auto-executes save + session** — no need to run them manually
 - **Inline execution** — runs in main conversation context, can invoke other skills
 - **BLUF** — score and critical items first, details below
-- **Won't nag** — if a skill already ran this session, skips it
+- **Won't nag** — skill already ran this session? Skips it
 - **Only recommends installed skills** — never suggests unavailable tools
 
 ## Related Skills
 
-- `/mn:session` — often recommended by review as a missed skill
-- `/mn:save` — often recommended for unsaved decisions
-- `/mn:health` — review may suggest if new Obsidian notes were created
+- `/mn:save` — auto-invoked by review when unsaved decisions detected
+- `/mn:session` — auto-invoked by review when session is significant
+- `/mn:health` — review recommends if new notes were created
+- `/mn:connect` — review recommends if new notes need linking

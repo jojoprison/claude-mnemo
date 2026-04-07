@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.9] - 2026-04-07
+
+### Changed
+- **`/mn:review` is now an end-of-session orchestrator** — auto-runs save + session without asking
+  - Detects unsaved decisions → auto-invokes `mnemo:memory-routing`
+  - Detects no session notes → auto-invokes `mnemo:session-notes`
+  - Remaining skills (commit, connect, health, sort) → asks before running
+  - Skip auto-run if skill was already invoked this session
+  - Only command users need at session end
+- Improved skill descriptions for better auto-triggering (pushy pattern from skill-creator)
+- docs/review.md updated with orchestrator workflow
+
 ## [0.5.8] - 2026-04-07
 
 ### Breaking Changes
