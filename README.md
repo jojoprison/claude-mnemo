@@ -7,11 +7,11 @@
 [![Skills](https://img.shields.io/badge/Skills-8-blue?style=flat-square)](plugins/mnemo/skills/)
 [![Obsidian](https://img.shields.io/badge/Obsidian-compatible-7C3AED?style=flat-square&logo=obsidian&logoColor=white)](https://obsidian.md)
 
-**[English](#-what-it-does)** | **[Русский](#-что-делает)**
+**[English](#-what-it-does)** | **[Русский](#-что-делает)** | **[中文](#-功能介绍)**
 
 ---
 
-## 🧠 What It Does
+## What It Does
 
 **mnemo** gives Claude Code a persistent memory through your Obsidian vault. Eight skills that handle the boring parts of knowledge management so you can focus on thinking.
 
@@ -25,62 +25,65 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 | Skill | Command | What it does |
 |-------|---------|-------------|
-| 🏥 **health** | `/mn:health` | Vault audit: orphans, broken links, missing sections, stale notes, growth stats |
-| 🔍 **ask** | `/mn:ask` | Search vault and synthesize answers from multiple notes with citations |
-| 🔗 **connect** | `/mn:connect` | Discovers hidden connections between notes you'd never think of |
-| 📂 **sort** | `/mn:sort` | Classify inbox notes into proper types (atom, molecule, source...) |
-| 📝 **session** | `/mn:session` | Auto-generates session summary + cross-session handoff |
-| 💾 **save** | `/mn:save` | Memory routing cascade — saves to Obsidian + claude-mem + memory/ with graceful degradation |
-| 📋 **review** | `/mn:review` | Session completeness analyzer — what's done, what's missed, what's hanging |
-| ⚙️ **setup** | `/mn:setup` | Interactive onboarding — vault name, taxonomy, language, integrations |
+| **health** | `/mn:health` | Vault audit: orphans, broken links, missing sections, stale notes, growth stats |
+| **ask** | `/mn:ask` | Search vault and synthesize answers from multiple notes with citations |
+| **connect** | `/mn:connect` | Discover hidden connections between notes you'd never think of |
+| **sort** | `/mn:sort` | Classify inbox notes into proper types (atom, molecule, source...) |
+| **session** | `/mn:session` | Auto-generate session summary + cross-session handoff |
+| **save** | `/mn:save` | Memory routing cascade — Obsidian + claude-mem + memory/ with graceful degradation |
+| **review** | `/mn:review` | Skill-aware session completeness analyzer with execution chain |
+| **setup** | `/mn:setup` | Interactive onboarding — vault name, taxonomy, language |
 
 ### Why Not Just Use Obsidian Plugins?
 
-Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, your conversation history, and your codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
+Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, conversation history, and codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
-## 🏗 Architecture
+### What's New in v0.5
+
+**`/mn:review`** got a complete rewrite. It now:
+- Parses your session's JSONL file to know exactly which tools and skills were used
+- Auto-discovers 200+ installed skills across all your plugins
+- Classifies your session type (implementation, research, debugging...)
+- Identifies skills that **should have been invoked** but weren't
+- Offers to run them in priority order — commit → review → ship → session → save
+
+## Architecture
 
 ```
-┌──────────────┐     ┌───────────────┐     ┌──────────────┐
-│  Claude Code  │────▶│  mnemo skills  │────▶│  Obsidian CLI │
-│  (you talk)   │     │  (8 skills)    │     │  (vault ops)  │
-└──────────────┘     └───────────────┘     └──────────────┘
-                            │
-                    ~/.mnemo/config.json
-                     (vault, taxonomy,
-                      links section)
+┌──────────────┐     ┌───────────────┐     ┌───────────────┐
+│  Claude Code  │────▶│    commands    │────▶│    skills      │
+│  (you type    │     │  /mn:save     │     │  memory-routing │
+│   /mn:save)   │     │  /mn:review   │     │  session-review │
+└──────────────┘     └───────────────┘     └───────────────┘
+                            │                      │
+                            │                ┌─────▼─────┐
+                            │                │ Obsidian   │
+                            │                │ CLI        │
+                            │                └───────────┘
+                      ~/.mnemo/config.json
 ```
+
+**Commands** are thin wrappers that route to **skills** via the Skill tool. This separation follows the [compound-engineering pattern](https://github.com/anthropics/claude-plugins-official): short command names (`/mn:*`) with a descriptive plugin label `(mnemo)`.
 
 **Key design decisions:**
 - **CLI-first** — uses `obsidian` CLI commands, not MCP ([70,000x cheaper](https://x.com/kepano))
-- **Config-driven** — vault name, taxonomy, rules in `config.json` (gitignored)
+- **Config-driven** — vault name, taxonomy, rules in `config.json`
 - **Non-destructive** — skills report and suggest, never auto-delete or overwrite
 - **Any taxonomy** — works with Zettelkasten, PARA, Atom/Molecule, or your own system
 
-## 🚀 Quick Start
+## Quick Start
 
-### Option 1: Plugin Marketplace (recommended)
+### Install
 
 ```bash
+# Add marketplace (one time)
 claude plugin marketplace add jojoprison/claude-mnemo
+
+# Install plugin
 claude plugin install mnemo@claude-mnemo
 ```
 
-### Option 2: Direct Install
-
-```bash
-claude plugin install github:jojoprison/claude-mnemo
-```
-
-### Option 3: Manual (skills only)
-
-```bash
-git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claude-mnemo
-```
-
 ### First Run
-
-After install, run any skill — it will ask for your vault name on first use and save to `config.json`:
 
 ```
 /mn:health
@@ -88,68 +91,73 @@ After install, run any skill — it will ask for your vault name on first use an
 > Saved to config.json. Running health check...
 ```
 
-## 📖 Usage Examples
+## Usage Examples
 
-### 🏥 Weekly vault checkup
+### Weekly vault checkup
 
 ```
 /mn:health
 ```
 
 ```
-📊 Vault Health Report (2026-03-23)
+📊 Vault Health Report (2026-04-07)
 
 Total: 487 notes
   Atoms: 89 | Molecules: 23 | Sources: 34
   Sessions: 67 | MOCs: 14 | Inbox: 4
 
 🔴 Orphans: 3
-  - Atom — old note without links
-🟡 Missing ## Связи: 2
-📬 Inbox backlog: 4 notes waiting for classification
+📬 Inbox backlog: 4 notes
 🏆 Top-5 Hubs: MOC — Security (34), MOC — AI ML Tools (28)...
 ```
 
-### 🔗 Discover hidden links
+### Search your knowledge base
+
+```
+/mn:ask "what did we decide about pricing strategy?"
+```
+
+Returns synthesized answers with citations to specific notes.
+
+### Discover hidden links
 
 ```
 /mn:connect "Atom — LongCat-Flash-Prover"
 ```
 
+Finds notes related by concepts, tags, or entities — then asks before applying.
+
+### Save decisions and findings
+
 ```
-🔗 Connection suggestions for "Atom — LongCat-Flash-Prover"
-
-Already connected: 3 notes
-New suggestions: 2
-
-1. [[Atom — SCOPE beats TextGrad]]
-   Why: Both discuss agentic RL stability
-
-2. [[MOC — Agent Self-Correction]]
-   Why: trial→verify→reflect cycle matches SCOPE pattern
-
-Apply these? (y/N, or pick numbers: 1,2)
+/mn:save "We chose PostgreSQL over DynamoDB for the audit log — better JSON querying"
 ```
 
-### 📝 End-of-session save
+Routes to Obsidian (Atom note) + claude-mem (semantic search) + memory/ (Claude's future context). If any backend is down, the others still work.
+
+### End-of-session review
+
+```
+/mn:review
+```
+
+Analyzes your entire session: what was done, what was missed, which skills should have been invoked. Offers to run missed skills in order.
+
+### Session notes + handoff
 
 ```
 /mn:session
 ```
 
-Creates a full session note with frontmatter, tags, and `## Связи` section. Automatically:
-- Verifies the note is linked in the relevant MOC
-- Updates the cross-session handoff file (`Meta — Session Handoff`)
-- Checks for orphans after creation
+Creates a session summary in Obsidian, updates the handoff file for the next session. No more "what was I doing yesterday?"
 
-## ⚙️ Configuration
+## Configuration
 
-Run `/mn:setup` for interactive configuration, or copy `config.example.json` manually:
+Run `/mn:setup` or copy manually:
 
 ```bash
 mkdir -p ~/.mnemo
 cp config.example.json ~/.mnemo/config.json
-# Edit ~/.mnemo/config.json with your values
 ```
 
 ```json
@@ -173,11 +181,11 @@ cp config.example.json ~/.mnemo/config.json
 }
 ```
 
-**All fields are optional.** Run `/mn:setup` to configure interactively, or skills will ask on first use.
+All fields are optional. Skills ask on first use.
 
 ### Custom Taxonomy
 
-mnemo doesn't force a note structure. Change `taxonomy` in config to match yours:
+mnemo doesn't force a note structure. Change `taxonomy` to match yours:
 
 ```json
 {
@@ -189,345 +197,343 @@ mnemo doesn't force a note structure. Change `taxonomy` in config to match yours
 }
 ```
 
-## 🔄 Cross-Session Continuity
+## Cross-Session Continuity
 
 The killer feature. When a session ends, `/mn:session` writes a handoff note:
 
 ```markdown
 ## Pending
-- [ ] Check orphans after mass note creation (project: research, date: 2026-03-23)
+- [ ] Check orphans after mass note creation
 - [ ] Update MOC — AI Research with 3 new notes
 
 ## Context
 - Researched WeChat agent ecosystem, all saved in Session — 2026-03-23
-- Reported malware repo, waiting for GitHub response
 ```
 
-Next session reads this file and picks up where you left off. No more "what was I doing yesterday?"
+Next session reads this and picks up where you left off.
 
-## 📋 Requirements
+## Requirements
 
-- [Claude Code](https://claude.ai/code) (any auth: Pro/Max/Team subscription or API key)
+- [Claude Code](https://claude.ai/code) (Pro/Max/Team or API key)
 - [Obsidian](https://obsidian.md) (free) — **must be running**
 - [Obsidian CLI](https://github.com/kepano/obsidian-cli) — `obsidian` command in PATH
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 claude-mnemo/
-├── .claude-plugin/
-│   └── marketplace.json         # Marketplace manifest
-├── plugins/
-│   └── mnemo/
-│       ├── .claude-plugin/
-│       │   └── plugin.json      # Plugin manifest
-│       └── skills/
-│           ├── health/SKILL.md     # /mn:health — vault audit
-│           ├── ask/SKILL.md        # /mn:ask — knowledge search
-│           ├── connect/SKILL.md    # /mn:connect — link discovery
-│           ├── sort/SKILL.md       # /mn:sort — inbox triage
-│           ├── session/SKILL.md    # /mn:session — session notes
-│           ├── save/SKILL.md       # /mn:save — memory routing cascade
-│           ├── review/SKILL.md     # /mn:review — session completeness
-│           └── setup/SKILL.md      # /mn:setup — onboarding
-├── config.example.json           # Config template
-├── CONTRIBUTING.md               # How to add skills
-├── README.md
+├── plugins/mnemo/
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/mn/                 # User-facing /mn:* commands
+│   │   ├── save.md                  # /mn:save → mnemo:memory-routing
+│   │   ├── session.md               # /mn:session → mnemo:session-notes
+│   │   ├── review.md                # /mn:review → mnemo:session-review
+│   │   ├── ask.md                   # /mn:ask → mnemo:vault-search
+│   │   ├── health.md                # /mn:health → mnemo:vault-health
+│   │   ├── connect.md               # /mn:connect → mnemo:link-discovery
+│   │   ├── sort.md                  # /mn:sort → mnemo:inbox-triage
+│   │   └── setup.md                 # /mn:setup → mnemo:initial-setup
+│   └── skills/                      # Skill implementations
+│       ├── memory-routing/SKILL.md
+│       ├── session-notes/SKILL.md
+│       ├── session-review/SKILL.md
+│       ├── vault-search/SKILL.md
+│       ├── vault-health/SKILL.md
+│       ├── link-discovery/SKILL.md
+│       ├── inbox-triage/SKILL.md
+│       └── initial-setup/SKILL.md
+├── config.example.json
+├── CONTRIBUTING.md
+├── CHANGELOG.md
 └── LICENSE
 ```
 
-## 💡 Inspired By
+## Inspired By
 
-- [My-Brain-Is-Full-Crew](https://github.com/gnekt/My-Brain-Is-Full-Crew) — 8 AI agents managing Obsidian (great concept, different architecture: PARA-based, heavier, full vault takeover). mnemo takes the best ideas (agent coordination, vault health, connection discovery) and packages them as lightweight skills that work with **any** existing vault structure.
+- [My-Brain-Is-Full-Crew](https://github.com/gnekt/My-Brain-Is-Full-Crew) — 8 AI agents managing Obsidian. Great concept, different approach: PARA-based, heavier. mnemo takes the best ideas and packages them as lightweight skills for **any** vault.
 - [kepano/obsidian-cli](https://github.com/kepano/obsidian-cli) + [obsidian-skills](https://github.com/kepano/obsidian-skills) — CLI-first philosophy and the 70,000x token savings insight.
 - [Zettelkasten](https://zettelkasten.de/), [Atomic/Molecular Notes](https://reasonabledeviations.com/2022/04/18/molecular-notes-part-1/), [Maps of Content](https://www.dsebastien.net/2022-05-15-maps-of-content/) — note taxonomy research.
 
-## 🤝 Contributing
+## Contributing
 
 PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonomy adapter — open a PR.
 
 ---
 
-# 🇷🇺 Русский
+# Русский
 
-## 🧠 Что делает
+## Что делает
 
-**mnemo** даёт Claude Code постоянную память через Obsidian vault. Восемь скиллов, которые берут на себя рутину управления знаниями, чтобы ты мог сосредоточиться на мышлении.
+**mnemo** дает Claude Code постоянную память через Obsidian vault. Восемь скиллов, которые берут на себя рутину управления знаниями.
 
-Большинство инструментов «второго мозга» предполагают, что у тебя есть время всё организовать. mnemo предполагает, что нет.
+Большинство инструментов «второго мозга» предполагают, что у тебя есть время все организовать. mnemo предполагает, что нет.
 
 ```
-Ты работаешь → mnemo запоминает → Vault растёт → Ты находишь потом
+Ты работаешь → mnemo запоминает → Vault растет → Ты находишь потом
 ```
 
 ### Скиллы
 
 | Скилл | Команда | Что делает |
 |-------|---------|-----------|
-| 🏥 **health** | `/mn:health` | Аудит vault: orphans, broken links, пропущенные секции, стагнирующие заметки, статистика роста |
-| 🔍 **ask** | `/mn:ask` | Поиск по vault и синтез ответа из нескольких заметок с цитатами |
-| 🔗 **connect** | `/mn:connect` | Находит скрытые связи между заметками, о которых ты бы не подумал |
-| 📂 **sort** | `/mn:sort` | Классификация inbox-заметок в правильные типы (atom, molecule, source...) |
-| 📝 **session** | `/mn:session` | Автоматическая сессионная заметка + cross-session handoff (передача контекста) |
-| 💾 **save** | `/mn:save` | Каскадное сохранение — Obsidian + claude-mem + memory/ с graceful degradation |
-| 📋 **review** | `/mn:review` | Анализ полноты сессии — что сделано, что пропущено, что повисло |
-| ⚙️ **setup** | `/mn:setup` | Интерактивный онбординг — имя vault, таксономия, язык, интеграции |
+| **health** | `/mn:health` | Аудит vault: orphans, битые ссылки, пропущенные секции, стагнирующие заметки |
+| **ask** | `/mn:ask` | Поиск по vault и синтез ответа из нескольких заметок с цитатами |
+| **connect** | `/mn:connect` | Находит скрытые связи между заметками |
+| **sort** | `/mn:sort` | Классификация inbox-заметок в типы (atom, molecule, source...) |
+| **session** | `/mn:session` | Сессионная заметка + cross-session handoff |
+| **save** | `/mn:save` | Каскадное сохранение — Obsidian + claude-mem + memory/ |
+| **review** | `/mn:review` | Skill-aware анализ полноты сессии с execution chain |
+| **setup** | `/mn:setup` | Интерактивный онбординг |
 
 ### Почему не обычные плагины Obsidian?
 
-Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию дебаггинга, `/mn:session` знает что ты делал, потому что был рядом.
+Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию, `/mn:session` знает что ты делал, потому что был рядом.
 
-## 🏗 Архитектура
+### Что нового в v0.5
 
-```
-┌──────────────┐     ┌───────────────┐     ┌──────────────┐
-│  Claude Code  │────▶│  mnemo skills  │────▶│  Obsidian CLI │
-│  (ты говоришь)│     │  (8 скиллов)   │     │  (операции)   │
-└──────────────┘     └───────────────┘     └──────────────┘
-                            │
-                      config.json
-                    (имя vault,
-                     таксономия)
-```
+**`/mn:review`** полностью переписан:
+- Парсит JSONL сессии — знает какие инструменты и скиллы были вызваны
+- Автообнаружение 200+ установленных скиллов по всем плагинам
+- Определяет тип сессии (implementation, research, debugging...)
+- Находит скиллы, которые **стоило вызвать**, но не вызвали
+- Предлагает запустить их по приоритету — commit → review → ship → session → save
 
-**Ключевые решения:**
-- **CLI-first** — использует команды `obsidian` CLI, не MCP ([в 70,000x дешевле по токенам](https://x.com/kepano))
-- **Config-driven** — имя vault, таксономия, правила в `config.json` (gitignored)
-- **Неразрушающий** — скиллы отчитываются и предлагают, никогда не удаляют и не перезаписывают автоматически
-- **Любая таксономия** — работает с Zettelkasten, PARA, Atom/Molecule, или твоей собственной системой
-
-## 🚀 Установка
-
-### Вариант 1: Plugin Marketplace (рекомендуется)
+## Установка
 
 ```bash
+# Добавить marketplace (один раз)
 claude plugin marketplace add jojoprison/claude-mnemo
+
+# Установить плагин
 claude plugin install mnemo@claude-mnemo
-```
-
-### Вариант 2: Прямая установка
-
-```bash
-claude plugin install github:jojoprison/claude-mnemo
-```
-
-### Вариант 3: Вручную (только скиллы)
-
-```bash
-git clone https://github.com/jojoprison/claude-mnemo.git ~/.claude/plugins/claude-mnemo
 ```
 
 ### Первый запуск
 
-После установки запусти любой скилл — он спросит имя vault при первом использовании и сохранит в `config.json`:
-
 ```
 /mn:health
 > Как называется твой Obsidian vault? main
-> Сохранено в config.json. Запускаю проверку...
+> Сохранено. Запускаю проверку...
 ```
 
-## 📖 Примеры использования
+## Примеры
 
-### 🏥 Еженедельная проверка vault
+### Аудит vault
 
 ```
 /mn:health
 ```
 
 ```
-📊 Здоровье Vault (2026-03-23)
+📊 Здоровье Vault (2026-04-07)
 
 Всего: 487 заметок
   Atoms: 89 | Molecules: 23 | Sources: 34
-  Sessions: 67 | MOCs: 14 | Inbox: 4
 
-🔴 Orphans (сироты): 3
-  - Atom — старая заметка без связей
-🟡 Без секции ## Связи: 2
-📬 Inbox: 4 заметки ждут классификации
+🔴 Orphans: 3
+📬 Inbox: 4 заметки
 🏆 Топ-5 хабов: MOC — Security (34), MOC — AI ML Tools (28)...
 ```
 
-### 🔍 Поиск по базе знаний
+### Поиск по знаниям
 
 ```
-/mn:ask "что мы решили по стратегии ценообразования?"
+/mn:ask "что мы решили по ценообразованию?"
 ```
 
-```
-На основе вашего vault:
+Синтезирует ответ из нескольких заметок с цитатами и ссылками.
 
-Стратегия ценообразования обсуждалась 14.03.2026 во время обзора pipeline.
-Ключевые решения:
-- Freemium модель с usage-based тарифами [Источник: Session — 2026-03-14 pipeline vision]
-- Enterprise план за $99/мес отклонён как слишком низкий [Источник: Atom — pricing research]
-
-📚 Источники (2 заметки):
-1. [[Session — 2026-03-14 pipeline vision]]
-2. [[Atom — pricing research]]
-```
-
-### 🔗 Поиск скрытых связей
+### Скрытые связи
 
 ```
 /mn:connect "Atom — LongCat-Flash-Prover"
 ```
 
+Находит связи по концептам, тегам, сущностям. Спрашивает перед применением.
+
+### Сохранение решений
+
 ```
-🔗 Предложения по связям для "Atom — LongCat-Flash-Prover"
-
-Уже связано: 3 заметки
-Новые предложения: 2
-
-1. [[Atom — SCOPE beats TextGrad]]
-   Почему: обе обсуждают стабильность agentic RL
-
-2. [[MOC — Agent Self-Correction]]
-   Почему: цикл trial→verify→reflect совпадает с паттерном SCOPE
-
-Применить? (y/N, или выбери номера: 1,2)
+/mn:save "Выбрали PostgreSQL вместо DynamoDB для audit log — лучше JSON querying"
 ```
 
-### 📝 Сохранение сессии
+Роутит в Obsidian (Atom) + claude-mem (семантический поиск) + memory/ (контекст для Claude). Если backend упал — остальные работают.
+
+### Ревью сессии
+
+```
+/mn:review
+```
+
+Анализирует всю сессию: что сделано, что пропущено, какие скиллы стоило вызвать. Предлагает запустить по порядку.
+
+### Сессионные заметки
 
 ```
 /mn:session
 ```
 
-Создаёт полную сессионную заметку с frontmatter, тегами и секцией `## Связи`. Автоматически:
-- Проверяет что заметка добавлена в соответствующий MOC
-- Обновляет файл cross-session handoff (`Meta — Session Handoff`)
-- Проверяет orphans после создания
+Создает заметку в Obsidian, обновляет handoff для следующей сессии.
 
-### 📂 Классификация inbox
+## Конфигурация
 
-```
-/mn:sort
-```
-
-```
-📬 Inbox заметка 1/4: "Inbox — HisPO для стабилизации pipeline"
-
-Содержание: "идея: использовать HisPO из LongCat для стабилизации pipeline"
-
-Предложенный тип: atom (один факт/концепт)
-Предложенное имя: "Atom — HisPO алгоритм для стабилизации MoE обучения"
-Предложенные теги: [atom, agentic-rl, moe, antomate]
-Предложенный MOC: [[MOC — Agent Self-Correction]]
-
-Действия:
-  [1] Принять предложение
-  [2] Изменить тип
-  [3] Редактировать имя/теги
-  [4] Пропустить
-  [5] Удалить
-```
-
-## 🔄 Cross-Session Continuity (передача контекста)
-
-Киллер-фича. Когда сессия заканчивается, `/mn:session` записывает handoff-заметку:
-
-```markdown
-## Pending
-- [ ] Проверить orphans после массового создания заметок (project: research, date: 2026-03-23)
-- [ ] Обновить MOC — AI Research, добавить 3 новые заметки
-
-## Context
-- Исследовал экосистему WeChat agent, всё в Session — 2026-03-23
-- Зарепортил malware repo, ждём ответа GitHub
-```
-
-Следующая сессия читает этот файл и подхватывает с того места, где остановились. Больше никакого «а что я вчера делал?»
-
-## ⚙️ Конфигурация
-
-Запусти `/mn:setup` для интерактивной настройки, или скопируй конфиг вручную:
+`/mn:setup` или вручную:
 
 ```bash
 mkdir -p ~/.mnemo
 cp config.example.json ~/.mnemo/config.json
-# Отредактируй ~/.mnemo/config.json
 ```
 
-```json
-{
-  "vault": "main",
-  "taxonomy": {
-    "atom": { "prefix": "Atom — ", "tag": "atom" },
-    "molecule": { "prefix": "Molecule — ", "tag": "molecule" },
-    "source": { "prefix": "Source — ", "tag": "source" },
-    "session": { "prefix": "Session — ", "tag": "session" },
-    "moc": { "prefix": "MOC — ", "tag": "moc" },
-    "inbox": { "prefix": "Inbox — ", "tag": "inbox" }
-  },
-  "links_section": "## Связи",
-  "handoff_note": "Meta — Session Handoff",
-  "cascade": {
-    "obsidian": { "enabled": true },
-    "claude_mem": { "enabled": true },
-    "memory_dir": { "enabled": true }
-  }
-}
-```
+Все поля опциональны. Скиллы спросят при первом запуске.
 
-**Все поля опциональны.** `/mn:setup` настроит интерактивно, или скиллы спросят при первом запуске.
+## Cross-Session Continuity
 
-### Своя таксономия
+Киллер-фича. `/mn:session` записывает handoff-заметку. Следующая сессия подхватывает с того места. Больше никакого «а что я вчера делал?»
 
-mnemo не навязывает структуру заметок. Измени `taxonomy` в конфиге:
+## Требования
 
-```json
-{
-  "taxonomy": {
-    "permanent": { "prefix": "", "tag": "permanent" },
-    "fleeting": { "prefix": "F: ", "tag": "fleeting" },
-    "literature": { "prefix": "L: ", "tag": "literature" }
-  }
-}
-```
-
-## 📋 Требования
-
-- [Claude Code](https://claude.ai/code) (любая авторизация: подписка Pro/Max/Team или API ключ)
+- [Claude Code](https://claude.ai/code) (Pro/Max/Team или API ключ)
 - [Obsidian](https://obsidian.md) (бесплатно) — **должен быть запущен**
-- [Obsidian CLI](https://github.com/kepano/obsidian-cli) — команда `obsidian` в PATH
-
-## 📁 Структура проекта
-
-```
-claude-mnemo/
-├── .claude-plugin/
-│   └── marketplace.json         # Marketplace манифест
-├── plugins/
-│   └── mnemo/
-│       ├── .claude-plugin/
-│       │   └── plugin.json      # Plugin манифест
-│       └── skills/
-│           ├── health/SKILL.md     # /mn:health — аудит vault
-│           ├── ask/SKILL.md        # /mn:ask — поиск по знаниям
-│           ├── connect/SKILL.md    # /mn:connect — поиск связей
-│           ├── sort/SKILL.md       # /mn:sort — классификация inbox
-│           ├── session/SKILL.md    # /mn:session — сессионные заметки
-│           ├── save/SKILL.md       # /mn:save — каскадное сохранение
-│           ├── review/SKILL.md     # /mn:review — анализ полноты сессии
-│           └── setup/SKILL.md      # /mn:setup — онбординг
-├── config.example.json           # Шаблон конфигурации
-├── CONTRIBUTING.md               # Как добавить скиллы
-├── README.md
-└── LICENSE
-```
-
-## 💡 Вдохновение
-
-- [My-Brain-Is-Full-Crew](https://github.com/gnekt/My-Brain-Is-Full-Crew) — 8 AI-агентов для управления Obsidian (отличный концепт, но другая архитектура: PARA, тяжеловесный, полный захват vault). mnemo берёт лучшие идеи (координация агентов, здоровье vault, поиск связей) и упаковывает в легковесные скиллы, совместимые с **любой** существующей структурой vault.
-- [kepano/obsidian-cli](https://github.com/kepano/obsidian-cli) + [obsidian-skills](https://github.com/kepano/obsidian-skills) — CLI-first философия и инсайт про экономию токенов в 70,000 раз.
-- [Zettelkasten](https://zettelkasten.de/), [Atomic/Molecular Notes](https://reasonabledeviations.com/2022/04/18/molecular-notes-part-1/), [Maps of Content](https://www.dsebastien.net/2022-05-15-maps-of-content/) — исследование таксономий заметок.
-
-## 🤝 Участие
-
-PR приветствуются. Если у тебя есть лучший промпт-паттерн, идея нового скилла или адаптер таксономии — открывай PR.
+- [Obsidian CLI](https://github.com/kepano/obsidian-cli) — `obsidian` в PATH
 
 ---
 
-Made with 🧠 by [Claude Code](https://claude.ai) + [jojoprison](https://github.com/jojoprison)
+# 中文
+
+## 功能介绍
+
+**mnemo** 为 Claude Code 提供基于 Obsidian 的持久记忆层。八个技能自动处理知识管理的繁琐工作，让你专注于思考。
+
+大多数「第二大脑」工具假设你有时间整理。mnemo 假设你没有。
+
+```
+你工作 → mnemo 记住 → Vault 成长 → 你以后能找到
+```
+
+### 技能列表
+
+| 技能 | 命令 | 功能 |
+|------|------|------|
+| **health** | `/mn:health` | Vault 审计：孤立笔记、断链、缺失章节、陈旧笔记、增长统计 |
+| **ask** | `/mn:ask` | 搜索 vault 并从多个笔记中综合答案，附带引用 |
+| **connect** | `/mn:connect` | 发现笔记之间隐藏的联系 |
+| **sort** | `/mn:sort` | 将收件箱笔记分类为正确类型（atom、molecule、source...） |
+| **session** | `/mn:session` | 自动生成会话摘要 + 跨会话上下文传递 |
+| **save** | `/mn:save` | 级联保存 — Obsidian + claude-mem + memory/，优雅降级 |
+| **review** | `/mn:review` | 技能感知的会话完整性分析器，带执行链 |
+| **setup** | `/mn:setup` | 交互式引导配置 |
+
+### 为什么不用 Obsidian 插件？
+
+Obsidian 插件在 Obsidian 内部运行。mnemo 在 **Claude Code** 内部运行——它可以访问你的整个开发上下文、对话历史和代码库。当你结束一个 3 小时的调试会话时，`/mn:session` 知道你做了什么，因为它全程在场。
+
+### v0.5 新特性
+
+**`/mn:review`** 完全重写：
+- 解析会话 JSONL 文件，精确知道使用了哪些工具和技能
+- 自动发现所有插件中 200+ 已安装技能
+- 识别会话类型（实现、研究、调试...）
+- 找出**应该调用但未调用**的技能
+- 按优先级提供执行——commit → review → ship → session → save
+
+## 安装
+
+```bash
+# 添加市场（一次性）
+claude plugin marketplace add jojoprison/claude-mnemo
+
+# 安装插件
+claude plugin install mnemo@claude-mnemo
+```
+
+### 首次运行
+
+```
+/mn:health
+> 你的 Obsidian vault 名称是？ main
+> 已保存。正在运行健康检查...
+```
+
+## 使用示例
+
+### Vault 审计
+
+```
+/mn:health
+```
+
+```
+📊 Vault 健康报告 (2026-04-07)
+
+总计：487 个笔记
+  Atoms: 89 | Molecules: 23 | Sources: 34
+
+🔴 孤立笔记：3
+📬 收件箱：4 个笔记待分类
+🏆 前5大枢纽：MOC — Security (34), MOC — AI ML Tools (28)...
+```
+
+### 知识搜索
+
+```
+/mn:ask "我们对定价策略做了什么决定？"
+```
+
+从多个笔记中综合答案，附带引用和链接。
+
+### 发现隐藏联系
+
+```
+/mn:connect "Atom — LongCat-Flash-Prover"
+```
+
+通过概念、标签、实体找到关联。应用前会询问确认。
+
+### 保存决策
+
+```
+/mn:save "选择了 PostgreSQL 而不是 DynamoDB 用于审计日志——JSON 查询更好"
+```
+
+路由到 Obsidian（Atom 笔记）+ claude-mem（语义搜索）+ memory/（Claude 的未来上下文）。任何后端宕机，其他仍然工作。
+
+### 会话审查
+
+```
+/mn:review
+```
+
+分析整个会话：完成了什么、遗漏了什么、应该调用哪些技能。按顺序提供运行。
+
+### 会话笔记
+
+```
+/mn:session
+```
+
+在 Obsidian 中创建会话摘要，更新下次会话的交接文件。
+
+## 配置
+
+`/mn:setup` 或手动：
+
+```bash
+mkdir -p ~/.mnemo
+cp config.example.json ~/.mnemo/config.json
+```
+
+所有字段可选。技能会在首次使用时询问。
+
+## 跨会话连续性
+
+杀手级功能。`/mn:session` 写入交接笔记，下次会话自动接续。再也不用问「我昨天在做什么？」
+
+## 环境要求
+
+- [Claude Code](https://claude.ai/code)（Pro/Max/Team 或 API 密钥）
+- [Obsidian](https://obsidian.md)（免费）——**必须运行中**
+- [Obsidian CLI](https://github.com/kepano/obsidian-cli)——`obsidian` 命令在 PATH 中
+
+---
+
+Made with care by [Claude Code](https://claude.ai) + [jojoprison](https://github.com/jojoprison)
