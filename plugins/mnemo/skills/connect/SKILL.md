@@ -1,7 +1,6 @@
 ---
 name: connect
 description: "Use after creating a new Obsidian note to discover hidden connections with existing notes. Shows suggestions, does NOT auto-apply. Invoke with note name as argument."
-disable-model-invocation: true
 context: fork
 model: opus
 ---

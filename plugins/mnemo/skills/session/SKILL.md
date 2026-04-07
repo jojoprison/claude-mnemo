@@ -1,7 +1,6 @@
 ---
 name: session
 description: "Use after completing significant work to write session summary to Obsidian. Triggers after major tasks (features, fixes, research) or manually via /mnemo:session."
-disable-model-invocation: true
 context: fork
 model: opus
 ---
