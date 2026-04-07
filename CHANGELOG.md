@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.4] - 2026-04-07
+
+### Changed
+- **Plugin name reverted to `mnemo`** — fixes `mn:mn:` duplication in autocomplete
+  - Autocomplete: `/mn:save (mnemo)`, `/mn:review (mnemo)` — CE pattern
+  - Expansion: `mnemo:mn:save` (full qualified name)
+- **Skills hidden from autocomplete** — `disable-model-invocation: true` on all SKILL.md
+  - No duplicate entries (`/save` vs `/mn:save`)
+  - Skills still callable via Skill tool from commands
+  - Commands are the sole user-facing UI
+- **`mnemo:review` rewritten** — skill-aware session completeness analyzer
+  - JSONL session introspection via `${CLAUDE_SESSION_ID}` preprocessing
+  - Auto-discovers 200+ installed skills across 6 glob paths
+  - Session fingerprinting (implementation/research/debugging/refactoring/docs/config)
+  - Skill gap analysis with trigger matrix per session type
+  - Execution chain — runs missed skills in priority order
+  - Inline (no `context: fork`) for conversation access + skill execution
+- Cross-references updated: `/mn:` → `/mnemo:` in all skill files
+- Stale references removed: `/mn:dump`, `/mn:check-gmail`
+- Plugin version: 0.4.0 → 0.5.4
+
 ## [0.4.0] - 2026-03-28
 
 ### Added
