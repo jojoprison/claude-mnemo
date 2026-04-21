@@ -85,9 +85,11 @@ Apply these? (y/N, or pick numbers: 1,3)
 ### Step 7: Apply on Confirmation
 
 If user confirms:
-1. Add new `[[wikilinks]]` to `{links_section}` section via `obsidian append` or `mcp__obsidian__str_replace`
-2. If MOC suggestion — add note link to the MOC via `obsidian append`
+1. Add new `[[wikilinks]]` to `{links_section}` section via **`mcp__obsidian__str_replace`** (preferred — targeted insert into the links section). CLI `obsidian append content="- [[name]]"` is a safe fallback only for plain wikilinks (no backticks, no `$()`)
+2. If MOC suggestion — add note link to the MOC via `mcp__obsidian__str_replace` or `obsidian append` (plain wikilink = safe)
 3. Verify with `obsidian backlinks`
+
+**Why MCP preferred:** if suggestions ever include code-reference links with backticks (e.g. `[[function_name()]]`), CLI `obsidian append content="..."` would trigger zsh command substitution. MCP passes content as JSON — always safe.
 
 ## Gotchas
 

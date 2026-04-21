@@ -58,15 +58,16 @@ obsidian search query="{key words}" vault="{vault}"
 
 If duplicate found → ask: update existing or create new?
 
-Create appropriate note based on classification:
+**Create note — MCP (shell-safe for markdown with code blocks):**
 
-```bash
-# For facts/decisions/gotchas:
-obsidian create name="{type_prefix}{descriptive title}" vault="{vault}" content="---
+```
+mcp__obsidian__create(
+  path: "{type_prefix}{descriptive title}.md",
+  file_text: """---
 type: {type}
 tags: [{type}, {topic_tags}]
 date: {YYYY-MM-DD}
-source: \"{where this came from}\"
+source: "{where this came from}"
 ---
 
 # {type_prefix}{title}
@@ -76,10 +77,23 @@ source: \"{where this came from}\"
 {links_section}
 - [[{relevant MOC}]]
 - [[{ghost notes for entities}]]
-"
+"""
+)
 ```
 
-Then add to relevant MOC:
+**Why MCP:** content may contain code blocks with backticks or `$(...)`. CLI `obsidian create content="..."` triggers zsh command substitution and can execute embedded shell commands (real incident: 2026-04-21, accidental prod deploy).
+
+**Add to MOC — MCP `str_replace` for targeted insert, or CLI for plain wikilinks:**
+
+```
+mcp__obsidian__str_replace(
+  path: "{MOC}.md",
+  old_str: "{stable anchor line near list}",
+  new_str: "{same anchor}\n- [[{note name}]]"
+)
+```
+
+CLI fallback for plain wikilink appends (safe — no backticks):
 
 ```bash
 obsidian append file="{MOC}" vault="{vault}" content="- [[{note name}]]"
@@ -187,7 +201,7 @@ Or with failures:
 - **Don't duplicate Obsidian content in memory/** — Obsidian = user's memory, memory/ = Claude's memory. Different audiences
 - **claude-mem is optional** — many users won't have it. Skip silently
 - **CLAUDE.md is almost never written to** — only 1-2 line rules that prevent actual errors. Target: <120 lines total
-- **CLI first for Obsidian** — never use MCP for search/create (70,000x cheaper)
+- **Tool choice: MCP-first hybrid** — CLI for search/read/orphans (fast, indexed); **MCP for any create/update with markdown body** (shell-safe, no zsh backtick expansion). Never use `obsidian create content="..."` with markdown containing code blocks
 - **memory/ path is NOT `./memory/`** — it's `~/.claude/projects/-{slug}/memory/`. Writing to project root creates files in git. Find the correct path from MEMORY.md in context
 - **Always check duplicates** before creating Obsidian notes
 - **Ghost notes generously** — wrap entities in `[[wikilinks]]`

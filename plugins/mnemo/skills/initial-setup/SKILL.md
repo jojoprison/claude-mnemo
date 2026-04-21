@@ -84,8 +84,12 @@ Write `~/.mnemo/config.json`:
 
 ### Step 6: Create Handoff Note
 
-```bash
-obsidian create name="Meta — Session Handoff" vault="{vault}" content="---
+Use **MCP** for shell-safety (handoff may accumulate markdown with code blocks over time):
+
+```
+mcp__obsidian__create(
+  path: "Meta — Session Handoff.md",
+  file_text: """---
 type: meta
 tags: [meta, handoff, cross-session]
 ---
@@ -98,8 +102,11 @@ Cross-session continuity file. Updated by mnemo:session.
 
 ## Context
 - mnemo setup completed on {date}
-"
+"""
+)
 ```
+
+**Why MCP, not CLI:** handoff is edited repeatedly. As soon as it contains a code block with backticks, CLI `obsidian create/append content="..."` triggers zsh command substitution. MCP passes content as JSON parameter — always safe.
 
 ### Step 7: Done
 

@@ -61,24 +61,39 @@ On user confirmation:
 
 1. Read the original inbox note content
 2. Delete the inbox note: `obsidian delete file="{old_name}" vault="{vault}"`
-3. Create new typed note with proper frontmatter:
-   ```bash
-   obsidian create name="{new_name}" vault="{vault}" content="---
-   type: {chosen_type}
-   tags: [{type}, {tags}]
-   date: {original_date}
-   source: {if applicable}
-   ---
-
-   # {new_name}
-
-   {original content, cleaned up}
-
-   ## {links_section}
-   - [[{suggested MOC}]]
-   "
+3. Create new typed note via **MCP** (shell-safe for arbitrary markdown):
    ```
-4. Add to MOC: `obsidian append file="{MOC}" vault="{vault}" content="- [[{new_name}]]"`
+   mcp__obsidian__create(
+     path: "{new_name}.md",
+     file_text: """---
+type: {chosen_type}
+tags: [{type}, {tags}]
+date: {original_date}
+source: {if applicable}
+---
+
+# {new_name}
+
+{original content, cleaned up}
+
+## {links_section}
+- [[{suggested MOC}]]
+"""
+   )
+   ```
+
+   **Why MCP, not CLI:** content from inbox may contain code blocks with backticks or `$(...)`. CLI `obsidian create content="..."` would trigger zsh command substitution (real incident 2026-04-21, accidental prod deploy).
+
+4. Add to MOC — MCP for consistency, or CLI for plain wikilink appends:
+   ```
+   mcp__obsidian__str_replace(
+     path: "{MOC}.md",
+     old_str: "{stable anchor near list}",
+     new_str: "{same anchor}\n- [[{new_name}]]"
+   )
+   ```
+   CLI fallback (plain wikilink — no backticks, safe):
+   `obsidian append file="{MOC}" vault="{vault}" content="- [[{new_name}]]"`
 
 ### Step 4: Summary
 

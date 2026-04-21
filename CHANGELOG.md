@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.10] - 2026-04-21
+
+### Security
+
+- **🚨 Fixed shell injection in `/mn:session`, `/mn:save`, `/mn:sort`, `/mn:setup`** — CLI `obsidian create content="..."` passes markdown through zsh double-quoted strings, which triggers command substitution on any backticks or `$(...)` inside code blocks. A real incident on 2026-04-21 accidentally executed `make deploy-back` on production because a session note contained a bash code block. (Harmless that time — same image SHA, no migrations — but a genuine vulnerability.)
+
+### Changed — MCP-first hybrid tool routing
+
+All write operations with arbitrary markdown bodies are now routed through MCP (`mcp__obsidian__create`, `mcp__obsidian__str_replace`, `mcp__obsidian__insert`) instead of CLI. Read/search/orphans/backlinks stay on CLI — they're faster (indexed) and unique to CLI. Benchmark on this machine:
+
+| Operation | CLI | MCP |
+|-----------|-----|-----|
+| create | ~180 ms (node cold-start) | ~30-50 ms |
+| search | ~175 ms (indexed) | not available |
+| read | ~185 ms | similar |
+| orphans/backlinks/tags | ~180 ms | not available |
+
+Rule of thumb: **any `content=` arg with markdown → MCP; everything else → CLI**.
+
+### Changed — session duplicate detection
+
+`/mn:session` Step 2 became two-level:
+
+1. **Exact filename read** (`obsidian read file="{planned-name}"`) — if the note exists, ask append/overwrite/rename
+2. **Related same-day search** (`obsidian search query="{prefix}{date}"`) — show informational list so the user can cross-link, but don't block creation
+
+Frontmatter now includes `session_id: {CLAUDE_SESSION_ID}` — disambiguates same-day sessions when topic keywords overlap.
+
+### Changed — handoff updates are targeted
+
+`/mn:session` Step 5 uses `mcp__obsidian__str_replace` to update specific sections of `Meta — Session Handoff` instead of blind `obsidian append`. Handoff no longer accumulates stale pending items.
+
+### Changed — inbox/memory/setup notes
+
+- `/mn:save` — Atom/Molecule/Source creation via `mcp__obsidian__create`
+- `/mn:sort` — reclassified notes created via MCP
+- `/mn:setup` — `Meta — Session Handoff` bootstrapped via MCP
+- `/mn:connect` — prefer `mcp__obsidian__str_replace` for adding `[[wikilinks]]` to the links section
+
+### Fixed
+
+- Removed stale "skill unsafe — don't invoke" ban from global `~/.claude/CLAUDE.md`. `/mn:session` is safe to use again as of this release.
+
 ## [0.5.9] - 2026-04-07
 
 ### Changed
