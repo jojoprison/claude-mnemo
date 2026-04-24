@@ -104,18 +104,28 @@ obsidian append file="{MOC}" vault="{vault}" content="- [[{note name}]]"
 
 **Skip if:** `cascade.claude_mem.enabled` is false
 
+Auto-detect the installed claude-mem version so observations carry provenance (useful when filtering pre-v12 data from post-v12 data):
+
 ```bash
+CM_VERSION=$(ls -1 ~/.claude/plugins/cache/thedotmack/claude-mem/ 2>/dev/null | sort -V | tail -1)
+
 curl -s -X POST http://{claude_mem_url}/api/memory/save \
   -H "Content-Type: application/json" \
-  -d '{
-    "content": "{one-line summary of what was saved}",
-    "metadata": {
-      "type": "{type}",
-      "project": "{current project or 'general'}",
-      "obsidian_note": "{note name if created}"
+  -d "{
+    \"content\": \"{one-line summary of what was saved}\",
+    \"metadata\": {
+      \"type\": \"{type}\",
+      \"project\": \"{current project or 'general'}\",
+      \"obsidian_note\": \"{note name if created}\",
+      \"obsidian_vault\": \"{vault}\",
+      \"claude_mem_version\": \"${CM_VERSION:-unknown}\"
     }
-  }'
+  }"
 ```
+
+**Why `obsidian_note` + `obsidian_vault`:** lets `claude-mem search` results link back to the full Obsidian note. Future `/mn:ask --deep` can show the user a direct wikilink alongside the observation.
+
+**Why `claude_mem_version`:** v11.0.1 disabled semantic-inject by default, v12.0.0 introduced the file-read gate. Tagging observations by version lets retrieval logic filter legacy entries when needed.
 
 **On error:** Log `⚠️ claude-mem: skipped (port {port} not responding)`, continue.
 

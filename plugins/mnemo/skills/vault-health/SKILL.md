@@ -24,6 +24,20 @@ Required fields: `vault`, `taxonomy`, `links_section`.
 
 **Steps 1-4 run in parallel** — single assistant message with 4 Bash tool uses. These are independent CLI queries against the same indexed vault, ~180ms each → 180ms total vs 720ms sequential.
 
+### Step 0: claude-mem Sanity Check (optional, ~20ms)
+
+If claude-mem plugin is installed (`~/.claude/plugins/cache/thedotmack/claude-mem/`), surface two things at the top of the health report — users often miss these:
+
+```bash
+ls -1 ~/.claude/plugins/cache/thedotmack/claude-mem/ 2>/dev/null
+```
+
+- **Multiple version folders** (e.g. `10.5.2` + `12.3.9`) → warn: "claude-mem has stale cache. Restart all Claude windows to pick up the latest — old Stop hooks point to a path that no longer exists."
+- **Major version < 12** → warn: "claude-mem v{N} is behind v12 — you're missing file-read gate, tier routing, and knowledge agents. Run `/plugin update claude-mem`."
+- Multiple folders is the common symptom (cache isn't cleaned up by `/plugin update`).
+
+Skip this step entirely if the claude-mem directory doesn't exist.
+
 ### Step 1: Orphan Detection
 
 ```bash
@@ -115,6 +129,8 @@ Sort by count, show top 5.
 ```
 📊 Vault Health Report ({date})
 
+⚠️ claude-mem: {warning or "v12.3.9, clean"}
+
 Total: {N} notes
   Atoms: {N} | Molecules: {N} | Sources: {N}
   Sessions: {N} | MOCs: {N} | Inbox: {N} | Other: {N}
@@ -138,6 +154,8 @@ Total: {N} notes
 
 💤 Stale (30d+ no backlinks): {N}
 ```
+
+Skip the `⚠️ claude-mem` line entirely if Step 0 found nothing to warn about.
 
 ## Gotchas
 

@@ -38,6 +38,21 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, conversation history, and codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
+### What's New in v0.7.0
+
+**claude-mem v12.3.9 integration.** If you also run [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem), mnemo now talks to it:
+
+- **`/mn:health` Step 0** surfaces stale-cache + major-version-skew warnings — the real-world failure mode where Stop hooks point to a deleted `CLAUDE_PLUGIN_ROOT` after `/plugin update`.
+- **`/mn:save` Step 2** auto-detects `claude_mem_version` and tags every observation with `obsidian_note` + `obsidian_vault` backlinks. Groundwork for a future `/mn:ask --deep` mode that shows semantic-search hits next to their full vault note.
+
+### What's New in v0.6.2
+
+**`/mn:connect` does one grep instead of N `obsidian search` calls.** Single filesystem pass for all concepts OR'd into one regex. **7 concepts: 1.26s → 50ms (25x).**
+
+**`/mn:health` Steps 1-4 run in parallel.** Orphans, unresolved, tags, files-count are independent CLI queries — documented as parallel batches. 720ms → 180ms.
+
+**SessionStart prewarm hook.** `/mn:review` caches warm up async on session boot, so the **first** review is instant instead of ~10s.
+
 ### What's New in v0.6.1
 
 **Model tiers, corrected against real benchmarks.** v0.6.0 was tiered by intuition. v0.6.1 rebalanced after reading Anthropic docs, Artificial Analysis comparisons, Sider's production retrospective on Haiku 4.5, and practitioner reports from Reddit/HN. Final map:
@@ -318,6 +333,21 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 
 Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию, `/mn:session` знает что ты делал, потому что был рядом.
 
+### Что нового в v0.7.0
+
+**Интеграция с claude-mem v12.3.9.** Если параллельно запущен [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem), mnemo теперь умеет с ним дружить:
+
+- **`/mn:health` Step 0** показывает предупреждения про stale cache + major-version skew — реальный failure mode, где Stop hooks указывают на удалённый `CLAUDE_PLUGIN_ROOT` после `/plugin update`.
+- **`/mn:save` Step 2** автоматически детектит `claude_mem_version` и тегирует каждое observation линками `obsidian_note` + `obsidian_vault`. Фундамент для будущего режима `/mn:ask --deep` который покажет semantic-search hits рядом с полными заметками vault'а.
+
+### Что нового в v0.6.2
+
+**`/mn:connect` делает один grep вместо N `obsidian search` вызовов.** Одно прохождение по filesystem для всех концептов, объединённых OR в regex. **7 концептов: 1.26с → 50ms (25x).**
+
+**`/mn:health` Steps 1-4 параллельно.** Orphans, unresolved, tags, files-count — независимые CLI queries — задокументированы как parallel batches. 720ms → 180ms.
+
+**SessionStart prewarm hook.** Кеши `/mn:review` прогреваются асинхронно на старте сессии — **первый** review мгновенный вместо ~10с.
+
 ### Что нового в v0.6.1
 
 **Модели перевыставлены по реальным бенчмаркам.** В v0.6.0 тиринг был интуитивным. Перед v0.6.1 прошерстил Anthropic docs, Artificial Analysis сравнения, production-ретро от Sider по Haiku 4.5, обсуждения на Reddit/HN. Итоговая карта:
@@ -484,6 +514,21 @@ cp config.example.json ~/.mnemo/config.json
 ### 为什么不用 Obsidian 插件？
 
 Obsidian 插件在 Obsidian 内部运行。mnemo 在 **Claude Code** 内部运行——它可以访问你的整个开发上下文、对话历史和代码库。当你结束一个 3 小时的调试会话时，`/mn:session` 知道你做了什么，因为它全程在场。
+
+### v0.7.0 新特性
+
+**claude-mem v12.3.9 集成。** 如果你也安装了 [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)，mnemo 现在会与它协作：
+
+- **`/mn:health` Step 0** 显示过期缓存 + 主版本偏移警告——真实的故障模式：`/plugin update` 后 Stop hooks 指向已删除的 `CLAUDE_PLUGIN_ROOT`。
+- **`/mn:save` Step 2** 自动检测 `claude_mem_version`，并为每个 observation 标记 `obsidian_note` + `obsidian_vault` 反向链接。为未来的 `/mn:ask --deep` 模式打基础——它将在 semantic-search 结果旁显示完整 vault 笔记。
+
+### v0.6.2 新特性
+
+**`/mn:connect` 用一个 grep 替代 N 次 `obsidian search` 调用。** 单次文件系统扫描处理所有合并为 OR 正则的概念。**7 个概念：1.26 秒 → 50ms（25 倍）。**
+
+**`/mn:health` Steps 1-4 并行运行。** Orphans、unresolved、tags、files-count 是独立的 CLI 查询——记录为并行批次。720ms → 180ms。
+
+**SessionStart 预热 hook。** `/mn:review` 的缓存在会话启动时异步预热——**第一次** 审查瞬时完成，而不是约 10 秒。
 
 ### v0.6.1 新特性
 

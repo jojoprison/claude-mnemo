@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2026-04-24
+
+### Added — claude-mem v12.3.9 integration
+
+mnemo now plays nicely with the major claude-mem upgrade (10.5.2 → 12.3.9, landed on this machine 2026-04-24). Two skills became aware of the co-installed plugin:
+
+**`/mn:health` Step 0 — claude-mem sanity check.** When the plugin is present, surface two common gotchas at the top of the health report:
+
+- Multiple version folders in cache → "restart all Claude windows" (stale Stop hooks point to an old `CLAUDE_PLUGIN_ROOT`, a real failure mode after every major upgrade)
+- Major version < 12 → "you're missing file-read gate, tier routing, and knowledge agents — run `/plugin update claude-mem`"
+
+Skipped entirely when claude-mem isn't installed.
+
+**`/mn:save` Step 2 — enriched observation metadata:**
+
+- `claude_mem_version` auto-detected from `~/.claude/plugins/cache/thedotmack/claude-mem/`. Lets future retrieval filter legacy pre-v12 observations from post-file-read-gate entries.
+- `obsidian_note` + `obsidian_vault` — backlinks the observation to the full note in the vault. Groundwork for `/mn:ask --deep` (a future skill upgrade) to show semantic-search results next to direct wikilinks.
+
+### Why a minor bump
+
+v0.6.x was pure perf. v0.7.0 adds new semantic capabilities (version detection, cross-system backlinks) that external scripts may depend on. Breaking none of v0.6.x — purely additive.
+
 ## [0.6.2] - 2026-04-24
 
 ### Changed — `/mn:connect` switches to single grep for all concepts
