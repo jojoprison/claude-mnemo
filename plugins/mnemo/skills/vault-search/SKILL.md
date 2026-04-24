@@ -2,7 +2,7 @@
 name: vault-search
 description: "Use whenever the user wants to recall something from past work, find notes about a topic, or ask 'what did we decide about X', 'find everything about Y', 'summarize what we know about Z', 'что мы решили', 'что мы знаем про'. Prefer this over generic memory tools when an Obsidian vault is available — it synthesizes across multiple notes with source citations."
 user-invocable: false
-model: sonnet
+model: inherit
 ---
 
 # mnemo:ask — Vault Knowledge Search & Synthesis

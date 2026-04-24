@@ -38,6 +38,17 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, conversation history, and codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
+### What's New in v0.7.3
+
+**Hybrid fork/inherit routing — no more `Extra usage required for 1M context` 429s.** v0.6.0's tiered `model:` overrides were forcing a mid-session model switch on every skill invocation, which re-reads the full conversation without cache. On Max plans (where Opus auto-upgrades to 1M context), a big conversation + a switch tripped Anthropic's server-side 1M billing gate and failed with `API Error: Extra usage is required for 1M context`.
+
+**The fix** splits skills by whether they need session context:
+
+- **4 skills run forked** (`context: fork` + concrete model) — `/mn:health`, `/mn:connect`, `/mn:sort`, `/mn:setup`. Isolated subagents with their own 200K context, no impact on the main session.
+- **4 skills inherit** (`model: inherit`) — `/mn:ask`, `/mn:save`, `/mn:session`, `/mn:review`. They use whatever model you picked via `/model` so you keep central control.
+
+`/mn:review` gained a one-line tip: *"run `/model opus[1m]` before review for deepest analysis."* Keeps the cheap default without losing the previous forced-opus ceiling. Linter extended to accept `model: inherit` and `context: fork`, rejects the contradictory `fork + inherit` combination.
+
 ### What's New in v0.7.2
 
 **CI lint for SKILL.md files.** `scripts/lint-skills.py` validates frontmatter, model whitelist, line budget, and every `references/` / `scripts/` / `assets/` path mentioned in a skill. Runs on every push via `.github/workflows/skill-lint.yml`. Catches broken references after renames, stale script pointers, accidental `model: opus-42`, oversized skills. Run locally with `python3 scripts/lint-skills.py`.
@@ -377,6 +388,17 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 
 Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию, `/mn:session` знает что ты делал, потому что был рядом.
 
+### Что нового в v0.7.3
+
+**Гибридный fork/inherit роутинг — больше нет 429 `Extra usage required for 1M context`.** tiered `model:` из v0.6.0 триггерил переключение модели на каждый вызов skill, что **заново вычитывает разговор без кеша**. На Max-подписке (где Opus авто-апгрейдится до 1M контекста) большой разговор + switch упирался в server-side 1M billing gate и падал с `API Error: Extra usage is required for 1M context`.
+
+**Решение** разделяет скиллы по тому, нужен ли им контекст сессии:
+
+- **4 скилла в форке** (`context: fork` + конкретная модель) — `/mn:health`, `/mn:connect`, `/mn:sort`, `/mn:setup`. Изолированные subagent'ы со своим 200K контекстом, главная сессия не тронута.
+- **4 скилла с inherit** (`model: inherit`) — `/mn:ask`, `/mn:save`, `/mn:session`, `/mn:review`. Используют модель, которую ты выбрал через `/model` — ты контролируешь.
+
+`/mn:review` получил подсказку: *"перед review запусти `/model opus[1m]` для максимальной глубины"*. Сохраняет дефолтную экономию без потери потолка качества. Linter расширен — принимает `model: inherit` и `context: fork`, отклоняет противоречащую комбинацию `fork + inherit`.
+
 ### Что нового в v0.7.2
 
 **CI lint для SKILL.md.** `scripts/lint-skills.py` проверяет frontmatter, whitelist моделей, лимит строк, и каждый путь на `references/` / `scripts/` / `assets/` который упомянут в скилле. Запускается на каждом push через `.github/workflows/skill-lint.yml`. Ловит битые ссылки после переименований, устаревшие указатели на скрипты, случайный `model: opus-42`, переросшие скиллы. Локально: `python3 scripts/lint-skills.py`.
@@ -580,6 +602,17 @@ cp config.example.json ~/.mnemo/config.json
 ### 为什么不用 Obsidian 插件？
 
 Obsidian 插件在 Obsidian 内部运行。mnemo 在 **Claude Code** 内部运行——它可以访问你的整个开发上下文、对话历史和代码库。当你结束一个 3 小时的调试会话时，`/mn:session` 知道你做了什么，因为它全程在场。
+
+### v0.7.3 新特性
+
+**混合 fork/inherit 路由 — 消除 `Extra usage required for 1M context` 429 错误。** v0.6.0 的分层 `model:` 覆盖在每次技能调用时强制切换模型，导致**无缓存重新读取整个会话**。在 Max 套餐上（Opus 自动升级到 1M 上下文），大会话 + 切换会触发 Anthropic 服务端 1M 计费门控，返回 `API Error: Extra usage is required for 1M context`。
+
+**修复方案**按是否需要会话上下文拆分技能：
+
+- **4 个技能使用 fork**（`context: fork` + 具体模型）—— `/mn:health`、`/mn:connect`、`/mn:sort`、`/mn:setup`。在隔离 subagent 中运行，独立 200K 上下文，主会话零影响。
+- **4 个技能使用 inherit**（`model: inherit`）—— `/mn:ask`、`/mn:save`、`/mn:session`、`/mn:review`。使用你通过 `/model` 选择的模型——你掌控一切。
+
+`/mn:review` 新增提示：*"运行 review 前先执行 `/model opus[1m]` 以获得最深度分析。"* 保留默认节省同时不丢失之前强制 opus 的质量上限。Linter 扩展支持 `model: inherit` 和 `context: fork`，并拒绝相互矛盾的 `fork + inherit` 组合。
 
 ### v0.7.2 新特性
 

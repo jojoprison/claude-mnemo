@@ -2,12 +2,14 @@
 name: session-review
 description: "End-of-session orchestrator. Auto-saves decisions (mnemo:memory-routing) and creates session notes (mnemo:session-notes) without asking. Then recommends remaining skills. Triggers on: 'что забыли', 'session review', 'что осталось', 'all done?', 'review', end of significant work. The ONLY command users need at session end — handles everything."
 user-invocable: false
-model: opus
+model: inherit
 ---
 
 # mnemo:review — Skill-Aware Session Completeness Analyzer
 
 You are performing a thorough end-of-session review. Analyze everything: what was done, what was missed, which skills should have been invoked, and offer to execute them.
+
+> **Tip:** For deepest analysis depth, run `/model opus[1m]` before `/mn:review` if you're not already on Opus. This skill inherits your session's model (v0.7.3+) so you control the quality/speed trade-off.
 
 ## Session Data (Preprocessed)
 

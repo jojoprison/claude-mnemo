@@ -2,7 +2,7 @@
 name: memory-routing
 description: "Use whenever the user says 'remember this', 'save to memory', 'запомни', 'в память', 'сохрани', 'в мнемо', solved a bug worth remembering, made a non-obvious decision, or learned a gotcha. Routes each item to the right combination of Obsidian + claude-mem + memory/ + CLAUDE.md with graceful degradation if a backend is unavailable."
 user-invocable: false
-model: haiku
+model: inherit
 ---
 
 # mnemo:save — Memory Routing Cascade

@@ -3,6 +3,7 @@ name: inbox-triage
 description: "Use whenever inbox notes need classification, the user says 'inbox cleanup', 'clean up my inbox', 'разгреби inbox', or after /mn:health flags a backlog. Converts inbox captures into proper typed notes (atom, molecule, source, session) with taxonomy tags and MOC links."
 user-invocable: false
 model: haiku
+context: fork
 ---
 
 # mnemo:sort — Classify Inbox Notes

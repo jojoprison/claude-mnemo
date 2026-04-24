@@ -1,7 +1,7 @@
 {
   "name": "mnemo",
-  "version": "0.7.2",
-  "description": "Persistent memory layer for Claude Code via Obsidian — 8 skills for vault health, knowledge search, connection discovery, session continuity, memory routing, inbox triage, skill-aware session review, and interactive setup. MCP-first hybrid (shell-safe writes), tiered models (Haiku/Sonnet/Opus), parallel CLI calls, SessionStart prewarm, incremental JSONL parsing, shared references for gotchas / config / tool-routing, claude-mem v12.3.9 integration. Any taxonomy.",
+  "version": "0.7.3",
+  "description": "Persistent memory layer for Claude Code via Obsidian — 8 skills for vault health, knowledge search, connection discovery, session continuity, memory routing, inbox triage, skill-aware session review, and interactive setup. MCP-first hybrid (shell-safe writes), hybrid model routing (4 forked haiku/sonnet + 4 inherit — no mid-session switch 429s), parallel CLI calls, SessionStart prewarm, incremental JSONL parsing, shared references for gotchas / config / tool-routing, claude-mem v12.3.9 integration. Any taxonomy.",
   "author": {
     "name": "jojoprison",
     "url": "https://github.com/jojoprison"

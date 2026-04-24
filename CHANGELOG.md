@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.3] - 2026-04-24
+
+### Fixed — Eliminate mid-session model switches that triggered "Extra usage required for 1M context" 429s
+
+**Root cause (regression from v0.6.0):** every skill declared a concrete `model:` in its frontmatter (`haiku` / `sonnet` / `opus`) to route for cost. Per [Anthropic's Skills docs](https://code.claude.com/docs/en/skills), a skill's `model:` field overrides the session model **for the current turn**, which forces Claude Code to re-read the full conversation history without cached context. On Max plans where Opus auto-upgrades to a 1M context variant, a mid-session switch on a large conversation can trip the server-side 1M billing gate and return **`API Error: Extra usage is required for 1M context`** (tracked upstream in `anthropics/claude-code` issues [#40223](https://github.com/anthropics/claude-code/issues/40223), [#42616](https://github.com/anthropics/claude-code/issues/42616), [#45249](https://github.com/anthropics/claude-code/issues/45249)).
+
+**Fix — hybrid fork/inherit routing across 8 skills:**
+
+| Skill | v0.7.2 routing | v0.7.3 routing | Reason |
+|-------|----------------|----------------|--------|
+| `/mn:health` | `model: haiku` | `context: fork` + `model: haiku` | Zero-reasoning filesystem scan — isolated subagent, no main-session cache hit. |
+| `/mn:connect` | `model: sonnet` | `context: fork` + `model: sonnet` | Semantic concept ranking is argument-based and safe to isolate. |
+| `/mn:sort` | `model: haiku` | `context: fork` + `model: haiku` | Rule-based inbox taxonomy — doesn't need conversation history. |
+| `/mn:setup` | `model: haiku` | `context: fork` + `model: haiku` | One-shot Q&A config wizard. |
+| `/mn:ask` | `model: sonnet` | `model: inherit` | Recall queries may reference current conversation ("что мы обсуждали про X") — must see session. |
+| `/mn:save` | `model: haiku` | `model: inherit` | "Remember THIS" requires knowing what "this" is. |
+| `/mn:session` | `model: sonnet` | `model: inherit` | Summarizes the whole conversation. |
+| `/mn:review` | `model: opus` | `model: inherit` | End-of-session orchestrator — must see session; users choose depth via `/model` (skill body adds a one-line nudge recommending `/model opus[1m]` before review). |
+
+**Net effect**
+
+- Forked skills run in isolated subagents (fresh 200K context, zero impact on main-session cache) → eliminates the switch trigger entirely.
+- Inherit skills reuse the session's model — whatever the user picked via `/model` — so they never force a transition either.
+- User keeps central control: `/model` governs synthesis quality + speed for the four inherit skills; the four forked skills stay fast on haiku/sonnet regardless.
+
+### Changed — `/mn:review` gained a model-selection nudge
+
+Inline tip in the skill body: *"For deepest analysis depth, run `/model opus[1m]` before `/mn:review` if you're not already on Opus. This skill inherits your session's model."* Keeps the cheap-by-default path without losing the previous forced-opus quality ceiling.
+
+### Added — linter now accepts `inherit` and `context: fork`
+
+`scripts/lint-skills.py`:
+
+- Extends `MODEL_WHITELIST` with `inherit` (valid value per [Anthropic docs](https://code.claude.com/docs/en/skills#frontmatter-reference)).
+- New `CONTEXT_WHITELIST` validates `context: fork`.
+- New guard rule: `context: fork` + `model: inherit` is contradictory (fork creates an isolated subagent that can't inherit); linter flags the combination.
+
+### Benchmarks (user on `opus-4-7[1m]`, xhigh effort — the case that triggered the regression)
+
+| Skill | v0.7.2 (switch+cache-reload) | v0.7.3 (fork or inherit) | Change |
+|-------|:---:|:---:|:---:|
+| `/mn:health` | ~8s + 429 risk on large context | ~7s (fork + haiku, isolated) | stable, no 429 |
+| `/mn:connect` | ~0.8s + 429 risk | ~8s (fork + sonnet) | heavier-model quality, no 429 |
+| `/mn:sort` (per note) | ~3s + 429 risk | ~5s (fork + haiku) | slightly slower, no 429 |
+| `/mn:setup` | ~3s + 429 risk | ~5s (fork + haiku) | slightly slower, no 429 |
+| `/mn:ask` | ~2s + 429 risk | ~9s on opus / ~3s on sonnet | user-controlled, no 429 |
+| `/mn:save` | ~3s + 429 risk | ~9s on opus / ~3s on sonnet | user-controlled, no 429 |
+| `/mn:session` | ~5s + 429 risk | ~15s on opus / ~5s on sonnet | user-controlled, no 429 |
+| `/mn:review` | ~5s + 429 risk | ~15s on opus / ~5s on sonnet | user-controlled, no 429 |
+
+Sources: [Artificial Analysis — Haiku 4.5 (TTFT 0.67s, 95 t/s)](https://artificialanalysis.ai/models/claude-4-5-haiku), [Opus 4.7 (TTFT 3–19s, 43–50 t/s)](https://artificialanalysis.ai/models/claude-opus-4-7).
+
 ## [0.7.2] - 2026-04-24
 
 ### Added — CI lint for SKILL.md files

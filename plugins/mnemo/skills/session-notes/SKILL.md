@@ -2,7 +2,7 @@
 name: session-notes
 description: "Use whenever significant work wraps up — a feature shipped, a bug fixed, a research thread finished, before the user steps away. Also triggers on 'записать сессию', 'session note', 'save session'. Creates a human-readable summary in Obsidian plus a handoff update so the next session picks up where you left off."
 user-invocable: false
-model: sonnet
+model: inherit
 ---
 
 # mnemo:session — Session Notes to Obsidian

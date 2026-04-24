@@ -3,6 +3,7 @@ name: link-discovery
 description: "Use automatically after creating any new Obsidian note to surface hidden connections with existing notes. Also use whenever the user asks 'find related notes', 'are there similar notes', 'connect this to others', or reviews a note for cross-references. Shows ranked suggestions with 'why relevant' explanations — does NOT auto-apply."
 user-invocable: false
 model: sonnet
+context: fork
 ---
 
 # mnemo:connect — Discover Hidden Links

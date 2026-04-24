@@ -4,11 +4,13 @@
 Checks:
 1. Frontmatter parses (YAML between --- markers).
 2. Required fields present: name, description.
-3. model field (if present) is in whitelist: haiku, sonnet, opus.
-4. File length ≤ 500 lines (skill-creator best practice).
-5. Any `references/*.md` path mentioned in the body actually exists.
-6. Any `scripts/*.{sh,py}` path mentioned resolves to an existing file.
-7. Any `assets/*` path mentioned resolves.
+3. model field (if present) is in whitelist: haiku, sonnet, opus, inherit.
+4. context field (if present) is in whitelist: fork.
+5. context: fork + model: inherit is contradictory (rejected).
+6. File length ≤ 500 lines (skill-creator best practice).
+7. Any `references/*.md` path mentioned in the body actually exists.
+8. Any `scripts/*.{sh,py}` path mentioned resolves to an existing file.
+9. Any `assets/*` path mentioned resolves.
 
 Exit codes:
   0 — all SKILL.md valid
@@ -23,7 +25,8 @@ import sys
 
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-MODEL_WHITELIST = {"haiku", "sonnet", "opus"}
+MODEL_WHITELIST = {"haiku", "sonnet", "opus", "inherit"}
+CONTEXT_WHITELIST = {"fork"}
 MAX_LINES = 500
 REF_RE = re.compile(r"references/([a-zA-Z0-9_\-]+\.md)")
 SCRIPT_RE = re.compile(r"scripts/([a-zA-Z0-9_\-]+\.(?:sh|py))")
@@ -72,6 +75,13 @@ def check_skill(path: str) -> list[str]:
     model = fm.get("model")
     if model and model not in MODEL_WHITELIST:
         issues.append(f"model '{model}' not in whitelist {sorted(MODEL_WHITELIST)}")
+
+    context = fm.get("context")
+    if context and context not in CONTEXT_WHITELIST:
+        issues.append(f"context '{context}' not in whitelist {sorted(CONTEXT_WHITELIST)}")
+
+    if context == "fork" and model == "inherit":
+        issues.append("context: fork + model: inherit is contradictory (fork creates isolated subagent; pick a concrete model)")
 
     plugin_dir = os.path.dirname(os.path.dirname(os.path.dirname(path)))
     for match in REF_RE.finditer(text):

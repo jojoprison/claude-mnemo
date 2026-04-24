@@ -1,11 +1,19 @@
-# Testing — claude-mnemo v0.7.2 smoke test
+# Testing — claude-mnemo v0.7.3 smoke test
 
-Pre-release smoke tests for v0.7.2. Run once after `/plugin update mnemo` to verify all 8 skills behave as intended after the v0.6.0 → v0.7.2 refactor.
+Pre-release smoke tests for v0.7.3. Run once after `/plugin update mnemo` to verify all 8 skills behave as intended after the v0.6.0 → v0.7.3 refactor.
+
+## What changed in v0.7.3
+
+Model routing was rewritten to prevent mid-session model switches from triggering `API Error: Extra usage is required for 1M context` on Max plans. Four skills now run in isolated forked subagents (`context: fork` + `haiku` or `sonnet`); the remaining four inherit the session model (`model: inherit`). See [CHANGELOG](./CHANGELOG.md#073---2026-04-24).
+
+**Universal red flag for every test below:** if you see `API Error: Extra usage is required for 1M context` during any skill invocation, the routing regressed — a skill is still forcing a model switch in the main session. File an issue with the skill name.
+
+
 
 ## Prerequisites
 
 - **Obsidian running**, vault `main` (or whatever is in `~/.mnemo/config.json`)
-- **Plugin updated to v0.7.2** in the current session:
+- **Plugin updated to v0.7.3** in the current session:
   ```
   /plugin update mnemo
   ```
@@ -68,7 +76,7 @@ Try a recall-style query you know is in your vault:
 ### 4. `/mn:save` — claude-mem metadata enrichment
 
 ```
-/mn:save "Тестовая заметка: smoke test mnemo v0.7.2. Facade ping."
+/mn:save "Тестовая заметка: smoke test mnemo v0.7.3. Facade ping."
 ```
 
 **Expect:**
@@ -146,7 +154,7 @@ Open <https://github.com/jojoprison/claude-mnemo/actions>. Last run (on commit `
   ```bash
   rm -rf ~/.claude/plugins/cache/claude-mnemo/mnemo/0.6.1
   ```
-  (Only after confirming v0.7.2 works.)
+  (Only after confirming v0.7.3 works.)
 
 ## Expected total time
 
