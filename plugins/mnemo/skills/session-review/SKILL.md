@@ -82,16 +82,28 @@ Cross-reference:
 
 **Only recommend skills that appear in the auto-discovered list.** Never recommend skills that aren't installed — the user can't act on them.
 
-**Read the trigger matrix for the detected session type** (one file, not the full catalogue — progressive disclosure keeps the prompt lean):
+**Load the matching trigger matrix file explicitly.** Pick `{type}` from the session classification in Step 2 (`implementation`, `research`, `debugging`, or `universal` for refactor / documentation / configuration / planning). Always also load `triggers-universal.md`.
 
-- Implementation → `references/triggers-implementation.md`
-- Research → `references/triggers-research.md`
-- Debugging → `references/triggers-debugging.md`
-- Refactoring / Documentation / Configuration / Planning → `references/triggers-universal.md`
+```bash
+TYPE={implementation|research|debugging|universal}
+REF_DIR="${CLAUDE_PLUGIN_ROOT}/references"
+[ -d "$REF_DIR" ] || REF_DIR="$(dirname "$0")/../../references"
 
-**Always** also read `references/triggers-universal.md` — it covers cross-cutting signals (uncommitted changes, missing session notes, unreviewed plans) that apply regardless of session type.
+echo "=== type-specific triggers ==="
+cat "${REF_DIR}/triggers-${TYPE}.md" 2>/dev/null || echo "(triggers file unavailable)"
 
-Custom project-specific triggers, if any, live at `${CLAUDE_PLUGIN_ROOT}/skill-triggers.md` or `.claude/skill-triggers.md` in the project root. Read whichever exists.
+echo ""
+echo "=== universal triggers ==="
+cat "${REF_DIR}/triggers-universal.md" 2>/dev/null || echo "(universal file unavailable)"
+
+echo ""
+echo "=== project-specific triggers (if any) ==="
+cat "${CLAUDE_PLUGIN_ROOT}/skill-triggers.md" 2>/dev/null \
+  || cat ".claude/skill-triggers.md" 2>/dev/null \
+  || echo "(no custom triggers)"
+```
+
+Run this command **before** walking the trigger rows. Progressive disclosure — don't load the other 3 type files when only one applies.
 
 ### Step 5: Cross-Reference Project Rules
 

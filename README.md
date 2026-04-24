@@ -38,6 +38,16 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, conversation history, and codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
+### What's New in v0.7.2
+
+**CI lint for SKILL.md files.** `scripts/lint-skills.py` validates frontmatter, model whitelist, line budget, and every `references/` / `scripts/` / `assets/` path mentioned in a skill. Runs on every push via `.github/workflows/skill-lint.yml`. Catches broken references after renames, stale script pointers, accidental `model: opus-42`, oversized skills. Run locally with `python3 scripts/lint-skills.py`.
+
+**`/mn:session` template actually loads.** Step 3 now explicitly `cat`s `assets/session-template.md` before filling placeholders — the template was referenced but never read before.
+
+**`/mn:review` triggers always load.** Step 4 now explicitly `cat`s `triggers-{type}.md` + `triggers-universal.md` + project-local `skill-triggers.md` (if present). No more relying on Claude to remember to read them.
+
+**README "Project Structure" matches reality** — added `references/`, `assets/`, `hooks/`, `scripts/`, and CI workflow.
+
 ### What's New in v0.7.1
 
 **Polish release driven by a skill-creator audit.** Removed ~100 lines of duplicated gotchas/config/tool-routing prose across 7 SKILL.md files by extracting to `plugins/mnemo/references/`. Skills now load the reference only when needed (progressive disclosure). `session-review` alone dropped 262 → 222 lines by splitting its huge trigger matrix into per-session-type files.
@@ -280,24 +290,46 @@ Next session reads this and picks up where you left off.
 claude-mnemo/
 ├── plugins/mnemo/
 │   ├── .claude-plugin/plugin.json
-│   ├── commands/mn/                 # User-facing /mn:* commands
-│   │   ├── save.md                  # /mn:save → mnemo:memory-routing
-│   │   ├── session.md               # /mn:session → mnemo:session-notes
-│   │   ├── review.md                # /mn:review → mnemo:session-review
-│   │   ├── ask.md                   # /mn:ask → mnemo:vault-search
-│   │   ├── health.md                # /mn:health → mnemo:vault-health
-│   │   ├── connect.md               # /mn:connect → mnemo:link-discovery
-│   │   ├── sort.md                  # /mn:sort → mnemo:inbox-triage
-│   │   └── setup.md                 # /mn:setup → mnemo:initial-setup
-│   └── skills/                      # Skill implementations
-│       ├── memory-routing/SKILL.md
-│       ├── session-notes/SKILL.md
-│       ├── session-review/SKILL.md
-│       ├── vault-search/SKILL.md
-│       ├── vault-health/SKILL.md
-│       ├── link-discovery/SKILL.md
-│       ├── inbox-triage/SKILL.md
-│       └── initial-setup/SKILL.md
+│   ├── commands/mn/                 # User-facing /mn:* commands (thin routers)
+│   │   ├── save.md                  # /mn:save      → mnemo:memory-routing
+│   │   ├── session.md               # /mn:session   → mnemo:session-notes
+│   │   ├── review.md                # /mn:review    → mnemo:session-review
+│   │   ├── ask.md                   # /mn:ask       → mnemo:vault-search
+│   │   ├── health.md                # /mn:health    → mnemo:vault-health
+│   │   ├── connect.md               # /mn:connect   → mnemo:link-discovery
+│   │   ├── sort.md                  # /mn:sort      → mnemo:inbox-triage
+│   │   └── setup.md                 # /mn:setup     → mnemo:initial-setup
+│   ├── skills/                      # Skill implementations (8)
+│   │   ├── memory-routing/SKILL.md
+│   │   ├── session-notes/SKILL.md
+│   │   ├── session-review/SKILL.md
+│   │   ├── vault-search/SKILL.md
+│   │   ├── vault-health/SKILL.md
+│   │   ├── link-discovery/SKILL.md
+│   │   ├── inbox-triage/SKILL.md
+│   │   └── initial-setup/SKILL.md
+│   ├── references/                  # Shared docs (progressive disclosure)
+│   │   ├── gotchas.md               # Common failures (IPC, stale cache, shell injection)
+│   │   ├── config-schema.md         # Full ~/.mnemo/config.json reference
+│   │   ├── tool-routing.md          # MCP-first hybrid rule + rationale
+│   │   ├── triggers-implementation.md
+│   │   ├── triggers-research.md
+│   │   ├── triggers-debugging.md
+│   │   └── triggers-universal.md
+│   ├── assets/                      # Reusable templates
+│   │   └── session-template.md
+│   ├── scripts/                     # Shell & Python helpers
+│   │   ├── session-scan.py          # JSONL parser with incremental read cache
+│   │   ├── skills-discover.py       # Auto-discovery across ~/.claude
+│   │   ├── get-vault-path.sh        # obsidian vault → filesystem path
+│   │   └── check-cm-version.sh      # claude-mem cache inspector
+│   └── hooks/                       # Harness hooks
+│       ├── hooks.json               # SessionStart async prewarm
+│       └── prewarm.sh               # Warms /mn:review caches non-blocking
+├── .github/workflows/
+│   └── skill-lint.yml               # CI: validates SKILL.md frontmatter + refs
+├── scripts/
+│   └── lint-skills.py               # Linter used by CI and locally
 ├── config.example.json
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
@@ -344,6 +376,16 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 ### Почему не обычные плагины Obsidian?
 
 Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию, `/mn:session` знает что ты делал, потому что был рядом.
+
+### Что нового в v0.7.2
+
+**CI lint для SKILL.md.** `scripts/lint-skills.py` проверяет frontmatter, whitelist моделей, лимит строк, и каждый путь на `references/` / `scripts/` / `assets/` который упомянут в скилле. Запускается на каждом push через `.github/workflows/skill-lint.yml`. Ловит битые ссылки после переименований, устаревшие указатели на скрипты, случайный `model: opus-42`, переросшие скиллы. Локально: `python3 scripts/lint-skills.py`.
+
+**`/mn:session` реально грузит шаблон.** Step 3 теперь явно делает `cat` на `assets/session-template.md` перед заполнением плейсхолдеров — раньше шаблон упоминался, но не читался.
+
+**`/mn:review` всегда грузит triggers.** Step 4 теперь явно делает `cat` на `triggers-{type}.md` + `triggers-universal.md` + project-local `skill-triggers.md` (если есть). Больше не полагается на то, что Claude вспомнит сам.
+
+**README "Project Structure" актуален** — добавлены `references/`, `assets/`, `hooks/`, `scripts/`, CI workflow.
 
 ### Что нового в v0.7.1
 
@@ -538,6 +580,16 @@ cp config.example.json ~/.mnemo/config.json
 ### 为什么不用 Obsidian 插件？
 
 Obsidian 插件在 Obsidian 内部运行。mnemo 在 **Claude Code** 内部运行——它可以访问你的整个开发上下文、对话历史和代码库。当你结束一个 3 小时的调试会话时，`/mn:session` 知道你做了什么，因为它全程在场。
+
+### v0.7.2 新特性
+
+**SKILL.md CI lint。** `scripts/lint-skills.py` 校验 frontmatter、模型白名单、行数上限，以及技能中提到的每个 `references/` / `scripts/` / `assets/` 路径是否存在。通过 `.github/workflows/skill-lint.yml` 在每次 push 时运行。捕获重命名后的失效引用、过期脚本指针、`model: opus-42` 之类的错误、超大技能文件。本地运行：`python3 scripts/lint-skills.py`。
+
+**`/mn:session` 真正加载模板。** Step 3 现在会显式 `cat` 读取 `assets/session-template.md` 然后填充占位符——之前模板仅被提及，从未真正加载。
+
+**`/mn:review` 始终加载 triggers。** Step 4 现在显式 `cat` 读取 `triggers-{type}.md` + `triggers-universal.md` + 项目本地 `skill-triggers.md`（如存在）。不再依赖 Claude 自己去记得读取。
+
+**README "Project Structure" 对齐实际状态** — 补充 `references/`、`assets/`、`hooks/`、`scripts/`、CI workflow。
 
 ### v0.7.1 新特性
 

@@ -1,0 +1,25 @@
+name: Skill lint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/**"
+      - "scripts/lint-skills.py"
+      - ".github/workflows/skill-lint.yml"
+  pull_request:
+    paths:
+      - "plugins/**"
+      - "scripts/lint-skills.py"
+      - ".github/workflows/skill-lint.yml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate SKILL.md files
+        run: python3 scripts/lint-skills.py

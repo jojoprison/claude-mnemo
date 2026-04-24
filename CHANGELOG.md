@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.2] - 2026-04-24
+
+### Added — CI lint for SKILL.md files
+
+`scripts/lint-skills.py` validates every `SKILL.md` in `plugins/*/skills/*/`:
+
+- Frontmatter parses and has required `name` + `description`
+- `model` (if set) is in the whitelist: `haiku`, `sonnet`, `opus`
+- File is under 500 lines (skill-creator recommendation)
+- Any `references/*.md`, `scripts/*.{sh,py}`, or `assets/*` paths mentioned in the body actually exist
+
+Wired into `.github/workflows/skill-lint.yml` — runs on every push/PR touching `plugins/` or the linter itself. Catches broken references after a rename, stale script pointers, accidental `model: opus-42`, and runaway SKILL.md sizes.
+
+Locally: `python3 scripts/lint-skills.py` — same output as CI.
+
+### Fixed — `/mn:session` Step 3 actually reads the template
+
+`assets/session-template.md` was referenced in the skill preamble but no step actually loaded it. Step 3 now runs `cat "${CLAUDE_PLUGIN_ROOT}/assets/session-template.md"` (with source-tree fallback) before filling in placeholders. Guarantees the template shape reaches the model.
+
+### Fixed — `/mn:review` Step 4 loads trigger files explicitly
+
+Previously the skill said "read `triggers-{type}.md`" but left it to Claude's discretion. Now Step 4 includes an explicit bash block that `cat`s the chosen type file, the universal file, and any project-local `skill-triggers.md` — so the trigger matrix always reaches the analysis step.
+
+### Changed — README "Project Structure" matches reality
+
+Added `references/`, `assets/`, `hooks/`, `scripts/` and the `.github/workflows/skill-lint.yml` / root `scripts/lint-skills.py` to the structure diagram. Per-skill routing and per-reference purpose annotated inline.
+
+### Changed — `memory/mnemo-tool-routing.md` thin-pointer
+
+The project-memory file duplicated the plugin's `references/tool-routing.md`. Reduced to a one-line pointer at the GitHub URL — single source of truth in the plugin itself.
+
 ## [0.7.1] - 2026-04-24
 
 ### Changed — Progressive disclosure via shared `references/`

@@ -58,34 +58,19 @@ Do not block creation on Level 2 matches — they're context, not conflicts.
 
 **Always use `mcp__obsidian__create` for creation.** Never CLI with inline `content=`.
 
+First, read the template (provides the exact structure to follow):
+
+```bash
+cat "${CLAUDE_PLUGIN_ROOT}/assets/session-template.md" 2>/dev/null \
+  || cat "$(dirname "$0")/../../assets/session-template.md"
+```
+
+Then create the note, filling the template placeholders (`{Session Title}`, `{YYYY-MM-DD}`, `{project}`, etc.) with the current session's context:
+
 ```
 mcp__obsidian__create(
   path: "{planned-filename}.md",
-  file_text: """---
-type: session
-tags: [session, {project}, {topics}]
-date: {YYYY-MM-DD}
-branch: {branch-name if exists}
-project: {project-name}
-session_id: {CLAUDE_SESSION_ID if available}
----
-
-# {planned-filename}
-
-{Brief summary of what was done.}
-
-## What was done
-- Item 1
-- Item 2
-
-## Key decisions
-- Decision 1
-
-{links_section}
-- [[MOC — {relevant MOC}]]
-- [[Related Note 1]]
-- [[Ghost Notes for entities]]
-"""
+  file_text: "<template with placeholders filled in>"
 )
 ```
 
