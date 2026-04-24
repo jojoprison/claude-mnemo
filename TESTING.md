@@ -1,10 +1,18 @@
-# Testing — claude-mnemo v0.7.3 smoke test
+# Testing — claude-mnemo v0.7.4 smoke test
 
-Pre-release smoke tests for v0.7.3. Run once after `/plugin update mnemo` to verify all 8 skills behave as intended after the v0.6.0 → v0.7.3 refactor.
+Smoke tests for the v0.7.x line. Run once after `/plugin update mnemo` to verify all 8 skills behave as intended after the v0.6.0 → v0.7.4 refactor arc.
+
+## Status — v0.7.3 passed 7/7 on 2026-04-24
+
+All seven checks below ran clean in a large opus-4-7[1m] session. The universal red flag never fired. Two pre-existing claude-mem v12.3.9 API bugs surfaced during Check #4 and are patched in v0.7.4 (see [CHANGELOG](./CHANGELOG.md#074---2026-04-24)). Re-run on a fresh install to reconfirm, but no regression is expected.
 
 ## What changed in v0.7.3
 
 Model routing was rewritten to prevent mid-session model switches from triggering `API Error: Extra usage is required for 1M context` on Max plans. Four skills now run in isolated forked subagents (`context: fork` + `haiku` or `sonnet`); the remaining four inherit the session model (`model: inherit`). See [CHANGELOG](./CHANGELOG.md#073---2026-04-24).
+
+## What changed in v0.7.4
+
+`/mn:save`'s claude-mem POST body switched from `content` → `text` to match v12.3.9 (previously returned `{"error": "text is required"}`). Key provenance (note name, vault, CM version) is now embedded in the `text` itself because v12.3.9 silently drops custom `metadata.*` fields — full-text search keeps the link back to Obsidian until upstream restores persistence.
 
 **Universal red flag for every test below:** if you see `API Error: Extra usage is required for 1M context` during any skill invocation, the routing regressed — a skill is still forcing a model switch in the main session. File an issue with the skill name.
 
@@ -13,14 +21,14 @@ Model routing was rewritten to prevent mid-session model switches from triggerin
 ## Prerequisites
 
 - **Obsidian running**, vault `main` (or whatever is in `~/.mnemo/config.json`)
-- **Plugin updated to v0.7.3** in the current session:
+- **Plugin updated to v0.7.4** in the current session:
   ```
   /plugin update mnemo
   ```
   Verify:
   ```bash
   ls ~/.claude/plugins/cache/claude-mnemo/mnemo/
-  # expected: 0.7.2 (plus maybe 0.6.1 legacy — that one can be deleted once confirmed working)
+  # expected: 0.7.4 (older 0.7.x dirs can be deleted once confirmed working)
   ```
 - **claude-mem plugin installed** (for Step 0 of `/mn:health` — the sanity check)
 
@@ -76,21 +84,22 @@ Try a recall-style query you know is in your vault:
 ### 4. `/mn:save` — claude-mem metadata enrichment
 
 ```
-/mn:save "Тестовая заметка: smoke test mnemo v0.7.3. Facade ping."
+/mn:save "Тестовая заметка: smoke test mnemo v0.7.4. Facade ping."
 ```
 
 **Expect:**
 - Skill classifies the input (fact/insight/decision/gotcha).
 - Creates Obsidian note via MCP (`mcp__obsidian__create`, not CLI).
-- POSTs to claude-mem at `127.0.0.1:37777` with metadata including:
-  - `claude_mem_version` (auto-detected: `12.3.9`)
-  - `obsidian_note` (the note filename)
-  - `obsidian_vault` (`main`)
+- POSTs to claude-mem at `127.0.0.1:37777` using the `text` key (NOT `content` — v12.3.9 API requirement).
+- `text` has a bracketed tail like `... [note: {name} | vault: main | cm: 12.3.9]` — provenance embedded because v12.3.9 silently drops `metadata.*` custom fields.
+- `metadata: {...}` block is still sent (forward-compat for when upstream fixes drop-silent).
 - Final report shows `Backends: Obsidian ✅, claude-mem ✅, memory/ ⏭` (or similar).
 
-**Verify metadata:** in a follow-up, search claude-mem for the test note and confirm the metadata fields are present.
+**Verify:** POST returns `{"success": true, "id": N}` — if it returns `{"error": "text is required..."}`, the `content` → `text` rename wasn't applied.
 
-**Red flag:** `claude_mem_version` is empty/missing → version detection broken.
+**Red flags:**
+- `text` still labeled `content` in the skill body → v0.7.4 fix didn't land, POST will 400.
+- `CM_VERSION` empty/missing → version detection broken; check `ls ~/.claude/plugins/cache/thedotmack/claude-mem/`.
 
 ### 5. `/mn:review` — prewarmed caches + progressive disclosure
 

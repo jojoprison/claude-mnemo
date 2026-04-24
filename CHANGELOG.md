@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.4] - 2026-04-24
+
+### Fixed — `/mn:save` POST body matches claude-mem v12.3.9 API
+
+**Bug caught during v0.7.3 smoke test (7/7 checks, observation #65284).** `plugins/mnemo/skills/memory-routing/SKILL.md` documented the claude-mem save payload as `{"content": "...", "metadata": {...}}`. claude-mem v12.3.9 renamed the body key to `text` and returns `{"error": "text is required and must be non-empty"}` for any POST that still sends `content`. Result: `/mn:save`'s claude-mem cascade step silently failed for every v12-era installation.
+
+- Changed the documented payload key from `content` → `text` in `Step 2: claude-mem` of the skill body.
+- Confirmed the fix end-to-end: POST with `text` returns `{"success": true, "id": 65284}` on v12.3.9 (observation #65284 is the smoke-test summary itself).
+
+### Documented — v12.3.9 drops custom `metadata.*` fields silently
+
+During the same smoke test we discovered that v12.3.9 accepts the `metadata: {...}` block on the save endpoint and returns `success: true`, but then **does not persist** the custom keys. Stored observation #65272 came back as `text: null, facts: [], concepts: [], project: "claude-mem"` — our `obsidian_note`, `obsidian_vault`, `claude_mem_version`, and `project: "claude-mnemo"` were dropped without error. The `project` column is forced to the calling plugin's project (`claude-mem`) rather than `metadata.project`.
+
+Until upstream (`thedotmack/claude-mem`) restores custom metadata persistence:
+
+- The skill now **embeds key provenance** (note name, vault, CM version) as a bracketed tail inside `text` itself — e.g. `"... [note: Atom — X | vault: main | cm: 12.3.9]"`. Full-text search still finds it.
+- The `metadata: {...}` block is kept in the POST anyway, so recovery is automatic once upstream fixes the drop-silent behavior.
+- Full explanation lives inline in the skill body next to the `curl` snippet.
+
+### Verified — v0.7.3 smoke test passed 7/7
+
+All seven checks from `TESTING.md` ran clean in a large opus-4-7[1m] session:
+
+| # | Skill | Result |
+|---|-------|--------|
+| 1 | `/mn:health` | Forked, Step 0 detected `claude-mem v12.3.9`, Step 5 instant grep |
+| 2 | `/mn:ask` | Inherit (no 429), parallel search (3 terms) + parallel read (3 notes), citations present |
+| 3 | `/mn:connect` | Single `grep -rlE` with OR'd concepts confirmed in SKILL.md (25x faster vs N obsidian searches) |
+| 4 | `/mn:save` | Obsidian MCP create ✅, claude-mem POST succeeded → uncovered the two bugs fixed above |
+| 5 | `/mn:review` | Preprocessed data + explicit `cat triggers-*.md` progressive disclosure |
+| 6 | `/mn:sort` | Forked, bulk mode (0 per-note prompts), inbox → Atom + MOC |
+| 7 | `/mn:setup` | `md5` of `Meta — Session Handoff.md` identical before/after — idempotent |
+
+**Universal red flag `API Error: Extra usage is required for 1M context` never appeared** across 5 forked + 3 inherit skill invocations in a 1M-context session. The v0.7.3 hybrid routing is stable.
+
 ## [0.7.3] - 2026-04-24
 
 ### Fixed — Eliminate mid-session model switches that triggered "Extra usage required for 1M context" 429s

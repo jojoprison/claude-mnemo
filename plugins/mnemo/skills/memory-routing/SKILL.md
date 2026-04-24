@@ -91,10 +91,14 @@ Auto-detect the installed claude-mem version so observations carry provenance (u
 ```bash
 CM_VERSION=$(ls -1 ~/.claude/plugins/cache/thedotmack/claude-mem/ 2>/dev/null | sort -V | tail -1)
 
+# Build the observation text with embedded provenance (see "v12.3.9 gotcha" below).
+SUMMARY="{one-line summary of what was saved}"
+TEXT="${SUMMARY} [note: {note name if created} | vault: {vault} | cm: ${CM_VERSION:-unknown}]"
+
 curl -s -X POST http://{claude_mem_url}/api/memory/save \
   -H "Content-Type: application/json" \
   -d "{
-    \"content\": \"{one-line summary of what was saved}\",
+    \"text\": \"${TEXT}\",
     \"metadata\": {
       \"type\": \"{type}\",
       \"project\": \"{current project or 'general'}\",
@@ -105,7 +109,13 @@ curl -s -X POST http://{claude_mem_url}/api/memory/save \
   }"
 ```
 
-**Why `obsidian_note` + `obsidian_vault`:** lets `claude-mem search` results link back to the full Obsidian note. Future `/mn:ask --deep` can show the user a direct wikilink alongside the observation.
+**API field name (v12.3.9):** the request body key is `text`, not `content`. Earlier versions accepted `content`; as of v12.3.9 the API returns `{"error": "text is required and must be non-empty"}` if you send `content`. Confirmed during v0.7.3 smoke test — verified in claude-mem source.
+
+**v12.3.9 metadata gotcha — custom fields are dropped silently.** POST returns `{"success": true, "id": ...}` but the stored observation only persists `text` + API-generated fields (`type`, `title`, `narrative`, `facts`, `concepts`, `content_hash`, `created_at`, ...). Custom `metadata.*` entries (including `project`, `obsidian_note`, `obsidian_vault`, `claude_mem_version`) are **not** retrievable from the observation record. The `project` field on the stored record is forced to the calling plugin's project (`claude-mem`), not `metadata.project`.
+
+**Workaround (used above):** embed the key provenance fields (note name, vault, CM version) directly into `text` as a bracketed tail. Losing structured filtering hurts less than losing the data entirely — full-text search still finds the provenance. Keep the `metadata: {...}` block in the POST anyway so recovery is automatic once upstream fixes drop-silent behavior. Track upstream: [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem/issues) — search for `metadata` / `project override`.
+
+**Why `obsidian_note` + `obsidian_vault`:** once upstream restores metadata persistence, `claude-mem search` results can link back to the full Obsidian note. Future `/mn:ask --deep` will show a direct wikilink alongside the observation.
 
 **Why `claude_mem_version`:** v11.0.1 disabled semantic-inject by default, v12.0.0 introduced the file-read gate. Tagging observations by version lets retrieval logic filter legacy entries when needed.
 
