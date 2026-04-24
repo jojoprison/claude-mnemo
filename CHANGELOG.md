@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.2] - 2026-04-24
+
+### Changed — `/mn:connect` switches to single grep for all concepts
+
+Step 3 used to run N parallel `obsidian search` calls, one per extracted concept — still 180ms per call minimum. Replaced with one `grep -rlE "({c1}|{c2}|...|{cN})"` against the vault's filesystem path. Single filesystem walk = ~50ms regardless of concept count.
+
+**Measured on 7 concepts: 1.26s → 50ms (25x faster).** Backlinks check still runs in parallel with the grep.
+
+### Changed — `/mn:health` Steps 1-4 run in parallel
+
+Orphans, unresolved links, tags, and files count are independent CLI queries. Documented them as parallel (single assistant message, 4 Bash tool uses). 720ms → 180ms.
+
+### Added — SessionStart prewarm hook
+
+`plugins/mnemo/hooks/prewarm.sh` runs async on SessionStart (`startup` and `resume` matchers) and warms `/tmp` caches for `session-scan.py` + `skills-discover.py`. **First** `/mn:review` in a session is now as fast as a cached rerun — no more 10s wait on the initial invocation.
+
+Hook is async + non-blocking + fails silently — doesn't slow down session boot even if scripts are unavailable.
+
+### Performance (cumulative since v0.5.10)
+
+| Command | v0.5.10 | v0.6.2 | Speedup |
+|---------|---------|--------|---------|
+| `/mn:health` | ~8s | ~1s | 8x |
+| `/mn:ask` | ~6s | ~2s | 3x |
+| `/mn:connect` | ~7s | ~0.8s | **8.7x** |
+| `/mn:save` | ~5s | ~1.5s | 3.3x |
+| `/mn:session` | ~5s | ~2.5s | 2x |
+| `/mn:review` first run | ~10s | ~3s (prewarmed) | 3.3x |
+
 ## [0.6.1] - 2026-04-24
 
 ### Changed — Model tier correction based on public benchmarks

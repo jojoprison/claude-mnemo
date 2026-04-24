@@ -22,6 +22,8 @@ Required fields: `vault`, `taxonomy`, `links_section`.
 
 ## Workflow
 
+**Steps 1-4 run in parallel** — single assistant message with 4 Bash tool uses. These are independent CLI queries against the same indexed vault, ~180ms each → 180ms total vs 720ms sequential.
+
 ### Step 1: Orphan Detection
 
 ```bash
