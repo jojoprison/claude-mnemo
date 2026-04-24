@@ -2,8 +2,7 @@
 name: link-discovery
 description: "Use after creating a new Obsidian note to discover hidden connections with existing notes. Shows suggestions, does NOT auto-apply. Invoke with note name as argument."
 user-invocable: false
-context: fork
-model: opus
+model: haiku
 ---
 
 # mnemo:connect — Discover Hidden Links
@@ -37,31 +36,26 @@ Extract:
 - Existing `[[wikilinks]]`
 - Existing links in `{links_section}` section
 
-### Step 3: Search for Related Notes
+### Step 3: Search for Related Notes + Backlinks (parallel)
 
-For each key concept (max 7):
-
-```bash
-obsidian search query="{concept}" vault="{vault}"
-```
-
-Collect all matching notes. Exclude the target note itself.
-
-### Step 4: Check Existing Backlinks
+**Run all concept searches AND backlinks check in parallel** — single assistant message with N+1 Bash tool uses. ~180ms total instead of ~1.4s sequential for 7 concepts + backlinks.
 
 ```bash
+obsidian search query="{concept_1}" vault="{vault}"
+obsidian search query="{concept_2}" vault="{vault}"
+...
 obsidian backlinks file="{note_name}" vault="{vault}"
 ```
 
-These are already connected — exclude from suggestions.
+Collect all matching notes from searches. Exclude the target note itself. Backlinks output → notes already connected (exclude from suggestions).
 
-### Step 5: Generate Suggestions
+### Step 4: Generate Suggestions
 
 Compare: notes found by search MINUS notes already linked (wikilinks + backlinks).
 
 For each suggestion, explain WHY it's relevant (shared concept, shared tag, complementary topics).
 
-### Step 6: Present (DO NOT auto-apply)
+### Step 5: Present (DO NOT auto-apply)
 
 ```
 🔗 Connection suggestions for "{note_name}"
@@ -82,7 +76,7 @@ New suggestions: {N}
 Apply these? (y/N, or pick numbers: 1,3)
 ```
 
-### Step 7: Apply on Confirmation
+### Step 6: Apply on Confirmation
 
 If user confirms:
 1. Add new `[[wikilinks]]` to `{links_section}` section via **`mcp__obsidian__str_replace`** (preferred — targeted insert into the links section). CLI `obsidian append content="- [[name]]"` is a safe fallback only for plain wikilinks (no backticks, no `$()`)

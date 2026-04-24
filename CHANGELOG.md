@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2026-04-24
+
+### Changed — Tiered model selection (~60% latency reduction on common ops)
+
+Every skill declared `model: opus` in v0.5.x. Opus is the slowest tier and overkill for index lookups and fixed-workflow classification. Retuned:
+
+| Skill | Before | After | Rationale |
+|-------|--------|-------|-----------|
+| `/mn:health` | opus | **haiku** | Deterministic CLI outputs → formatted report, no synthesis |
+| `/mn:connect` | opus | **haiku** | Mechanical search + backlinks diff, no judgment calls |
+| `/mn:sort` | opus | **haiku** | Rule-based classification against a fixed taxonomy |
+| `/mn:setup` | opus | **haiku** | Interactive Q&A, one-time |
+| `/mn:ask` | opus | **sonnet** | Light synthesis from N notes — Sonnet 4.6 is plenty |
+| `/mn:save` | opus | **sonnet** | Classify + cascade to 4 backends |
+| `/mn:session` | opus | **sonnet** | Summarize + MCP write + handoff update |
+| `/mn:review` | opus | **opus** (kept) | Session-completeness analysis + skill-gap reasoning genuinely needs Opus |
+
+### Changed — No more `context: fork` on index-only skills
+
+`context: fork` spins up a fresh Claude session with a cold cache. Kept only on skills that process large vault context (`/mn:save`, `/mn:session`, `/mn:review` stays default). Removed from `/mn:ask`, `/mn:connect`, `/mn:health`, `/mn:sort`, `/mn:setup` — they reuse the current session's warm cache.
+
+### Changed — Parallel CLI invocations
+
+Three skills previously made sequential `obsidian` calls. Now documented as parallel (single assistant message, multiple Bash tool uses):
+
+- **`/mn:ask`** Step 3 — all search terms in parallel (4×180ms → 180ms)
+- **`/mn:ask`** Step 4 — read top-7 notes in parallel (7×185ms → 185ms)
+- **`/mn:session`** Step 2 — exact-filename read + same-day search in parallel
+- **`/mn:connect`** Step 3 — all concept searches + backlinks check in parallel (8×180ms → 180ms)
+
+### Changed — `/mn:review` inline Python extracted
+
+`session-review/SKILL.md` dropped from 387 to ~250 lines. The two inline Python heredocs (session JSONL scan + skill auto-discovery) moved to `plugins/mnemo/scripts/session-scan.py` and `skills-discover.py`. Each script now caches results to `/tmp/` (60s for session scan, 300s for skills inventory) — `/mn:review` reruns during the same session are instant instead of re-parsing the JSONL every time.
+
+### Performance
+
+Combined effect on a warm Claude Code instance:
+
+| Operation | Before | After |
+|-----------|--------|-------|
+| `/mn:health` (400-note vault) | ~8s | ~3s |
+| `/mn:ask` broad query | ~6s | ~2s |
+| `/mn:connect` | ~7s | ~2.5s |
+| `/mn:session` | ~5s | ~2.5s |
+| `/mn:review` (rerun) | ~10s | ~3s (cached scan) |
+
 ## [0.5.10] - 2026-04-21
 
 ### Security

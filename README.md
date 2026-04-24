@@ -38,9 +38,24 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, conversation history, and codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
+### What's New in v0.6
+
+**Performance tuning — everything feels snappier.** Index ops dropped to Haiku 4.5, synthesis stays on Sonnet 4.6, Opus only for genuine reasoning (`/mn:review`). Skills that only touch indexed CLI output no longer spin up a forked session with a cold cache. CLI calls that used to run sequentially are now documented as parallel batches — `/mn:ask` reading 7 notes went from ~1.3s to ~185ms.
+
+Typical wins on a warm instance:
+
+| Command | Before | After |
+|---------|--------|-------|
+| `/mn:health` | ~8s | ~3s |
+| `/mn:ask` | ~6s | ~2s |
+| `/mn:connect` | ~7s | ~2.5s |
+| `/mn:review` rerun | ~10s | ~3s (cached scan) |
+
+**`/mn:review` internals cleaned up.** The two inline Python heredocs (session JSONL scan + skill auto-discovery) now live in `plugins/mnemo/scripts/` with 60s/300s `/tmp` caches — repeated reviews in the same session are effectively instant.
+
 ### What's New in v0.5
 
-**`/mn:review`** is now your **end-of-session orchestrator**. Just run it and it handles everything:
+**`/mn:review`** is your **end-of-session orchestrator**. Just run it and it handles everything:
 - **Auto-saves** unsaved decisions and findings to Obsidian + claude-mem + memory/
 - **Auto-creates** session notes with handoff for the next session
 - Parses your session's JSONL file to know exactly which tools and skills were used
@@ -292,9 +307,24 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 
 Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию, `/mn:session` знает что ты делал, потому что был рядом.
 
+### Что нового в v0.6
+
+**Перформанс — всё ощутимо быстрее.** Индексные операции перевели на Haiku 4.5, синтез остался на Sonnet 4.6, Opus — только там, где реально нужно рассуждение (`/mn:review`). Скиллы, которые дёргают только индексированный CLI-вывод, больше не создают форк-сессию с холодным кешем. CLI-вызовы, которые раньше шли последовательно, теперь идут batch'ами параллельно — `/mn:ask` с чтением 7 заметок стал ~185ms вместо ~1.3s.
+
+Типичный выигрыш на прогретом инстансе:
+
+| Команда | Было | Стало |
+|---------|------|-------|
+| `/mn:health` | ~8с | ~3с |
+| `/mn:ask` | ~6с | ~2с |
+| `/mn:connect` | ~7с | ~2.5с |
+| `/mn:review` повтор | ~10с | ~3с (кеш) |
+
+**Внутренности `/mn:review` почистили.** Два inline-Python heredoc (скан JSONL + автодискавери скиллов) переехали в `plugins/mnemo/scripts/` с кешем 60с/300с в `/tmp` — повторные ревью в одной сессии почти мгновенны.
+
 ### Что нового в v0.5
 
-**`/mn:review`** — теперь **оркестратор конца сессии**. Одна команда — и всё:
+**`/mn:review`** — **оркестратор конца сессии**. Одна команда — и всё:
 - **Автосохранение** решений и находок в Obsidian + claude-mem + memory/
 - **Автосоздание** session notes с handoff для следующей сессии
 - Парсит JSONL — знает какие инструменты и скиллы были вызваны
@@ -433,9 +463,24 @@ cp config.example.json ~/.mnemo/config.json
 
 Obsidian 插件在 Obsidian 内部运行。mnemo 在 **Claude Code** 内部运行——它可以访问你的整个开发上下文、对话历史和代码库。当你结束一个 3 小时的调试会话时，`/mn:session` 知道你做了什么，因为它全程在场。
 
+### v0.6 新特性
+
+**性能调优——一切都更快了。** 索引操作降级到 Haiku 4.5，综合任务留在 Sonnet 4.6，只有真正需要推理的地方（`/mn:review`）才使用 Opus。只处理索引化 CLI 输出的技能不再启动冷缓存的 fork 会话。以前顺序执行的 CLI 调用现在以批量方式并行——`/mn:ask` 读取 7 条笔记从约 1.3 秒降到 ~185ms。
+
+预热实例下的典型提升：
+
+| 命令 | 之前 | 之后 |
+|------|------|------|
+| `/mn:health` | ~8秒 | ~3秒 |
+| `/mn:ask` | ~6秒 | ~2秒 |
+| `/mn:connect` | ~7秒 | ~2.5秒 |
+| `/mn:review` 重跑 | ~10秒 | ~3秒 (缓存) |
+
+**`/mn:review` 内部清理。** 两个内联 Python heredoc（JSONL 扫描 + 技能自动发现）移到 `plugins/mnemo/scripts/`，配合 `/tmp` 60 秒/300 秒缓存——同一会话内重复审查几乎瞬时完成。
+
 ### v0.5 新特性
 
-**`/mn:review`** 现在是**会话结束编排器**。一个命令搞定一切：
+**`/mn:review`** 是**会话结束编排器**。一个命令搞定一切：
 - **自动保存**未持久化的决策和发现到 Obsidian + claude-mem + memory/
 - **自动创建**会话笔记和交接文件
 - 解析 JSONL 文件，精确知道使用了哪些工具和技能

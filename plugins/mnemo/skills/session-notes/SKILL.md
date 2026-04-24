@@ -2,8 +2,7 @@
 name: session-notes
 description: "Use after completing significant work to write session summary to Obsidian. Triggers after major tasks (features, fixes, research) or manually via /mnemo:session."
 user-invocable: false
-context: fork
-model: opus
+model: sonnet
 ---
 
 # mnemo:session — Session Notes to Obsidian
@@ -46,7 +45,9 @@ Analyze the conversation: what was done, key decisions, commits/PRs created, fin
 
 Derive a **planned filename**: `{session_prefix}{YYYY-MM-DD} {short descriptive topic}`. Topic should be specific enough to disambiguate from other sessions the same day (include PR number, Linear ticket, branch name, or primary keyword).
 
-### Step 2: Duplicate Check (two-level)
+### Step 2: Duplicate Check (two-level, parallel)
+
+**Run Level 1 and Level 2 in parallel — single assistant message with two Bash tool uses.** ~185ms total instead of ~370ms sequential.
 
 **Level 1 — exact filename:**
 

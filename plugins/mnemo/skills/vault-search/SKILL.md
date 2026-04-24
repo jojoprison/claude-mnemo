@@ -2,8 +2,7 @@
 name: vault-search
 description: "Use when searching for information across the Obsidian vault — 'what did we decide about X', 'find everything about Y', 'summarize what we know about Z'. Synthesizes answers from multiple notes with source citations."
 user-invocable: false
-context: fork
-model: opus
+model: sonnet
 ---
 
 # mnemo:ask — Vault Knowledge Search & Synthesis
@@ -31,22 +30,27 @@ If no argument, ask: "What would you like to find in your vault?"
 Break query into 2-4 key search terms. Example:
 - "what did we decide about pricing strategy?" → ["pricing", "strategy", "decision"]
 
-### Step 3: Search Vault
+### Step 3: Search Vault (parallel)
 
-For each search term:
+**Run all searches in parallel — single assistant message with multiple Bash tool uses.** For 4 terms this takes ~180ms total instead of ~720ms sequential.
 
 ```bash
-obsidian search query="{term}" vault="{vault}"
+obsidian search query="{term1}" vault="{vault}"
+obsidian search query="{term2}" vault="{vault}"
+obsidian search query="{term3}" vault="{vault}"
+obsidian search query="{term4}" vault="{vault}"
 ```
 
 Collect all unique matching notes. Deduplicate.
 
-### Step 4: Read Top Results
+### Step 4: Read Top Results (parallel)
 
-Read the most relevant notes (max 7):
+Read the most relevant notes (max 7) **in parallel — single message with multiple Bash tool uses.** ~185ms vs ~1.3s sequential for 7 notes.
 
 ```bash
-obsidian read file="{note_name}" vault="{vault}"
+obsidian read file="{note_name_1}" vault="{vault}"
+obsidian read file="{note_name_2}" vault="{vault}"
+...
 ```
 
 ### Step 5: Synthesize Answer

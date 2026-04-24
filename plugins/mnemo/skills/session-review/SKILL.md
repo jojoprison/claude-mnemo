@@ -2,6 +2,7 @@
 name: session-review
 description: "End-of-session orchestrator. Auto-saves decisions (mnemo:memory-routing) and creates session notes (mnemo:session-notes) without asking. Then recommends remaining skills. Triggers on: 'что забыли', 'session review', 'что осталось', 'all done?', 'review', end of significant work. The ONLY command users need at session end — handles everything."
 user-invocable: false
+model: opus
 ---
 
 # mnemo:review — Skill-Aware Session Completeness Analyzer
@@ -20,137 +21,11 @@ You are performing a thorough end-of-session review. Analyze everything: what wa
 
 ### Tools & Skills Used This Session
 
-!`python3 << 'PYEOF'
-import json, sys, os, glob
-
-session_id = '${CLAUDE_SESSION_ID}'
-if not session_id or '${' in session_id:
-    print('SESSION_ID: not available')
-    sys.exit(0)
-
-home = os.path.expanduser('~')
-jsonl_path = None
-for d in glob.glob(os.path.join(home, '.claude/projects/*/')):
-    candidate = os.path.join(d, session_id + '.jsonl')
-    if os.path.exists(candidate):
-        jsonl_path = candidate
-        break
-
-if not jsonl_path:
-    print('JSONL: not found — use conversation context for analysis')
-    sys.exit(0)
-
-tools = {}
-skills = []
-commits = 0
-files_written = set()
-errors = 0
-
-with open(jsonl_path) as f:
-    for line in f:
-        try:
-            msg = json.loads(line)
-            content = msg.get('message', {}).get('content', [])
-            if not isinstance(content, list):
-                continue
-            for block in content:
-                if not isinstance(block, dict):
-                    continue
-                if block.get('type') == 'tool_use':
-                    name = block.get('name', '')
-                    tools[name] = tools.get(name, 0) + 1
-                    inp = block.get('input', {})
-                    if name == 'Skill':
-                        s = inp.get('skill', '')
-                        if s:
-                            skills.append(s)
-                    elif name in ('Write', 'Edit'):
-                        fp = inp.get('file_path', '')
-                        if fp:
-                            files_written.add(fp)
-                    elif name == 'Bash':
-                        cmd = inp.get('command', '')
-                        if 'git commit' in cmd:
-                            commits += 1
-                elif block.get('type') == 'tool_result' and block.get('is_error'):
-                    errors += 1
-        except:
-            continue
-
-print(f'TOTAL_TOOL_CALLS: {sum(tools.values())}')
-for t, c in sorted(tools.items(), key=lambda x: -x[1])[:20]:
-    print(f'  {t}: {c}')
-print(f'\nSKILLS_INVOKED: {", ".join(skills) if skills else "none"}')
-print(f'FILES_MODIFIED: {len(files_written)}')
-if files_written:
-    exts = {}
-    for fp in files_written:
-        ext = os.path.splitext(fp)[1] or 'no-ext'
-        exts[ext] = exts.get(ext, 0) + 1
-    print(f'  Extensions: {", ".join(f"{e}({c})" for e, c in sorted(exts.items(), key=lambda x: -x[1]))}')
-    for fp in sorted(files_written)[:15]:
-        print(f'  {fp}')
-print(f'COMMITS: {commits}')
-print(f'ERRORS_SEEN: {errors}')
-PYEOF
-`
+!`CLAUDE_SESSION_ID='${CLAUDE_SESSION_ID}' bash -c 'for p in "${CLAUDE_PLUGIN_ROOT}/scripts/session-scan.py" "${CLAUDE_PLUGIN_ROOT}/plugins/mnemo/scripts/session-scan.py" "$HOME/.claude/plugins/cache/jojoprison/claude-mnemo/"*"/plugins/mnemo/scripts/session-scan.py" "./plugins/mnemo/scripts/session-scan.py"; do [ -f "$p" ] && exec python3 "$p"; done; echo "SESSION_ID: script unavailable"'`
 
 ### All Available Skills (Auto-Discovered)
 
-!`python3 << 'PYEOF'
-import os, glob, re
-
-home = os.path.expanduser('~')
-skills = []
-seen = set()
-
-patterns = [
-    os.path.join(home, '.claude/skills/*/SKILL.md'),
-    os.path.join(home, '.claude/plugins/*/skills/*/SKILL.md'),
-    os.path.join(home, '.claude/plugins/cache/*/*/*/skills/*/SKILL.md'),
-    os.path.join(home, '.claude/plugins/marketplaces/*/plugins/*/skills/*/SKILL.md'),
-    '.claude/skills/*/SKILL.md',
-    'plugins/*/skills/*/SKILL.md',
-]
-
-for pat in patterns:
-    for path in glob.glob(pat):
-        if path in seen:
-            continue
-        seen.add(path)
-        try:
-            with open(path) as f:
-                head = f.read(600)
-            name_m = re.search(r'^name:\s*["\']?(.+?)["\']?\s*$', head, re.M)
-            desc_m = re.search(r'^description:\s*["\']?(.+?)["\']?\s*$', head, re.M)
-            if not name_m:
-                continue
-            name = name_m.group(1).strip()
-            desc = desc_m.group(1).strip()[:100] if desc_m else ''
-
-            parts = path.replace(home, '~').split('/')
-            plugin = ''
-            if 'plugins' in parts:
-                idx = parts.index('plugins')
-                candidate = parts[idx + 1] if idx + 1 < len(parts) else ''
-                if candidate == 'marketplaces' and idx + 3 < len(parts):
-                    plugin = parts[idx + 3]
-                else:
-                    plugin = candidate
-
-            qualified = f'{plugin}:{name}' if plugin else name
-            if qualified not in seen:
-                seen.add(qualified)
-                skills.append(f'{qualified} — {desc}')
-        except:
-            continue
-
-skills.sort()
-for s in skills:
-    print(s)
-print(f'\nTOTAL_SKILLS: {len(skills)}')
-PYEOF
-`
+!`bash -c 'for p in "${CLAUDE_PLUGIN_ROOT}/scripts/skills-discover.py" "${CLAUDE_PLUGIN_ROOT}/plugins/mnemo/scripts/skills-discover.py" "$HOME/.claude/plugins/cache/jojoprison/claude-mnemo/"*"/plugins/mnemo/scripts/skills-discover.py" "./plugins/mnemo/scripts/skills-discover.py"; do [ -f "$p" ] && exec python3 "$p"; done; echo "TOTAL_SKILLS: discover unavailable"'`
 
 $ARGUMENTS
 
