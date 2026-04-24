@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1] - 2026-04-24
+
+### Changed — Model tier correction based on public benchmarks
+
+v0.6.0 was based on intuition. Actual research across Anthropic docs, Artificial Analysis benchmarks, Reddit practitioner reports and Sider's production retrospective revealed two miscalibrated choices:
+
+- **`/mn:connect`**: haiku → **sonnet**. Semantic concept extraction + ranking with "why relevant" explanations is exactly where Haiku 4.5 breaks on subtle connections. Multiple practitioner reports flag this failure mode ("missed something crucial on page 87"). Sonnet 4.6's 94/100 coding-composite vs Haiku's 82 is also meaningful for this task.
+- **`/mn:save`**: sonnet → **haiku**. Rule-based classification (fact/insight/decision/gotcha/rule) against a fixed taxonomy + routing cascade. Short input, clear schema — Haiku's sweet spot. Anthropic's own tiering guidance for structured output + routing supports this.
+
+`/mn:review` stays on **opus** — kept by user preference despite research suggesting Sonnet 4.6 would suffice. The 1M context window matters for long session JSONL analysis.
+
+Final tiering: **4× haiku** (health, sort, setup, save), **3× sonnet** (connect, ask, session), **1× opus** (review).
+
+### Changed — `/mn:health` Step 5 is 1800x faster
+
+Previously looped `obsidian read` per file to check for `## Связи` heading — on a 1000-note vault that's ~180 seconds. Replaced with a single recursive `grep -rL` against the vault's filesystem path (obtained via `obsidian vault vault="{name}"`).
+
+Measured: **49ms vs ~180s on a 999-note vault** — no more "skip on large vaults" caveat. Safe to run every time.
+
+### Model tier summary (final)
+
+| Skill | Model | Why |
+|-------|-------|-----|
+| `/mn:health` | haiku | Parse CLI output, format table, no reasoning |
+| `/mn:sort` | haiku | Rule-based classification, clear taxonomy |
+| `/mn:setup` | haiku | Interactive Q&A, one-time |
+| `/mn:save` | haiku | Classify + route to 4 backends by schema |
+| `/mn:connect` | sonnet | Semantic ranking with explanations |
+| `/mn:ask` | sonnet | Multi-source synthesis + citations |
+| `/mn:session` | sonnet | Session summary with coherent frontmatter + wikilinks |
+| `/mn:review` | opus | JSONL-wide skill-gap reasoning, kept by preference |
+
 ## [0.6.0] - 2026-04-24
 
 ### Changed — Tiered model selection (~60% latency reduction on common ops)

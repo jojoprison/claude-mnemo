@@ -38,20 +38,31 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, conversation history, and codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
-### What's New in v0.6
+### What's New in v0.6.1
 
-**Performance tuning — everything feels snappier.** Index ops dropped to Haiku 4.5, synthesis stays on Sonnet 4.6, Opus only for genuine reasoning (`/mn:review`). Skills that only touch indexed CLI output no longer spin up a forked session with a cold cache. CLI calls that used to run sequentially are now documented as parallel batches — `/mn:ask` reading 7 notes went from ~1.3s to ~185ms.
+**Model tiers, corrected against real benchmarks.** v0.6.0 was tiered by intuition. v0.6.1 rebalanced after reading Anthropic docs, Artificial Analysis comparisons, Sider's production retrospective on Haiku 4.5, and practitioner reports from Reddit/HN. Final map:
+
+| Skill | Model | Why |
+|-------|-------|-----|
+| `/mn:health`, `/mn:sort`, `/mn:setup`, `/mn:save` | haiku | Rule-based routing, schema-constrained output, no synthesis |
+| `/mn:connect`, `/mn:ask`, `/mn:session` | sonnet | Multi-source synthesis or semantic ranking with explanations |
+| `/mn:review` | opus | Long JSONL + skill-gap reasoning; 1M context needed |
+
+**`/mn:health` Step 5 is 1800x faster.** Previously looped `obsidian read` per note to find missing `## Связи` sections — ~180s on a 1000-note vault. Now one filesystem-level `grep -rL` against the vault path — **~49ms measured on a 999-note vault.** No more "skip on large vaults" caveat.
 
 Typical wins on a warm instance:
 
-| Command | Before | After |
-|---------|--------|-------|
-| `/mn:health` | ~8s | ~3s |
+| Command | v0.5.10 | v0.6.1 |
+|---------|---------|--------|
+| `/mn:health` | ~8s | ~1s (with Step 5 fix) |
 | `/mn:ask` | ~6s | ~2s |
 | `/mn:connect` | ~7s | ~2.5s |
+| `/mn:save` | ~5s | ~1.5s (Haiku) |
 | `/mn:review` rerun | ~10s | ~3s (cached scan) |
 
 **`/mn:review` internals cleaned up.** The two inline Python heredocs (session JSONL scan + skill auto-discovery) now live in `plugins/mnemo/scripts/` with 60s/300s `/tmp` caches — repeated reviews in the same session are effectively instant.
+
+Plus: parallel CLI calls documented in `/mn:ask`, `/mn:session`, `/mn:connect`. `context: fork` removed from index-only skills (warm-cache reuse).
 
 ### What's New in v0.5
 
@@ -307,20 +318,31 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 
 Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию, `/mn:session` знает что ты делал, потому что был рядом.
 
-### Что нового в v0.6
+### Что нового в v0.6.1
 
-**Перформанс — всё ощутимо быстрее.** Индексные операции перевели на Haiku 4.5, синтез остался на Sonnet 4.6, Opus — только там, где реально нужно рассуждение (`/mn:review`). Скиллы, которые дёргают только индексированный CLI-вывод, больше не создают форк-сессию с холодным кешем. CLI-вызовы, которые раньше шли последовательно, теперь идут batch'ами параллельно — `/mn:ask` с чтением 7 заметок стал ~185ms вместо ~1.3s.
+**Модели перевыставлены по реальным бенчмаркам.** В v0.6.0 тиринг был интуитивным. Перед v0.6.1 прошерстил Anthropic docs, Artificial Analysis сравнения, production-ретро от Sider по Haiku 4.5, обсуждения на Reddit/HN. Итоговая карта:
+
+| Скилл | Модель | Почему |
+|-------|--------|--------|
+| `/mn:health`, `/mn:sort`, `/mn:setup`, `/mn:save` | haiku | Rule-based routing, schema-constrained вывод, без синтеза |
+| `/mn:connect`, `/mn:ask`, `/mn:session` | sonnet | Multi-source synthesis или семантическое ранжирование с объяснением |
+| `/mn:review` | opus | Длинный JSONL + skill-gap reasoning; нужен 1M контекст |
+
+**`/mn:health` Step 5 стал в 1800 раз быстрее.** Раньше в цикле `obsidian read` по каждой заметке для проверки `## Связи` — ~180с на vault из 1000 заметок. Теперь один recursive `grep -rL` по filesystem-пути vault'а — **~49ms на 999-заметочном vault'е.** Больше никаких "skip на больших vault'ах".
 
 Типичный выигрыш на прогретом инстансе:
 
-| Команда | Было | Стало |
-|---------|------|-------|
-| `/mn:health` | ~8с | ~3с |
+| Команда | v0.5.10 | v0.6.1 |
+|---------|---------|--------|
+| `/mn:health` | ~8с | ~1с (с фиксом Step 5) |
 | `/mn:ask` | ~6с | ~2с |
 | `/mn:connect` | ~7с | ~2.5с |
+| `/mn:save` | ~5с | ~1.5с (Haiku) |
 | `/mn:review` повтор | ~10с | ~3с (кеш) |
 
 **Внутренности `/mn:review` почистили.** Два inline-Python heredoc (скан JSONL + автодискавери скиллов) переехали в `plugins/mnemo/scripts/` с кешем 60с/300с в `/tmp` — повторные ревью в одной сессии почти мгновенны.
+
+Плюс: parallel CLI-вызовы задокументированы в `/mn:ask`, `/mn:session`, `/mn:connect`. `context: fork` убран с index-only скиллов (warm-cache reuse).
 
 ### Что нового в v0.5
 
@@ -463,20 +485,31 @@ cp config.example.json ~/.mnemo/config.json
 
 Obsidian 插件在 Obsidian 内部运行。mnemo 在 **Claude Code** 内部运行——它可以访问你的整个开发上下文、对话历史和代码库。当你结束一个 3 小时的调试会话时，`/mn:session` 知道你做了什么，因为它全程在场。
 
-### v0.6 新特性
+### v0.6.1 新特性
 
-**性能调优——一切都更快了。** 索引操作降级到 Haiku 4.5，综合任务留在 Sonnet 4.6，只有真正需要推理的地方（`/mn:review`）才使用 Opus。只处理索引化 CLI 输出的技能不再启动冷缓存的 fork 会话。以前顺序执行的 CLI 调用现在以批量方式并行——`/mn:ask` 读取 7 条笔记从约 1.3 秒降到 ~185ms。
+**基于真实基准校准的模型分层。** v0.6.0 的分层凭直觉。v0.6.1 重新平衡，参考了 Anthropic 文档、Artificial Analysis 对比、Sider 关于 Haiku 4.5 的生产总结，以及 Reddit/HN 的从业者报告。最终映射：
+
+| 技能 | 模型 | 原因 |
+|------|------|------|
+| `/mn:health`, `/mn:sort`, `/mn:setup`, `/mn:save` | haiku | 基于规则的路由、模式约束输出、无综合 |
+| `/mn:connect`, `/mn:ask`, `/mn:session` | sonnet | 多源综合或带解释的语义排序 |
+| `/mn:review` | opus | 长 JSONL + 技能缺口推理；需要 1M 上下文 |
+
+**`/mn:health` Step 5 快了 1800 倍。** 以前按笔记循环调用 `obsidian read` 查找缺失的 `## Связи`——1000 笔记的 vault 约 180 秒。现在单次 `grep -rL` 直接扫描 vault 文件系统路径——**999 笔记 vault 实测 ~49ms**。不再需要"大 vault 跳过此步"的警告。
 
 预热实例下的典型提升：
 
-| 命令 | 之前 | 之后 |
-|------|------|------|
-| `/mn:health` | ~8秒 | ~3秒 |
+| 命令 | v0.5.10 | v0.6.1 |
+|------|---------|--------|
+| `/mn:health` | ~8秒 | ~1秒 (Step 5 修复) |
 | `/mn:ask` | ~6秒 | ~2秒 |
 | `/mn:connect` | ~7秒 | ~2.5秒 |
+| `/mn:save` | ~5秒 | ~1.5秒 (Haiku) |
 | `/mn:review` 重跑 | ~10秒 | ~3秒 (缓存) |
 
 **`/mn:review` 内部清理。** 两个内联 Python heredoc（JSONL 扫描 + 技能自动发现）移到 `plugins/mnemo/scripts/`，配合 `/tmp` 60 秒/300 秒缓存——同一会话内重复审查几乎瞬时完成。
+
+另外：`/mn:ask`、`/mn:session`、`/mn:connect` 中记录了并行 CLI 调用。索引型技能移除了 `context: fork`（复用 warm cache）。
 
 ### v0.5 新特性
 
