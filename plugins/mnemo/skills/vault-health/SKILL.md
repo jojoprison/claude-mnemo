@@ -1,6 +1,6 @@
 ---
 name: vault-health
-description: "Use when checking Obsidian vault health, finding orphans, broken links, or getting vault statistics. Invoke weekly, after mass note creation, or when asked about vault state."
+description: "Use whenever the user mentions vault maintenance, orphans, broken links, 'is my vault clean', 'проверь vault', or asks for vault statistics. Also invoke proactively after creating 3+ notes in one session, weekly, or after mass note creation — the longer between checks, the more invisible orphans accumulate."
 user-invocable: false
 model: haiku
 ---
@@ -9,16 +9,9 @@ model: haiku
 
 Run a comprehensive health check on the Obsidian vault: orphans, broken links, missing sections, stale notes, and growth statistics.
 
-## Prerequisites
+## Prerequisites & config
 
-- **Obsidian must be open** — CLI works through app indexes
-- **Obsidian CLI installed** — `obsidian` command available in PATH
-
-## Config
-
-Read from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user for vault name and save.
-
-Required fields: `vault`, `taxonomy`, `links_section`.
+Obsidian must be open; `obsidian` CLI on PATH. Config at `~/.mnemo/config.json` (required fields: `vault`, `taxonomy`, `links_section`) — schema in `references/config-schema.md`.
 
 ## Workflow
 
@@ -26,17 +19,18 @@ Required fields: `vault`, `taxonomy`, `links_section`.
 
 ### Step 0: claude-mem Sanity Check (optional, ~20ms)
 
-If claude-mem plugin is installed (`~/.claude/plugins/cache/thedotmack/claude-mem/`), surface two things at the top of the health report — users often miss these:
+Surface two common gotchas if claude-mem plugin is installed — users often miss them silently:
 
 ```bash
-ls -1 ~/.claude/plugins/cache/thedotmack/claude-mem/ 2>/dev/null
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-cm-version.sh"
+# Or from source: plugins/mnemo/scripts/check-cm-version.sh
 ```
 
-- **Multiple version folders** (e.g. `10.5.2` + `12.3.9`) → warn: "claude-mem has stale cache. Restart all Claude windows to pick up the latest — old Stop hooks point to a path that no longer exists."
-- **Major version < 12** → warn: "claude-mem v{N} is behind v12 — you're missing file-read gate, tier routing, and knowledge agents. Run `/plugin update claude-mem`."
-- Multiple folders is the common symptom (cache isn't cleaned up by `/plugin update`).
+Script emits three lines: `version: X`, `stale: N`, `path: ...`. Interpret:
 
-Skip this step entirely if the claude-mem directory doesn't exist.
+- `stale > 0` → warn: "claude-mem has {stale} old version folder(s) cached. Restart all Claude windows — old Stop hooks point to a path that no longer exists."
+- `version < 12` → warn: "claude-mem v{version} is behind v12 — you're missing file-read gate, tier routing, and knowledge agents. Run `/plugin update claude-mem`."
+- Empty path → claude-mem not installed. Skip the section entirely.
 
 ### Step 1: Orphan Detection
 
@@ -80,20 +74,19 @@ obsidian files ext=md vault="{vault}" total
 
 ### Step 5: Missing Links Section (batched grep — 1800x faster)
 
-**Do NOT loop `obsidian read` per file** — on a 1000-note vault that's ~180s (1000 × 180ms). Use a single filesystem-level grep against the vault directory. Get vault path from `obsidian vault vault="{name}"` (tab-separated, path is column 2 of the `path` line).
+**Do NOT loop `obsidian read` per file** — on a 1000-note vault that's ~180s. Use a single filesystem grep against the vault directory.
 
 ```bash
-# One call to get vault filesystem path
-VAULT_PATH=$(obsidian vault vault="{vault}" | awk '/^path\s/{print $2}')
+VAULT_PATH=$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/get-vault-path.sh" "{vault}")
 
-# Single recursive grep -L lists files NOT containing the links section heading.
+# Single recursive grep -L: files NOT containing the links section heading.
 # Filter to taxonomy-prefixed notes, exclude inbox.
 grep -rL --include="*.md" "{links_section}" "$VAULT_PATH" 2>/dev/null \
   | grep -E "(Atom|Molecule|Source|Session|MOC) — " \
   | grep -v "Inbox —"
 ```
 
-**Measured on 999-note vault: ~49ms vs ~180s serial** — 3600x speedup. Safe to run always, no need to skip on large vaults.
+**Measured on 999-note vault: ~49ms vs ~180s serial** — 3600x speedup. Safe to run always.
 
 Inbox notes are **exempt** via the `grep -v "Inbox —"` filter.
 
@@ -159,10 +152,10 @@ Skip the `⚠️ claude-mem` line entirely if Step 0 found nothing to warn about
 
 ## Gotchas
 
-- Obsidian must be open — CLI communicates through the running app
-- `obsidian orphans` may return empty on small vaults — this is OK, not an error
-- Reference notes (taxonomy docs, templates) are NOT orphans even if few backlinks
-- Ghost notes (unresolved wikilinks) are a FEATURE, not a bug — they enable entity discovery
-- Use CLI for everything, MCP only for str_replace/insert (70,000x cheaper)
-- Do NOT auto-fix anything — only report. User decides what to fix
-- Step 5 now uses filesystem grep, safe on any vault size (1800x faster than per-file reads)
+Common failures in `references/gotchas.md`. Skill-specific rules:
+
+- `obsidian orphans` may return empty on small vaults — this is OK, not an error.
+- Reference notes (taxonomy docs, templates) aren't orphans even if few backlinks — they're meant to be lookups.
+- Ghost notes (unresolved wikilinks) are a **feature**, not a bug — they enable entity discovery. Only flag if excessive (>200).
+- **Do not auto-fix anything** — only report. User decides what to clean up.
+- Step 5 uses filesystem grep (1800x faster than per-file reads) — safe on any vault size.

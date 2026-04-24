@@ -1,6 +1,6 @@
 ---
 name: session-notes
-description: "Use after completing significant work to write session summary to Obsidian. Triggers after major tasks (features, fixes, research) or manually via /mnemo:session."
+description: "Use whenever significant work wraps up — a feature shipped, a bug fixed, a research thread finished, before the user steps away. Also triggers on 'записать сессию', 'session note', 'save session'. Creates a human-readable summary in Obsidian plus a handoff update so the next session picks up where you left off."
 user-invocable: false
 model: sonnet
 ---
@@ -9,26 +9,11 @@ model: sonnet
 
 Create a human-readable session summary note in Obsidian after significant work.
 
-## Prerequisites
+## Prerequisites & config
 
-- **Obsidian must be open**
+Obsidian must be open. Config at `~/.mnemo/config.json` — reads `vault`, `taxonomy.session`, `links_section`, `handoff_note`. Schema in `references/config-schema.md`.
 
-## Config
-
-Read `vault`, `taxonomy.session`, `links_section`, and `handoff_note` from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user.
-
-## Tool Choice — MCP-first hybrid (IMPORTANT)
-
-**Never use `obsidian create content="..."` or `obsidian append content="..."` from Bash for markdown with code blocks.** zsh expands backticks and `$(...)` inside double-quoted strings — this already caused an accidental production deploy (incident 2026-04-21).
-
-| Operation | Tool | Why |
-|-----------|------|-----|
-| **Write** (create, str_replace, insert) | **MCP** (`mcp__obsidian__create`, `mcp__obsidian__str_replace`, `mcp__obsidian__insert`) | Shell-safe — content passes as JSON parameter, no expansion |
-| **Read** (read file, view) | **CLI** `obsidian read` | ~180 ms, indexed, safe (no content arg) |
-| **Search** (duplicates, related) | **CLI** `obsidian search` | Only CLI has this — indexed, fast |
-| **Orphans / backlinks / tags** | **CLI** `obsidian orphans` / `backlinks` | Only CLI has these |
-
-Rule of thumb: **any `content=` arg with markdown → MCP**. Everything else (read, search, index queries) → CLI.
+Tool-routing (MCP for writes, CLI for reads/search) in `references/tool-routing.md`. Frontmatter template in `assets/session-template.md`.
 
 ## When to Trigger
 
@@ -187,8 +172,8 @@ Output summary:
 
 ## Gotchas
 
-- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
-- **Obsidian must be open** — all tools (CLI + MCP) require running app
-- **MCP `create` signature**: `path` (not `name`), `file_text` (not `content`). Path is relative to vault root, include `.md` extension
-- **Always check duplicate before creating** — prevents clobbering same-day work
-- **`str_replace` requires exact match** — copy the anchor text verbatim from read output
+Common failures (IPC hung, shell injection) in `references/gotchas.md`. Skill-specific rules:
+
+- **MCP `create` signature**: `path` (not `name`), `file_text` (not `content`). Path is relative to vault root, include `.md` extension.
+- **Always check duplicate before creating** — prevents clobbering same-day work. Two-level check in Step 2.
+- **`str_replace` requires exact match** — copy the anchor text verbatim from read output, including whitespace.

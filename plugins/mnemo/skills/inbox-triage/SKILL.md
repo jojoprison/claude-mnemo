@@ -1,6 +1,6 @@
 ---
 name: inbox-triage
-description: "Use when inbox notes need classification — converts inbox captures into proper typed notes (atom, molecule, source, session). Invoke after mnemo:health shows inbox backlog, or manually."
+description: "Use whenever inbox notes need classification, the user says 'inbox cleanup', 'clean up my inbox', 'разгреби inbox', or after /mn:health flags a backlog. Converts inbox captures into proper typed notes (atom, molecule, source, session) with taxonomy tags and MOC links."
 user-invocable: false
 model: haiku
 ---
@@ -9,13 +9,9 @@ model: haiku
 
 Review unclassified inbox notes one by one and convert them to proper typed notes.
 
-## Prerequisites
+## Prerequisites & config
 
-- **Obsidian must be open**
-
-## Config
-
-Read `vault`, `taxonomy`, and `links_section` from `~/.mnemo/config.json`.
+Obsidian must be open. Config at `~/.mnemo/config.json` — reads `vault`, `taxonomy`, `links_section`. Schema in `references/config-schema.md`.
 
 ## Workflow
 
@@ -57,7 +53,9 @@ Actions:
 
 ### Step 3: Apply Classification
 
-On user confirmation:
+**Bulk mode:** if the user says "accept all" / "применить все" / "bulk", skip the per-note `[1-5]` prompt and apply the suggested classification for every remaining note. Still show a progress line per note ("3/7: Atom — X created") so the user can abort if something looks wrong.
+
+On user confirmation (per-note or bulk):
 
 1. Read the original inbox note content
 2. Delete the inbox note: `obsidian delete file="{old_name}" vault="{vault}"`
@@ -111,11 +109,11 @@ Remaining in inbox: 1
 
 ## Gotchas
 
-- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+Common failures in `references/gotchas.md`. Tool-routing (MCP for writes) in `references/tool-routing.md`. Skill-specific rules:
 
-- **One note at a time** — don't batch classify, user confirms each
-- **Preserve original date** — from inbox note frontmatter, not today's date
-- **Delete old inbox note** — don't leave duplicates
-- **Always add to MOC** — classified notes must not be orphans
-- **Suggest, don't force** — user picks final type, name, tags
-- **Clean up content** — fix typos, expand abbreviations, add context if the original note was terse
+- **One note at a time by default** — user confirms each. Bulk mode only on explicit request (see Step 3).
+- **Preserve original date** — from inbox note frontmatter, not today's date. The intent was captured when the inbox note was created.
+- **Delete old inbox note after reclassification** — otherwise you end up with duplicates (inbox + typed).
+- **Always add to MOC** — classified notes must not be orphans.
+- **Suggest, don't force** — user picks final type, name, tags. Your role is to propose, not to decide.
+- **Clean up content** — fix typos, expand abbreviations, add context if the original note was terse. The new note should be readable a month from now.

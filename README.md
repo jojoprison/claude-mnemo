@@ -38,6 +38,18 @@ You work → mnemo remembers → Your vault grows → You find things later
 
 Obsidian plugins run inside Obsidian. mnemo runs inside **Claude Code** — it has access to your entire development context, conversation history, and codebase. When you finish a 3-hour debugging session, `/mn:session` knows what you did because it was there.
 
+### What's New in v0.7.1
+
+**Polish release driven by a skill-creator audit.** Removed ~100 lines of duplicated gotchas/config/tool-routing prose across 7 SKILL.md files by extracting to `plugins/mnemo/references/`. Skills now load the reference only when needed (progressive disclosure). `session-review` alone dropped 262 → 222 lines by splitting its huge trigger matrix into per-session-type files.
+
+**Pushier descriptions** to stop Claude from under-triggering skills (this was a real concern flagged by skill-creator). Seven skills got Russian trigger phrases and proactive "use whenever" language.
+
+**Incremental session scan.** `session-scan.py` now reads only appended JSONL bytes since the last scan. First `/mn:review` on a 5000-line session: ~200ms → ~20ms parse.
+
+**`/mn:sort` bulk mode.** Say "accept all" to skip per-note confirmation.
+
+**`/mn:setup` idempotent handoff.** Re-running setup no longer clobbers an existing handoff note.
+
 ### What's New in v0.7.0
 
 **claude-mem v12.3.9 integration.** If you also run [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem), mnemo now talks to it:
@@ -333,6 +345,18 @@ PRs welcome. If you have a better prompt pattern, a new skill idea, or a taxonom
 
 Плагины Obsidian работают внутри Obsidian. mnemo работает внутри **Claude Code** — у него есть доступ ко всему контексту разработки, истории разговора и кодовой базе. Когда ты заканчиваешь 3-часовую сессию, `/mn:session` знает что ты делал, потому что был рядом.
 
+### Что нового в v0.7.1
+
+**Polish-релиз после skill-creator аудита.** Убрали ~100 строк дублированных gotcha/config/tool-routing блоков из 7 SKILL.md — вынесли в `plugins/mnemo/references/`. Skills теперь подгружают ref только когда нужно (progressive disclosure). `session-review` ужали с 262 → 222 строк, разбив огромную trigger matrix на файлы по типу сессии.
+
+**Более pushy descriptions** чтоб Claude не «забывал» вызывать skills (реальная проблема, на которую указал skill-creator). 7 skills получили русские триггер-фразы и proactive формулировки «use whenever».
+
+**Incremental session scan.** `session-scan.py` теперь читает только дозаписанные байты JSONL. Первый `/mn:review` на сессии 5000+ строк: ~200ms → ~20ms парсинга.
+
+**`/mn:sort` bulk mode.** Скажи «применить все» — и пропустит пер-note подтверждения.
+
+**`/mn:setup` идемпотентный handoff.** Повторный запуск setup больше не перезаписывает существующий handoff.
+
 ### Что нового в v0.7.0
 
 **Интеграция с claude-mem v12.3.9.** Если параллельно запущен [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem), mnemo теперь умеет с ним дружить:
@@ -514,6 +538,18 @@ cp config.example.json ~/.mnemo/config.json
 ### 为什么不用 Obsidian 插件？
 
 Obsidian 插件在 Obsidian 内部运行。mnemo 在 **Claude Code** 内部运行——它可以访问你的整个开发上下文、对话历史和代码库。当你结束一个 3 小时的调试会话时，`/mn:session` 知道你做了什么，因为它全程在场。
+
+### v0.7.1 新特性
+
+**skill-creator 审计驱动的 polish 版本。** 从 7 个 SKILL.md 中移除 ~100 行重复的 gotchas/config/tool-routing 描述，提取到 `plugins/mnemo/references/`。技能现在仅在需要时加载引用（progressive disclosure）。仅 `session-review` 就从 262 → 222 行，将庞大的 trigger matrix 拆分为按会话类型的文件。
+
+**更积极的 descriptions** 防止 Claude 欠触发技能（skill-creator 指出的真实问题）。7 个 skill 加入俄语触发短语和主动式 "use whenever" 表述。
+
+**增量会话扫描。** `session-scan.py` 现在只读取自上次扫描以来追加的 JSONL 字节。5000 行会话的首次 `/mn:review`：~200ms → ~20ms 解析时间。
+
+**`/mn:sort` 批量模式。** 说 "accept all" 即可跳过逐条确认。
+
+**`/mn:setup` 幂等 handoff。** 重新运行 setup 不再覆盖已有的 handoff 笔记。
 
 ### v0.7.0 新特性
 

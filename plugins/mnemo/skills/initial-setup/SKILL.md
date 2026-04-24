@@ -1,6 +1,6 @@
 ---
 name: initial-setup
-description: "Use on first install or when reconfiguring mnemo. Interactive onboarding that creates config.json with vault name, taxonomy, language preferences, and integration settings."
+description: "Use on first install, when reconfiguring mnemo, or when the user says 'setup mnemo', 'mnemo not configured', 'change vault', 'reset config', 'мнемо настрой'. Interactive onboarding that creates ~/.mnemo/config.json with vault name, taxonomy, language preferences, and cascade integration settings. Also invoked automatically when any other mnemo skill detects a missing config."
 user-invocable: false
 model: haiku
 ---
@@ -82,9 +82,15 @@ Write `~/.mnemo/config.json`:
 }
 ```
 
-### Step 6: Create Handoff Note
+### Step 6: Create Handoff Note (only if missing)
 
-Use **MCP** for shell-safety (handoff may accumulate markdown with code blocks over time):
+First check — skip this step entirely if the handoff note already exists:
+
+```bash
+obsidian read file="{handoff_note}" vault="{vault}" 2>/dev/null | head -1
+```
+
+If empty output, create via MCP (shell-safe for future edits that may contain code blocks — see `references/tool-routing.md`):
 
 ```
 mcp__obsidian__create(
@@ -105,8 +111,6 @@ Cross-session continuity file. Updated by mnemo:session.
 """
 )
 ```
-
-**Why MCP, not CLI:** handoff is edited repeatedly. As soon as it contains a code block with backticks, CLI `obsidian create/append content="..."` triggers zsh command substitution. MCP passes content as JSON parameter — always safe.
 
 ### Step 7: Done
 
@@ -130,7 +134,9 @@ Try: /mnemo:health
 
 ## Gotchas
 
-- **Run once** — if config.json exists, ask before overwriting
-- **Obsidian must be open** — verify during vault name step
-- **Don't create vault structure** — mnemo works with existing vaults, doesn't impose folders
-- **PARA taxonomy** — if selected, map to: project/area/resource/archive with appropriate prefixes
+Common failures in `references/gotchas.md`. Full config schema in `references/config-schema.md`. Skill-specific rules:
+
+- **Run once** — if `~/.mnemo/config.json` exists, show current values and ask before overwriting. User may just want to change one field, not rebuild everything.
+- **Verify Obsidian is open during vault name step** — the test `obsidian search query="test" vault={input}` fails-fast if the vault name is wrong or Obsidian isn't running.
+- **Don't create vault structure** — mnemo works with existing vaults. Do not create folders, templates, or sample notes. The user's vault is theirs.
+- **PARA taxonomy selection** — map to `project/area/resource/archive` prefixes. Custom taxonomy accepts any prefixes as long as each ends in a separator (` — `, `: `, `/`).

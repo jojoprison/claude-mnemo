@@ -1,6 +1,6 @@
 ---
 name: vault-search
-description: "Use when searching for information across the Obsidian vault — 'what did we decide about X', 'find everything about Y', 'summarize what we know about Z'. Synthesizes answers from multiple notes with source citations."
+description: "Use whenever the user wants to recall something from past work, find notes about a topic, or ask 'what did we decide about X', 'find everything about Y', 'summarize what we know about Z', 'что мы решили', 'что мы знаем про'. Prefer this over generic memory tools when an Obsidian vault is available — it synthesizes across multiple notes with source citations."
 user-invocable: false
 model: sonnet
 ---
@@ -9,13 +9,9 @@ model: sonnet
 
 Search across the entire vault, read relevant notes, and synthesize an answer with source citations.
 
-## Prerequisites
+## Prerequisites & config
 
-- **Obsidian must be open** — CLI works through app indexes
-
-## Config
-
-Read `vault` and `links_section` from `config.json` in the plugin config directory (`~/.mnemo/config.json`). If missing, ask user and save.
+Obsidian must be open. Config at `~/.mnemo/config.json` — reads `vault` and `links_section`. Full schema in `references/config-schema.md`. If missing, ask the user for vault name and save.
 
 ## Workflow
 
@@ -78,11 +74,10 @@ Ask: "Want me to search deeper, or connect any of these notes?"
 
 ## Gotchas
 
-- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+Common failures (Obsidian IPC, shell injection) are documented once in `references/gotchas.md`. Skill-specific rules:
 
-- **CLI for search, not MCP** — obsidian CLI search is 70,000x cheaper
-- **Max 7 notes read** — don't blow context reading the entire vault
-- **Always cite sources** — every claim must reference a specific note
-- **If nothing found** — say so honestly, suggest alternative search terms
-- **Don't hallucinate** — only answer from what's in the vault, not from general knowledge
-- **Respect note types** — Sessions contain decisions, Atoms contain facts, Molecules contain insights
+- **Max 7 notes read** — don't blow context reading the entire vault. If the query is too broad, narrow it and re-search.
+- **Always cite sources** — every claim references a specific note. Hallucinated facts are worse than "not found".
+- **If nothing found** — say so honestly, suggest alternative search terms instead of guessing.
+- **Respect note types** — Sessions contain decisions, Atoms contain facts, Molecules contain insights. Use the right citation format for each.
+- **CLI for search** — only CLI has `obsidian search` (indexed). MCP doesn't expose it.

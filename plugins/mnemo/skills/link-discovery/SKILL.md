@@ -1,6 +1,6 @@
 ---
 name: link-discovery
-description: "Use after creating a new Obsidian note to discover hidden connections with existing notes. Shows suggestions, does NOT auto-apply. Invoke with note name as argument."
+description: "Use automatically after creating any new Obsidian note to surface hidden connections with existing notes. Also use whenever the user asks 'find related notes', 'are there similar notes', 'connect this to others', or reviews a note for cross-references. Shows ranked suggestions with 'why relevant' explanations — does NOT auto-apply."
 user-invocable: false
 model: sonnet
 ---
@@ -9,13 +9,9 @@ model: sonnet
 
 Analyze a note and discover connections to other notes in the vault that aren't linked yet.
 
-## Prerequisites
+## Prerequisites & config
 
-- **Obsidian must be open** — CLI works through app indexes
-
-## Config
-
-Read `vault` and `links_section` from `~/.mnemo/config.json`. If missing, run `/mnemo:setup` or ask user.
+Obsidian must be open. Config at `~/.mnemo/config.json` — reads `vault` and `links_section`. Schema in `references/config-schema.md`.
 
 ## Workflow
 
@@ -94,11 +90,10 @@ If user confirms:
 
 ## Gotchas
 
-- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
+Common failures in `references/gotchas.md`. Tool-routing rationale in `references/tool-routing.md`. Skill-specific rules:
 
-- Maximum 5-7 suggestions — don't overwhelm
-- Don't suggest links to orphan notes (they need their own fixing first)
-- Ghost notes are NORMAL — don't flag `[[Technology]]` as "unresolved"
-- Don't suggest connections that are too generic (e.g. both mention "Claude" — that's not meaningful)
-- CLI first, MCP only for str_replace in middle of file
-- NEVER auto-apply without user confirmation
+- **Max 5-7 suggestions** — don't overwhelm. If you find more, rank and present top-7.
+- **Don't suggest links to orphan notes** — they need their own fixing first (run `/mn:health` if interested).
+- **Ghost notes are normal** — `[[Technology]]` pointing to a non-existent note enables entity discovery. Not "unresolved" in the bad sense.
+- **Avoid generic connections** — "both mention Claude" is noise. A connection is meaningful if it shares a concept, approach, or unresolved question.
+- **Never auto-apply** — always ask the user before writing new wikilinks.

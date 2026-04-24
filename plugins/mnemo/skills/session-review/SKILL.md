@@ -77,61 +77,21 @@ From conversation history + preprocessed data, identify:
 Cross-reference:
 - **Session type** (Step 2) → expected skill categories
 - **Signals detected** (Step 3) → specific skill triggers
-- **Skills already invoked** (preprocessed SKILLS_INVOKED)
+- **Skills already invoked** (preprocessed `SKILLS_INVOKED`)
 - **All available skills** (preprocessed auto-discovery)
 
-**CRITICAL: Only recommend skills that appear in the auto-discovered list.** Never recommend skills that aren't installed.
+**Only recommend skills that appear in the auto-discovered list.** Never recommend skills that aren't installed — the user can't act on them.
 
-#### Trigger Matrix by Session Type
+**Read the trigger matrix for the detected session type** (one file, not the full catalogue — progressive disclosure keeps the prompt lean):
 
-**Implementation sessions:**
+- Implementation → `references/triggers-implementation.md`
+- Research → `references/triggers-research.md`
+- Debugging → `references/triggers-debugging.md`
+- Refactoring / Documentation / Configuration / Planning → `references/triggers-universal.md`
 
-| Signal | Recommended skill | Priority |
-|--------|------------------|----------|
-| New code without corresponding tests | test-master, test-driven-development | CRITICAL |
-| Web app code (.html/.tsx/.jsx/.css) | vibesec, design-review | HIGH |
-| Diff > 100 lines, single feature | simplify | MEDIUM |
-| Branch diverged from main, tests pass | ship | HIGH |
-| API endpoints added or changed | api-designer | MEDIUM |
-| Django models/views touched | django-expert | MEDIUM |
-| Rails code touched | dhh-rails-style | MEDIUM |
-| Database migrations in diff | postgres-pro, data-integrity-guardian | HIGH |
-| Frontend components modified | design-review, polish | MEDIUM |
+**Always** also read `references/triggers-universal.md` — it covers cross-cutting signals (uncommitted changes, missing session notes, unreviewed plans) that apply regardless of session type.
 
-**Research sessions:**
-
-| Signal | Recommended skill | Priority |
-|--------|------------------|----------|
-| Findings/discoveries not saved | mnemo:save | CRITICAL |
-| No session summary created | mnemo:session | HIGH |
-| New knowledge links to existing notes | mnemo:connect | MEDIUM |
-
-**Debugging sessions:**
-
-| Signal | Recommended skill | Priority |
-|--------|------------------|----------|
-| Root cause identified (save as gotcha) | mnemo:save | HIGH |
-| Fix committed without regression tests | test-master | CRITICAL |
-| Investigation log worth preserving | mnemo:session | MEDIUM |
-
-**All sessions (universal triggers):**
-
-| Signal | Recommended skill | Priority |
-|--------|------------------|----------|
-| Significant work done, no session notes | mnemo:session | HIGH |
-| Decisions in conversation, not persisted | mnemo:save | HIGH |
-| Uncommitted changes in working tree | commit | CRITICAL |
-| Branch ready, no PR created | ship | HIGH |
-| Project has memory routing rules (CLAUDE.md) | check all memory backends | MEDIUM |
-| New Obsidian notes created this session | mnemo:connect, mnemo:health | LOW |
-| Plan created but not reviewed | plan-eng-review, plan-ceo-review | MEDIUM |
-| Code written, no review pass | review, ce:review | MEDIUM |
-| CLAUDE.md needs updating | claude-md-management:revise-claude-md | LOW |
-
-Also check for custom triggers:
-```bash
-cat "${CLAUDE_SKILL_DIR}/skill-triggers.md" 2>/dev/null
-```
+Custom project-specific triggers, if any, live at `${CLAUDE_PLUGIN_ROOT}/skill-triggers.md` or `.claude/skill-triggers.md` in the project root. Read whichever exists.
 
 ### Step 5: Cross-Reference Project Rules
 

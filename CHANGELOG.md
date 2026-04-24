@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.1] - 2026-04-24
+
+### Changed — Progressive disclosure via shared `references/`
+
+A skill-creator audit flagged ~100 lines of duplicated gotchas, config schemas, and tool-routing rationale across 7 of 8 SKILL.md files. Extracted into `plugins/mnemo/references/`:
+
+- `gotchas.md` — IPC hung, plugin update stale cache, shell injection, `memory/` path resolution, claude-mem worker availability
+- `config-schema.md` — full `~/.mnemo/config.json` field reference + PARA / custom taxonomy examples
+- `tool-routing.md` — the MCP-first hybrid rule with rationale and the 2026-04-21 zsh-backticks incident
+- `triggers-implementation.md` / `triggers-research.md` / `triggers-debugging.md` / `triggers-universal.md` — `/mn:review` trigger matrix split by session type (progressive disclosure — read only the matching file)
+
+Each SKILL.md now has a one-line pointer: *"Common failures in `references/gotchas.md`"*. Claude loads the reference only when it actually needs the detail.
+
+**Net: 1290 → 1186 lines across skills (−104 duplicated lines), `session-review` alone dropped 262 → 222.**
+
+### Changed — Pushier descriptions to fix under-triggering
+
+skill-creator explicitly warns that Claude under-triggers skills with passive descriptions. Rewrote 5 descriptions to include "use whenever..." language, Russian trigger phrases (`'запомни'`, `'мнемо настрой'`, `'инбокс'`), and Russian intent verbs practitioners actually type:
+
+- `vault-search` → recall, summarize, "что мы решили"
+- `vault-health` → vault maintenance, "проверь vault", proactive after 3+ notes
+- `link-discovery` → automatic after any new note, "find related notes"
+- `inbox-triage` → "inbox cleanup", "разгреби inbox"
+- `memory-routing` → solved a bug, non-obvious decision, "в мнемо"
+- `session-notes` → ship completion, "записать сессию", before stepping away
+- `initial-setup` → "mnemo not configured", auto-invoked on missing config
+
+### Changed — `/mn:review` auto-discovery uses `${CLAUDE_PLUGIN_ROOT}`
+
+The Step 4 custom-triggers path referenced a non-existent `${CLAUDE_SKILL_DIR}` env var. Fixed to `${CLAUDE_PLUGIN_ROOT}/skill-triggers.md` with fallback to `.claude/skill-triggers.md` at project root.
+
+### Added — Shared shell scripts for repeated logic
+
+- `scripts/get-vault-path.sh` — returns the filesystem path of a named vault via `obsidian vault`. Used by `/mn:health` Step 5 and `/mn:connect` Step 3.
+- `scripts/check-cm-version.sh` — inspects claude-mem cache, emits `version:`, `stale:`, `path:` lines. Used by `/mn:health` Step 0 and `/mn:save` Step 2.
+
+Single source of truth for cache-path and version-detection logic.
+
+### Added — `assets/session-template.md`
+
+Reusable session frontmatter + structure template. `/mn:session` now references it instead of inlining the whole example.
+
+### Changed — Incremental JSONL parsing in `session-scan.py`
+
+`session-scan.py` now reads only bytes appended since the last scan (offset stored in `/tmp/mnemo-session-offset-{id}.json`) and merges into the cached aggregate. On a long session (5000+ lines), the first `/mn:review` after cache expiry drops from ~200ms parse to ~5-20ms because JSONL is append-only.
+
+Safely falls back to full re-scan if the offset exceeds file size (session rotated) or if the cache JSON is corrupt.
+
+### Added — Bulk mode in `/mn:sort`
+
+Say "accept all" / "применить все" / "bulk" to skip per-note confirmation and apply suggested classification to every remaining inbox note. Still shows per-note progress so you can abort mid-stream if a suggestion looks wrong.
+
+### Changed — `/mn:setup` Step 6 idempotent
+
+Now skips handoff-note creation if it already exists. Prevents clobbering a live handoff when the user re-runs setup.
+
 ## [0.7.0] - 2026-04-24
 
 ### Added — claude-mem v12.3.9 integration

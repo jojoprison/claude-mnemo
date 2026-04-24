@@ -1,6 +1,6 @@
 ---
 name: memory-routing
-description: "Use when user says 'remember this', 'save to memory', 'запомни', 'в память', 'сохрани', or when significant facts, decisions, or findings need to be persisted. Routes to multiple storage backends with graceful degradation."
+description: "Use whenever the user says 'remember this', 'save to memory', 'запомни', 'в память', 'сохрани', 'в мнемо', solved a bug worth remembering, made a non-obvious decision, or learned a gotcha. Routes each item to the right combination of Obsidian + claude-mem + memory/ + CLAUDE.md with graceful degradation if a backend is unavailable."
 user-invocable: false
 model: haiku
 ---
@@ -9,27 +9,9 @@ model: haiku
 
 Save information to multiple memory backends with graceful degradation. Each backend is tried independently — if one fails, others still work.
 
-## Prerequisites
+## Prerequisites & config
 
-- **Obsidian should be open** — but skill works even if it's not (skips Obsidian, uses other backends)
-
-## Config
-
-Read from `~/.mnemo/config.json`:
-
-```json
-{
-  "vault": "main",
-  "cascade": {
-    "obsidian": { "enabled": true },
-    "claude_mem": { "enabled": true, "url": "http://127.0.0.1:37777" },
-    "memory_dir": { "enabled": true },
-    "claude_md": { "enabled": false }
-  }
-}
-```
-
-If `cascade` section is missing, defaults: obsidian=true, claude_mem=true, memory_dir=true, claude_md=false.
+Obsidian is preferred but not required (skill degrades gracefully). Config at `~/.mnemo/config.json` — full schema including `cascade.*` toggles in `references/config-schema.md`.
 
 ## Workflow
 
@@ -80,7 +62,7 @@ source: "{where this came from}"
 )
 ```
 
-**Why MCP:** content may contain code blocks with backticks or `$(...)`. CLI `obsidian create content="..."` triggers zsh command substitution and can execute embedded shell commands (real incident: 2026-04-21, accidental prod deploy).
+**Why MCP:** content may contain code blocks with backticks or `$(...)` — CLI `obsidian create content="..."` would trigger zsh command substitution. See `references/tool-routing.md` for the full rule.
 
 **Add to MOC — MCP `str_replace` for targeted insert, or CLI for plain wikilinks:**
 
@@ -137,18 +119,7 @@ Only write here if the information **prevents Claude from making errors** in fut
 - Gotchas, commands, conventions
 - NOT business context (that's Obsidian's job)
 
-**Path resolution (CRITICAL):**
-The "memory/" directory is Claude Code's **auto-memory** directory, NOT `./memory/` in the project root.
-
-To find the correct path, look for the `MEMORY.md` file that is already loaded in your conversation context. Its path follows the pattern:
-```
-~/.claude/projects/-{slugified-cwd}/memory/
-```
-For example: `~/.claude/projects/-Users-jkaseq-Documents-projects-bts-holding/memory/`
-
-**NEVER create or write to `./memory/` in the project root** — that would put memory files in the git repo.
-
-Write or append to relevant topic file in that directory. Use `~/.claude/memory/` only for cross-project info.
+**Path resolution:** memory/ is Claude Code's auto-memory directory at `~/.claude/projects/-{slugified-cwd}/memory/`, **not** `./memory/` in the project root. Find the correct path by reading the `MEMORY.md` already loaded in your conversation context — its path shows the right slug. Use `~/.claude/memory/` only for cross-project info. See `references/gotchas.md` for why this matters.
 
 **On error:** Log `⚠️ memory/: skipped (directory not found)`, continue.
 
@@ -205,13 +176,12 @@ Or with failures:
 
 ## Gotchas
 
-- **"Unable to connect to main process"** — Obsidian IPC hung. Fix: quit Obsidian (Cmd+Q), reopen, wait 3 seconds, retry
-- **Graceful degradation is the point** — never fail completely, always save to at least one backend
-- **Don't duplicate Obsidian content in memory/** — Obsidian = user's memory, memory/ = Claude's memory. Different audiences
-- **claude-mem is optional** — many users won't have it. Skip silently
-- **CLAUDE.md is almost never written to** — only 1-2 line rules that prevent actual errors. Target: <120 lines total
-- **Tool choice: MCP-first hybrid** — CLI for search/read/orphans (fast, indexed); **MCP for any create/update with markdown body** (shell-safe, no zsh backtick expansion). Never use `obsidian create content="..."` with markdown containing code blocks
-- **memory/ path is NOT `./memory/`** — it's `~/.claude/projects/-{slug}/memory/`. Writing to project root creates files in git. Find the correct path from MEMORY.md in context
-- **Always check duplicates** before creating Obsidian notes
-- **Ghost notes generously** — wrap entities in `[[wikilinks]]`
-- **MOC link mandatory** for Obsidian notes (except inbox)
+Common failures in `references/gotchas.md`. Tool-routing rationale in `references/tool-routing.md`. Skill-specific rules:
+
+- **Graceful degradation is the point** — never fail completely. If Obsidian IPC is hung, skip it and save to claude-mem + memory/. The user can retry when Obsidian recovers.
+- **Don't duplicate Obsidian content in memory/** — different audiences. Obsidian is for the user (cite-able, searchable in vault); memory/ is for Claude (error prevention across sessions).
+- **claude-mem is optional** — many users won't have it running on :37777. Skip silently, don't warn.
+- **CLAUDE.md is almost never written to** — only 1-2 line rules that prevent actual errors. Target: <120 lines total to preserve prompt budget.
+- **Always check duplicates** before creating Obsidian notes — clobbering a note silently is worse than any write latency.
+- **Ghost notes generously** — wrap entities in `[[wikilinks]]` even when the target doesn't exist yet. Enables future entity discovery.
+- **MOC link mandatory** for typed Obsidian notes (Atom/Molecule/Source/Session). Inbox notes are exempt.
