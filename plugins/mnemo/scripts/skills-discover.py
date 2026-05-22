@@ -37,6 +37,10 @@ PATTERNS = [
     ".claude/skills/*/SKILL.md",
     "plugins/*/skills/*/SKILL.md",
 ]
+CLAUDE_PLUGIN_CACHE_ROOTS = (
+    os.path.join(HOME, ".claude/plugins/cache"),
+    os.path.join(HOME, ".claude/plugins/marketplaces"),
+)
 
 NAME_RE = re.compile(r'^name:\s*["\']?(.+?)["\']?\s*$', re.M)
 DESC_RE = re.compile(r'^description:\s*["\']?(.+?)["\']?\s*$', re.M)
@@ -66,8 +70,6 @@ def codex_plugin_id(path: str) -> str:
     abs_path = os.path.abspath(path)
 
     cache_roots = [os.path.join(HOME, ".codex/plugins/cache")]
-    if IS_CODEX:
-        cache_roots.append(os.path.join(HOME, ".claude/plugins/cache"))
     for cache_root in cache_roots:
         cache_prefix = cache_root + os.sep
         if abs_path.startswith(cache_prefix):
@@ -90,6 +92,15 @@ def codex_plugin_id(path: str) -> str:
     return ""
 
 
+def skip_for_runtime(path: str) -> bool:
+    """Avoid reporting Claude plugin cache as active skills inside Codex."""
+    if not IS_CODEX:
+        return False
+
+    abs_path = os.path.abspath(path)
+    return any(abs_path.startswith(root + os.sep) for root in CLAUDE_PLUGIN_CACHE_ROOTS)
+
+
 def discover() -> list[str]:
     skills: list[str] = []
     seen: set[str] = set()
@@ -99,6 +110,8 @@ def discover() -> list[str]:
             if path in seen:
                 continue
             seen.add(path)
+            if skip_for_runtime(path):
+                continue
             if codex_plugin_id(path) in disabled_plugins:
                 continue
             try:

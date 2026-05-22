@@ -1,6 +1,6 @@
-# Testing — mnemo v0.8.0 smoke test
+# Testing — mnemo v0.8.1 smoke test
 
-Smoke tests for the v0.8.x line. Run once after `/plugin update mnemo` or `codex plugin install mnemo@mnemo` to verify all 8 skills behave as intended after the v0.6.0 → v0.8.0 refactor arc.
+Smoke tests for the v0.8.x line. Run once after `/plugin update mnemo` or `codex plugin install mnemo@mnemo` to verify all 8 skills behave as intended after the v0.6.0 → v0.8.1 refactor arc.
 
 ## Status — v0.7.3 passed 7/7 on 2026-04-24
 
@@ -21,14 +21,14 @@ Model routing was rewritten to prevent mid-session model switches from triggerin
 ## Prerequisites
 
 - **Obsidian running**, vault `main` (or whatever is in `~/.mnemo/config.json`)
-- **Plugin updated to v0.8.0** in the current session:
+- **Plugin updated to v0.8.1** in the current session:
   ```
   /plugin update mnemo
   ```
   Verify:
   ```bash
   ls ~/.claude/plugins/cache/mnemo/mnemo/ ~/.claude/plugins/cache/claude-mnemo/mnemo/ 2>/dev/null
-  # expected: 0.8.0 (older 0.7.x dirs can be deleted once confirmed working)
+  # expected: 0.8.1 (older 0.7.x dirs can be deleted once confirmed working)
   ```
 - **claude-mem plugin optional**. If `cascade.claude_mem.enabled=false`, `/mn:health` Step 0 and `/mn:save` claude-mem POST should skip silently.
 

@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.1] - 2026-05-22
+
+### Changed — Codex install hygiene
+
+- Released `mnemo` under the new repository name with both Claude Code and Codex manifests at `0.8.1`.
+- Verified the Codex marketplace snapshot resolves from `https://github.com/jojoprison/mnemo` and exposes `mnemo@mnemo` as installed/enabled.
+- Documented the clean Codex setup expectation: `mnemo@mnemo` and `compound-engineering@compound-engineering-plugin` stay enabled, while Superpowers is not installed.
+- Tightened `skills-discover.py` so Codex sessions do not report stale Claude plugin cache skills as active Codex capabilities.
+
+### Removed — legacy Codex Superpowers install
+
+- Removed the previously installed `superpowers@claude-plugins-official` Codex plugin and its cache.
+- Removed the `claude-plugins-official` Codex marketplace from the user setup after uninstalling its remaining installed plugin, so the old Superpowers entry no longer appears through that marketplace.
+- Cleared the stale Superpowers hook trust state from `~/.codex/config.toml`.
+
 ## [0.8.0] - 2026-05-21
 
 ### Added — Codex support without breaking Claude Code
