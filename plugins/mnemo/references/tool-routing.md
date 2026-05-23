@@ -62,6 +62,16 @@ This is how skills add MOC entries. It's fast, indexed, and bulletproof when the
 
 Anything with code blocks or shell metacharacters → switch to MCP `str_replace` or `insert`.
 
+## Referencing memory/ files (never wikilink them)
+
+`memory/` files (Claude's cross-session error-prevention notes) are **not** part of the Obsidian vault graph. A `[[memory/foo]]` or `[[foo.md]]` link from inside a note never resolves — it becomes a phantom ghost that pollutes `orphans`/`unresolved` reports forever.
+
+- **Reference as inline code** — `` `memory/foo.md` `` — keeps the pointer, no broken link.
+- **If a real vault note covers the same topic** (a MOC or Atom), link THAT instead — strengthens the graph rather than dangling.
+- **Same for project files** (`CLAUDE.md`, `AGENTS.md`, `TECH_DEBT_AUDIT.md`): inline code, not `[[wikilink]]`.
+
+The failure mode is silent: `obsidian create`/`str_replace` happily writes the broken link, and it only surfaces later as an orphan/unresolved entry. Get it right at write time.
+
 ## Reading order of preference
 
 1. **Search / index query** → CLI (only option).

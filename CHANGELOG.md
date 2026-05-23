@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.2] - 2026-05-23
+
+### Added — memory-routing guard against phantom wikilinks
+
+- `memory-routing` SKILL.md Gotchas + `references/tool-routing.md`: documented that `memory/` files (and project files like `CLAUDE.md`/`AGENTS.md`) must be referenced as inline code, never `[[wikilinks]]`. They live outside the Obsidian vault graph, so `[[memory/foo]]` / `[[foo.md]]` create permanent unresolved links (phantom ghosts). Prefer linking a real vault counterpart (MOC/Atom) when one exists.
+
 ## [0.8.1] - 2026-05-22
 
 ### Changed — Codex install hygiene
