@@ -72,3 +72,23 @@ Find the correct slug from the `MEMORY.md` path already loaded in the conversati
 ## "Unable to connect" specifically on `mcp__obsidian__*` calls
 
 Same root cause as CLI IPC hung — restart Obsidian. MCP and CLI share the same socket.
+
+## CLI orphans / unresolved / backlinks cache lag — `eval` for truth
+
+`obsidian orphans` / `unresolved` / `backlinks` read Obsidian's index, which **lags writes 1-5s** (longer on big vaults). Symptom: a note shows as resolved AND unresolved at once, or a freshly created note still appears as orphan, or alias/hub changes don't surface even after edits. Real incident 2026-05-26: CLI `unresolved` kept listing hubs as broken while `metadataCache` already resolved them.
+
+**Authoritative check — `obsidian eval` on `metadataCache`:**
+
+```bash
+# Top broken (unresolved) targets — candidates for missing hub notes:
+obsidian eval code="(()=>{const u=app.metadataCache.unresolvedLinks;const f={};Object.values(u).forEach(l=>Object.keys(l).forEach(t=>f[t]=(f[t]||0)+1));return JSON.stringify(Object.entries(f).sort((a,b)=>b[1]-a[1]).slice(0,10));})()" vault="main"
+
+# Real backlink count for one note (does [[X]] actually resolve to it?):
+obsidian eval code="(()=>{let n=0;for(const f of app.vault.getMarkdownFiles()){const rl=app.metadataCache.resolvedLinks[f.path]||{};for(const k in rl)if(k.endsWith('TARGET.md'))n++;}return n;})()" vault="main"
+```
+
+Treat CLI graph counts as **advisory** if notes were created/edited in the same session. `vault-health` and `session-review` should prefer `eval` for critical resolution checks.
+
+## Forbidden chars in note names (`#` `.` `/`)
+
+`#` breaks wikilinks (parsed as a heading anchor → permanent orphan, even existing links to it), `.` truncates CLI `create` at the dot, `/` makes a subfolder. Full table + the hub-note fix → `references/tool-routing.md` ("Note naming rules" + "Hub notes"). Always sanitize a name before `create`. Incident 2026-05-26: 56 `#`-named notes were silent orphans.

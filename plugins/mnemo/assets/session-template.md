@@ -24,7 +24,7 @@ session_id: {CLAUDE_SESSION_ID}
 
 ## Findings
 
-- {Thing learned, especially if surprising or cross-project useful}
+- {Thing learned, especially if surprising or cross-project useful — if it connects to an existing note, link inline WITH context: «...as established in [[Atom — X]]...», not a bare link}
 - ...
 
 ## Next steps / pending

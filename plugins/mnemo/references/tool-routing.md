@@ -11,7 +11,7 @@ Rule of thumb: **any write with markdown body → MCP; everything else → CLI.*
 | **Insert at line** | `mcp__obsidian__insert` | Line-number-based, shell-safe |
 | **View file** | `mcp__obsidian__view` or CLI `obsidian read` | Both work; CLI is ~180ms, MCP similar |
 | **Search (fulltext)** | CLI `obsidian search` | **Only CLI has this** — indexed, ~175ms, not available in MCP |
-| **Orphans / backlinks / tags / unresolved** | CLI `obsidian orphans` / `backlinks` / etc. | **Only CLI has these** — indexed graph queries |
+| **Orphans / backlinks / tags / unresolved** | CLI `obsidian orphans` / `backlinks` / etc. | **Only CLI has these** — indexed graph queries. ⚠️ cache lags writes 1-5s & can give false positives — for critical checks use `obsidian eval` on `metadataCache` (see gotchas) |
 | **Vault metadata** | CLI `obsidian vault` | Returns filesystem path, file count, size |
 | **List files** | CLI `obsidian files` | Indexed |
 | **Append plain wikilink** (no backticks) | CLI `obsidian append content="- [[Name]]"` | Safe — no backticks means no shell expansion |
@@ -71,6 +71,43 @@ Anything with code blocks or shell metacharacters → switch to MCP `str_replace
 - **Same for project files** (`CLAUDE.md`, `AGENTS.md`, `TECH_DEBT_AUDIT.md`): inline code, not `[[wikilink]]`.
 
 The failure mode is silent: `obsidian create`/`str_replace` happily writes the broken link, and it only surfaces later as an orphan/unresolved entry. Get it right at write time.
+
+## Note naming rules (enforce BEFORE create — violations create permanent orphans)
+
+Obsidian/CLI break on certain chars in filenames. Check every note name before `create`:
+
+| Char | Effect | Rule |
+|------|--------|------|
+| `#` | Breaks wikilink — `[[Note #1]]` parses as `[[Note]]` + heading anchor `#1` → note becomes an unreachable orphan, even existing links to it | **Never** in names |
+| `.` (mid-name) | CLI `obsidian create` truncates the name at the dot (treats tail as extension) | **Never** except the auto `.md` |
+| `/` | Path separator — creates a subfolder instead of the note | **Never** in names |
+| `.md` (in name arg) | Double extension, breaks resolution | Omit — added automatically |
+
+Use `—` (em-dash) or a space instead. Real incident 2026-05-26: 56 notes with `(PR #NNN)` / `VPS#1` were silent orphans — their `[[…#NNN]]` links never resolved; had to rename all.
+
+## Hub notes — making short `[[Name]]` resolve
+
+Obsidian's resolver **ignores frontmatter `aliases` for bare `[[Name]]` links — BY DESIGN** (not a bug / version / cache). `[[Diadoc]]` will NOT find `MOC — BTS Diadoc.md` via `aliases: [Diadoc]`. Only the pipe form `[[MOC — BTS Diadoc|Diadoc]]` (inserted via `[[` autocomplete) resolves through an alias.
+
+**Pattern (canon: Luhmann *register note* / Milo *home note* / Obsidian *hub note*):** create a real file named with the short name — `Diadoc.md` — whose body redirects to the MOC:
+
+```
+# Diadoc
+→ [[MOC — BTS Diadoc]]
+## Связи
+- [[MOC — BTS Diadoc]]
+```
+
+Now `[[Diadoc]]` resolves everywhere by filename-match (100% reliable). Optionally add `aliases: [Diadoc, Диадок]` to the hub note itself — gives `[[` autocomplete + unlinked-mentions in the backlinks panel (the link still resolves by filename). Real incident 2026-05-26: `[[BTS Holding]]` (469 refs), `[[Diadoc]]` (246), `[[1С]]` (330) were all broken until hub notes were created.
+
+**When:** `initial-setup` offers a project hub; `memory-routing` creates one when a `[[ShortName]]` is needed and none exists. Verify resolution with `obsidian eval` (`metadataCache`), NOT CLI `unresolved` (caches — see gotchas).
+
+## Two link layers (Luhmann / Matuschak)
+
+1. **Inline with context** — in the body, where the connection matters: «builds on [[Atom — X]] because…», «contradicts [[Atom — Y]]». The sentence carries the *why*. A bare `[[link]]` with no context is noise (zettelkasten.de: "state explicitly why you made the link").
+2. **`## {links_section}`** — bottom nav block: MOC + structural links, pure wikilinks (context lives inline).
+
+For graph/backlinks the position doesn't matter (Obsidian parses the whole file), but inline context makes the graph semantically rich. Skills creating notes: always emit `## {links_section}` (≥1 MOC link); for Atoms/Molecules that reference other notes — add inline context too.
 
 ## Reading order of preference
 

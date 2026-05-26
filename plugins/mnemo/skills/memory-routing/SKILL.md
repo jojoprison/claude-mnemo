@@ -27,7 +27,6 @@ Determine what type of information is being saved:
 | **gotcha** | Obsidian Atom + memory/ + possibly CLAUDE.md | "execSync with shell=true is banned in antomate" |
 | **source** | Obsidian Source + optional claude-mem | External article, tool, research finding |
 | **rule** | CLAUDE.md (if error-preventing) + memory/ | "Never mark Gmail as read without explicit request" |
-| **quick thought** | Create Obsidian inbox note | Unstructured ideas |
 
 ### Step 1: Obsidian (Primary — for the user)
 
@@ -63,6 +62,13 @@ source: "{where this came from}"
 ```
 
 **Why MCP:** content may contain code blocks with backticks or `$(...)` — CLI `obsidian create content="..."` would trigger zsh command substitution. See `references/tool-routing.md` for the full rule.
+
+**Note quality rules** (details + tables in `references/tool-routing.md`):
+- **Naming:** never `#` / `.` / `/` / `.md` in the title — they break wikilinks (`#`→heading anchor) or the CLI (`.`→truncation). Sanitize before `create`. Use `—` or space.
+- **Atom title = a statement, not a topic** (Matuschak «title as API» / Умэсао): `Atom — Redis fail-open keeps reads alive when cache is down`, NOT `Atom — Redis`.
+- **Molecule = non-trivial synthesis** of ≥2 atoms (new insight not in either alone), not "linked two notes."
+- **Two link layers:** inline with context in the body («contradicts [[X]]», «builds on [[Y]]») + `## {links_section}` for MOC/nav. A bare link without context is noise.
+- **Short project names** (`[[Diadoc]]`, `[[BTS Holding]]`) need a **hub note** — Obsidian doesn't resolve bare links via alias (by design). If `[[ShortName]]` is referenced and no `ShortName.md` exists, create it: a one-liner redirecting to `[[MOC — …]]`.
 
 **Add to MOC — MCP `str_replace` for targeted insert, or CLI for plain wikilinks:**
 
@@ -186,7 +192,6 @@ Or with failures:
 | Gotcha | ✅ Atom | ✅ | ✅ | ✅ if critical |
 | Command/convention | ✅ Atom | ✅ | ✅ | ❌ |
 | Error-preventing rule | ❌ | ❌ | ✅ | ✅ |
-| Quick unstructured thought | ✅ Inbox | ❌ | ❌ | ❌ |
 
 ## Gotchas
 
@@ -199,4 +204,4 @@ Common failures in `references/gotchas.md`. Tool-routing rationale in `reference
 - **Always check duplicates** before creating Obsidian notes — clobbering a note silently is worse than any write latency.
 - **Ghost notes generously** — wrap entities in `[[wikilinks]]` even when the target doesn't exist yet. Enables future entity discovery.
 - **Never `[[wikilink]]` a memory/ file — use inline code** — `memory/` files (`feedback-*.md`, `reference-*.md`, etc.) and project files (`CLAUDE.md`, `AGENTS.md`) live **outside** the Obsidian vault graph. Writing `[[memory/foo]]` or `[[foo.md]]` from a note creates a permanent unresolved link (a phantom ghost that pollutes `orphans`/`unresolved` reports forever). Reference them as `` `memory/foo.md` `` instead. If the memory file has a real vault counterpart (a MOC or Atom on the same topic), link THAT note — it strengthens the graph instead of dangling. See `references/tool-routing.md`.
-- **MOC link mandatory** for typed Obsidian notes (Atom/Molecule/Source/Session). Inbox notes are exempt.
+- **MOC link mandatory** for typed Obsidian notes (Atom/Molecule/Source/Session).

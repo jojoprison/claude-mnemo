@@ -12,8 +12,7 @@ Path: `~/.mnemo/config.json`. Created by `initial-setup` skill on first install.
     "molecule": { "prefix": "Molecule — ", "tag": "molecule" },
     "source": { "prefix": "Source — ", "tag": "source" },
     "session": { "prefix": "Session — ", "tag": "session" },
-    "moc": { "prefix": "MOC — ", "tag": "moc" },
-    "inbox": { "prefix": "Inbox — ", "tag": "inbox" }
+    "moc": { "prefix": "MOC — ", "tag": "moc" }
   },
   "links_section": "## Связи",
   "handoff_note": "Meta — Session Handoff"
@@ -31,8 +30,7 @@ Path: `~/.mnemo/config.json`. Created by `initial-setup` skill on first install.
     "molecule": { "prefix": "Molecule — ", "tag": "molecule" },
     "source":   { "prefix": "Source — ",   "tag": "source" },
     "session":  { "prefix": "Session — ",  "tag": "session" },
-    "moc":      { "prefix": "MOC — ",      "tag": "moc" },
-    "inbox":    { "prefix": "Inbox — ",    "tag": "inbox" }
+    "moc":      { "prefix": "MOC — ",      "tag": "moc" }
   },
 
   "links_section": "## Связи",
@@ -52,8 +50,8 @@ Path: `~/.mnemo/config.json`. Created by `initial-setup` skill on first install.
 | Path | Purpose | Used by |
 |------|---------|---------|
 | `vault` | Obsidian vault name (as shown in vault switcher) | All skills |
-| `taxonomy.{type}.prefix` | Filename prefix for each note type | save, sort, session |
-| `taxonomy.{type}.tag` | Frontmatter tag for each note type | save, health, sort |
+| `taxonomy.{type}.prefix` | Filename prefix for each note type | save, session |
+| `taxonomy.{type}.tag` | Frontmatter tag for each note type | save, health |
 | `links_section` | Heading used for cross-references (`## Связи` / `## Links`) | All skills |
 | `handoff_note` | Cross-session continuity file name | session, setup |
 | `cascade.obsidian.enabled` | Skip Obsidian writes if false | memory-routing |
@@ -70,7 +68,7 @@ If `vault` or `taxonomy` is missing, the skill that needs them asks the user and
 
 ## Customizing taxonomy
 
-The default is Zettelkasten-inspired (atom/molecule/source). Other common setups:
+The default is Zettelkasten-inspired (atom/molecule/source). **Naming constraint:** prefixes and note names must never contain `#`, `.` (except the auto `.md`), or `/` — these break wikilink resolution or CLI indexing (see `tool-routing.md`, "Note naming rules"). Other common setups:
 
 **PARA** (Projects/Areas/Resources/Archive):
 ```json
@@ -84,6 +82,18 @@ The default is Zettelkasten-inspired (atom/molecule/source). Other common setups
 ```
 
 **Custom** — any prefix/tag scheme, as long as `prefix` ends with a separator Obsidian can recognize in filenames (` — `, `: `, `/`, etc).
+
+## Note type semantics (Zettelkasten default)
+
+| Type | Definition | Title form |
+|------|-----------|------------|
+| **Atom** | Single atomic claim, true independently | A **statement** (Matuschak «title as API» / Умэсао «bean essay»), not a topic: `Atom — Caching cuts read latency 10×`, not `Atom — Caching` |
+| **Molecule** | Non-trivial synthesis of ≥2 Atoms — new insight not present in either alone | Compound statement; optional `cites:` field listing source atoms |
+| **Source** | External material + your annotations | Descriptive: `Source — {author} {title} ({year})` |
+| **Session** | Work log for one session | `Session — {date} {project} {topic}` |
+| **MOC** | Navigation hub (create at 5+ notes OR when you lose overview — Milo «mental squeeze point») | `MOC — {domain}` |
+
+**Atom vs Molecule:** if one source note supports the claim → Atom. If the insight only emerges by combining ≥2 → Molecule. "Linked two notes" alone is not a Molecule.
 
 ## Internationalization
 

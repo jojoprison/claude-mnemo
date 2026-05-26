@@ -59,6 +59,8 @@ Compare: notes found by search MINUS notes already linked (wikilinks + backlinks
 
 For each suggestion, explain WHY it's relevant (shared concept, shared tag, complementary topics).
 
+**Tension-nodes (high value, ТРИЗ):** if a found note makes an OPPOSITE claim on the same question — that's NOT a duplicate, it's a `#contradiction` link worth surfacing. Two notes disagreeing on the same benchmark is a synthesis point, not noise.
+
 ### Step 5: Present (DO NOT auto-apply)
 
 ```
@@ -77,17 +79,30 @@ New suggestions: {N}
 3. [[Session — ANT-14 TextGrad research]]
    Why: Both evaluate RL approaches for agent improvement
 
+4. [[Atom — Full attention wins on this benchmark]]  ⚡ #contradiction
+   Why: opposite conclusion on the same GPU-efficiency question — tension to resolve
+
 Apply these? (y/N, or pick numbers: 1,3)
 ```
+
+Links are applied **with their one-line context** (the «Why»), not as bare `[[wikilinks]]` (Luhmann: state why you linked).
 
 ### Step 6: Apply on Confirmation
 
 If user confirms:
-1. Add new `[[wikilinks]]` to `{links_section}` section via **`mcp__obsidian__str_replace`** (preferred — targeted insert into the links section). CLI `obsidian append content="- [[name]]"` is a safe fallback only for plain wikilinks (no backticks, no `$()`)
+1. Add new links to `{links_section}` **with a one-line context** (Luhmann — state why connected): `- [[Name]] — {why, ≤10 words}`, not a bare `[[Name]]`. Tension links get the marker: `- [[Name]] #contradiction — {what disagrees}`. Via **`mcp__obsidian__str_replace`** (preferred — targeted insert). CLI `obsidian append content="- [[name]]"` is a safe fallback only for plain wikilinks (no backticks, no `$()`)
 2. If MOC suggestion — add note link to the MOC via `mcp__obsidian__str_replace` or `obsidian append` (plain wikilink = safe)
 3. Verify with `obsidian backlinks`
 
 **Why MCP preferred:** if suggestions ever include code-reference links with backticks (e.g. `[[function_name()]]`), CLI `obsidian append content="..."` would trigger zsh command substitution. MCP passes content as JSON — always safe.
+
+## Advanced modes (optional)
+
+- **Radius-2 (Scrapbox/Cosense-style):** two notes sharing ≥2 of the target's links are likely related even without shared text. If text-grep yields <3 results or user asks `--deep`:
+  ```bash
+  obsidian eval code="(()=>{const rl=app.metadataCache.resolvedLinks;const t=Object.keys(rl['{note_path}']||{});const r={};for(const[f,l]of Object.entries(rl)){if(f==='{note_path}')continue;const s=Object.keys(l).filter(x=>t.includes(x));if(s.length>=2)r[f]=s;}return JSON.stringify(r);})()" vault="{vault}"
+  ```
+- **KJ-Canvas (bottom-up MOC, 川喜田 affinity):** for `--canvas {topic}` — gather all topic Atoms, drop them onto an Obsidian Canvas without categories, let the user group spatially so structure emerges. Then name clusters → new Molecules / MOC revision. Use when a topic has many Atoms but no clear MOC yet.
 
 ## Gotchas
 

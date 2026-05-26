@@ -30,6 +30,8 @@ Analyze the conversation: what was done, key decisions, commits/PRs created, fin
 
 Derive a **planned filename**: `{session_prefix}{YYYY-MM-DD} {short descriptive topic}`. Topic should be specific enough to disambiguate from other sessions the same day (include PR number, Linear ticket, branch name, or primary keyword).
 
+**Naming:** the topic must NOT contain `#`, `.`, or `/` — they break wikilinks (`#`→heading anchor) or the CLI (`.`→truncation). Write `PR 387`, not `PR #387`. See `references/tool-routing.md` (naming rules).
+
 ### Step 2: Duplicate Check (two-level, parallel)
 
 **Run Level 1 and Level 2 in parallel — single assistant message with two Bash tool uses.** ~185ms total instead of ~370ms sequential.
@@ -132,7 +134,9 @@ If handoff note doesn't exist, create it via `mcp__obsidian__create` (same struc
 obsidian orphans vault="{vault}"
 ```
 
-If the newly created note appears in orphans, warn the user — it means no `## Связи` links or MOC didn't get updated.
+If the newly created note appears in orphans, it means no `## Связи` links or the MOC didn't get updated.
+
+⚠️ **`obsidian orphans` caches & lags writes 1-5s** — a note created moments ago via MCP may show as orphan falsely. If it appears right after creation, wait 2-3s and re-run, or verify authoritatively via `obsidian eval` (`metadataCache.resolvedLinks`/`unresolvedLinks`). See `references/gotchas.md`.
 
 ### Step 7: Confirm
 

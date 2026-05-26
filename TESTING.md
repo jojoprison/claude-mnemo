@@ -1,6 +1,6 @@
-# Testing — mnemo v0.8.1 smoke test
+# Testing — mnemo v0.9.0 smoke test
 
-Smoke tests for the v0.8.x line. Run once after `/plugin update mnemo` or `codex plugin install mnemo@mnemo` to verify all 8 skills behave as intended after the v0.6.0 → v0.8.1 refactor arc.
+Smoke tests for the v0.9.x line. Run once after `/plugin update mnemo` or `codex plugin install mnemo@mnemo` to verify all 7 skills behave as intended (v0.9.0 removed inbox-triage; added PKM-canon rules: naming, hub-notes, metadataCache resolution checks).
 
 ## Status — v0.7.3 passed 7/7 on 2026-04-24
 
@@ -32,7 +32,7 @@ Model routing was rewritten to prevent mid-session model switches from triggerin
   ```
 - **claude-mem plugin optional**. If `cascade.claude_mem.enabled=false`, `/mn:health` Step 0 and `/mn:save` claude-mem POST should skip silently.
 
-## Test plan — 7 checks, ~10 minutes total
+## Test plan — 6 checks, ~10 minutes total
 
 ### 1. `/mn:health` — the biggest surface
 
@@ -115,26 +115,7 @@ Try a recall-style query you know is in your vault:
 
 **Red flag:** no `cat triggers-*.md` call visible → Step 4 fix didn't land.
 
-### 6. `/mn:sort` — bulk mode
-
-Prereq: at least one `Inbox — <something>` note in the vault. If none, create one:
-```
-/mn:save "тестовый inbox note"
-```
-then tag it as `inbox` manually or classify quickly to generate backlog.
-
-Run:
-```
-/mn:sort
-```
-
-Try saying **"применить все"** / **"accept all"** when prompted.
-
-**Expect:** skill skips per-note `[1-5]` prompts and applies suggested classification to every note, showing `3/7: Atom — X created` progress lines.
-
-**Red flag:** skill still asks per-note despite bulk intent → bulk mode didn't land.
-
-### 7. `/mn:setup` — idempotent handoff
+### 6. `/mn:setup` — idempotent handoff
 
 ```
 /mn:setup
@@ -168,7 +149,6 @@ Open <https://github.com/jojoprison/mnemo/actions>. Last run should show **Skill
 
 ## Cleanup after a clean run
 
-- Delete the test inbox note (`обычный inbox flow через /mn:sort`)
 - Optionally delete the "Facade ping" test atom via Obsidian
 - Remove legacy cache:
   ```bash
@@ -178,4 +158,4 @@ Open <https://github.com/jojoprison/mnemo/actions>. Last run should show **Skill
 
 ## Expected total time
 
-~10 minutes on a warm vault. All 7 checks independent — you can skip any that aren't relevant, but `/mn:health` and `/mn:ask` are the most important (cover the most surface).
+~10 minutes on a warm vault. All 6 checks independent — you can skip any that aren't relevant, but `/mn:health` and `/mn:ask` are the most important (cover the most surface).

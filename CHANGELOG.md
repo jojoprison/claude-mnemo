@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.0] - 2026-05-27
+
+### Removed — inbox-triage skill (`/mn:sort`)
+
+- Removed `inbox-triage` skill + `commands/mn/sort.md`. In an agent-driven memory workflow, Claude creates typed notes (Atom/Molecule/Session) directly via `memory-routing`/`session-notes` — there are no manual Inbox captures to triage (the missing piece would be *capture*, not triage). Skill count **8 → 7**. Cleaned all references: both plugin manifests, marketplace, `vault-health` Inbox-backlog step, `memory-routing` decision matrix, `config-schema` taxonomy, `initial-setup` help.
+
+### Added — PKM-canon alignment (Zettelkasten + Obsidian-official + cross-cultural research)
+
+- **Naming rules** (`references/tool-routing.md`, `gotchas.md`, create-skills): `#` / `.` / `/` / `.md` forbidden in note names — `#` breaks wikilinks (parsed as heading anchor), `.` truncates CLI `create`. Incident-driven (56 silent orphans found in a real vault).
+- **Hub notes** (`tool-routing.md`, `initial-setup` Step 6.5, `memory-routing`, `vault-health`): bare `[[ShortName]]` does NOT resolve via frontmatter `aliases` — **by design** in Obsidian (only pipe `[[MOC|Short]]` works). Use a hub note (file named with the short name → redirects to its MOC). Documented as canon (Luhmann register / Milo home / Obsidian hub note).
+- **metadataCache over CLI cache** (`gotchas.md`, `vault-health`, `session-review`, `session-notes`): `obsidian orphans/unresolved/backlinks` cache & lag writes 1-5s and can report a note resolved+broken at once. Critical resolution checks now use `obsidian eval` on `app.metadataCache`.
+- **vault-health**: top unresolved targets surfaced as missing-hub candidates (actionable); `#`-in-filename detection replaces the Inbox-backlog step.
+- **link-discovery**: tension-node `#contradiction` suggestions (ТРИЗ), inline link context (Luhmann «state why»), optional radius-2 (Scrapbox/Cosense) + KJ-Canvas affinity (川喜田) modes.
+- **Note quality** (`config-schema` note-type semantics, `memory-routing` quality rules): Atom title = a statement not a topic (Matuschak «title as API» / Умэсао «bean essay»); Molecule = non-trivial synthesis of ≥2 atoms; two link layers (inline-with-context + `## links` for nav).
+
 ## [0.8.2] - 2026-05-23
 
 ### Added — memory-routing guard against phantom wikilinks

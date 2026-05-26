@@ -47,7 +47,15 @@ List notes with zero backlinks. These are invisible in Graph View.
 obsidian unresolved vault="{vault}"
 ```
 
-Show `[[wikilinks]]` pointing to non-existent files. Ghost notes are NORMAL (entity discovery) — only flag if count seems excessive (>200).
+Show `[[wikilinks]]` pointing to non-existent files. Ghost notes are NORMAL (entity discovery) — don't flag on raw count alone.
+
+**Actionable — top unresolved targets = missing hub notes** (via `obsidian eval`, authoritative; CLI `unresolved` can lag/lie — see `references/gotchas.md`):
+
+```bash
+obsidian eval code="(()=>{const u=app.metadataCache.unresolvedLinks;const f={};Object.values(u).forEach(l=>Object.keys(l).forEach(t=>f[t]=(f[t]||0)+1));return JSON.stringify(Object.entries(f).sort((a,b)=>b[1]-a[1]).slice(0,10));})()" vault="{vault}"
+```
+
+A short name with many refs (e.g. `[[Diadoc]]` ×30) = create a hub note `Diadoc.md` → `[[MOC — …]]` so all those links resolve (alias doesn't work for bare links — by design).
 
 ### Step 3: Tag Distribution
 
@@ -65,7 +73,7 @@ Use tags (indexed, reliable) instead of fulltext search:
 obsidian tags counts sort=count vault="{vault}"
 ```
 
-From the output, extract counts for taxonomy tags: `#atom`, `#molecule`, `#source`, `#session`, `#moc`, `#inbox`. These correspond to `config.taxonomy.*.tag` values.
+From the output, extract counts for taxonomy tags: `#atom`, `#molecule`, `#source`, `#session`, `#moc`. These correspond to `config.taxonomy.*.tag` values.
 
 Total notes count:
 
@@ -81,22 +89,23 @@ obsidian files ext=md vault="{vault}" total
 VAULT_PATH=$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/get-vault-path.sh" "{vault}")
 
 # Single recursive grep -L: files NOT containing the links section heading.
-# Filter to taxonomy-prefixed notes, exclude inbox.
+# Filter to taxonomy-prefixed notes.
 grep -rL --include="*.md" "{links_section}" "$VAULT_PATH" 2>/dev/null \
-  | grep -E "(Atom|Molecule|Source|Session|MOC) — " \
-  | grep -v "Inbox —"
+  | grep -E "(Atom|Molecule|Source|Session|MOC) — "
 ```
 
 **Measured on 999-note vault: ~49ms vs ~180s serial** — 3600x speedup. Safe to run always.
 
-Inbox notes are **exempt** via the `grep -v "Inbox —"` filter.
-
 Report notes missing the section.
 
-### Step 6: Inbox Backlog
+### Step 6: Bad Filenames (`#` in names → permanent orphans)
 
-Count from Step 4's inbox search. If > 0, remind:
-"N inbox notes waiting for classification. Run /mnemo:sort to classify."
+```bash
+VAULT_PATH=$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/get-vault-path.sh" "{vault}")
+find "$VAULT_PATH" -name "*#*.md" -not -path "*/.obsidian/*" -not -path "*/.trash/*" 2>/dev/null | sed "s|$VAULT_PATH/||"
+```
+
+Files with `#` in the name are **permanent orphans** — `[[Note #1]]` parses as `[[Note]]` + heading anchor `#1`, so nothing resolves to them (even existing links). Flag for rename (`#` → `—` or drop the `#`). Same for `.` mid-name (breaks CLI create). See `references/tool-routing.md` (naming rules).
 
 ### Step 7: Stale Notes
 
@@ -127,7 +136,7 @@ Sort by count, show top 5.
 
 Total: {N} notes
   Atoms: {N} | Molecules: {N} | Sources: {N}
-  Sessions: {N} | MOCs: {N} | Inbox: {N} | Other: {N}
+  Sessions: {N} | MOCs: {N} | Other: {N}
 
 🔴 Orphans: {N}
   - Note Name 1
@@ -136,9 +145,14 @@ Total: {N} notes
 🟡 Missing {links_section}: {N}
   - Note Name 1
 
-📬 Inbox backlog: {N} notes — run /mnemo:sort to classify
+🚫 Bad filenames (`#`/`.`): {N} — permanent broken links, rename
+  - Atom — Foo (PR #12)  → rename to "PR 12"
 
-🔗 Unresolved wikilinks: {N}
+🔍 Top unresolved targets (missing hub notes?):
+  1. [[Diadoc]] ×34 → create hub note?
+  2. [[Python]] ×28
+
+🔗 Unresolved wikilinks: {N} total
 📏 Tags: {N} total, {N} used once
 
 🏆 Top-5 Hubs (most backlinks):
@@ -157,6 +171,7 @@ Common failures in `references/gotchas.md`. Skill-specific rules:
 
 - `obsidian orphans` may return empty on small vaults — this is OK, not an error.
 - Reference notes (taxonomy docs, templates) aren't orphans even if few backlinks — they're meant to be lookups.
-- Ghost notes (unresolved wikilinks) are a **feature**, not a bug — they enable entity discovery. Only flag if excessive (>200).
+- Ghost notes (unresolved wikilinks) are a **feature**, not a bug — they enable entity discovery. Don't flag on raw count; instead surface the **top targets** (Step 2 eval) — frequent ones = missing hub notes (actionable).
+- **CLI graph queries cache & can lie** — `orphans`/`unresolved`/`backlinks` lag writes and have shown a note as resolved AND broken at once. For critical checks use `obsidian eval` on `metadataCache` (see `references/gotchas.md`). Treat counts as advisory if notes were created this session.
 - **Do not auto-fix anything** — only report. User decides what to clean up.
 - Step 5 uses filesystem grep (1800x faster than per-file reads) — safe on any vault size.

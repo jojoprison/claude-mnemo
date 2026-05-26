@@ -115,6 +115,7 @@ From CLAUDE.md, check mandatory steps:
 |---------------|--------------|
 | Git flow | PR created? Correct format? Draft or ready? |
 | CI checks | Tests run? Lint passing? Type-check? |
+| Graph integrity | `obsidian unresolved`/`orphans` — **advisory** if notes were created this session (CLI cache lags writes 1-5s & can show a note resolved+broken at once; use `metadataCache` eval for truth — see `references/gotchas.md`). Don't raise false CRITICAL on fresh notes |
 | Memory routing | All required backends updated? (Obsidian, claude-mem, memory/) |
 | Session handoff | Handoff note updated in Obsidian? |
 | Task tracker | Linear/GitHub issue status moved? PR linked? |

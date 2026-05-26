@@ -75,8 +75,7 @@ Write `~/.mnemo/config.json`:
     "molecule": { "prefix": "Molecule — ", "tag": "molecule" },
     "source": { "prefix": "Source — ", "tag": "source" },
     "session": { "prefix": "Session — ", "tag": "session" },
-    "moc": { "prefix": "MOC — ", "tag": "moc" },
-    "inbox": { "prefix": "Inbox — ", "tag": "inbox" }
+    "moc": { "prefix": "MOC — ", "tag": "moc" }
   },
   "links_section": "## Связи",
   "handoff_note": "Meta — Session Handoff",
@@ -119,6 +118,34 @@ Cross-session continuity file. Updated by mnemo:session.
 )
 ```
 
+### Step 6.5: Project Hub Note (optional)
+
+Offer: "Create a hub note for short-name navigation? E.g. `[[ProjectName]]` → its MOC."
+
+**Why:** Obsidian's resolver ignores frontmatter `aliases` for bare `[[Name]]` links (by design) — only a real file named `ProjectName.md` makes `[[ProjectName]]` resolve. See `references/tool-routing.md` ("Hub notes"). Without it, every short `[[ProjectName]]` reference is a broken ghost.
+
+If user confirms — via MCP:
+
+```
+mcp__obsidian__create(
+  path: "{short-name}.md",
+  file_text: """---
+type: hub
+aliases: [{short-name}]
+---
+
+# {short-name}
+
+→ [[MOC — {full project name}]]
+
+## {links_section}
+- [[MOC — {full project name}]]
+"""
+)
+```
+
+Skip if a file with that name already exists (`obsidian read` returns content). Note name must not contain `#` / `.` / `/` (see `references/tool-routing.md` naming rules).
+
 ### Step 7: Done
 
 ```
@@ -129,7 +156,6 @@ Your skills:
   /mnemo:connect   — discover hidden links
   /mnemo:session   — session notes + handoff
   /mnemo:ask       — search & synthesize
-  /mnemo:sort      — classify inbox notes
   /mnemo:save      — memory routing cascade
   /mnemo:review    — session completeness review
 
