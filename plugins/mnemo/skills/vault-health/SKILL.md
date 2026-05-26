@@ -81,7 +81,7 @@ Total notes count:
 obsidian files ext=md vault="{vault}" total
 ```
 
-### Step 5: Missing Links Section (batched grep — 1800x faster)
+### Step 5: Missing Links Section (batched grep — 3600x faster)
 
 **Do NOT loop `obsidian read` per file** — on a 1000-note vault that's ~180s. Use a single filesystem grep against the vault directory.
 
@@ -174,4 +174,4 @@ Common failures in `references/gotchas.md`. Skill-specific rules:
 - Ghost notes (unresolved wikilinks) are a **feature**, not a bug — they enable entity discovery. Don't flag on raw count; instead surface the **top targets** (Step 2 eval) — frequent ones = missing hub notes (actionable).
 - **CLI graph queries cache & can lie** — `orphans`/`unresolved`/`backlinks` lag writes and have shown a note as resolved AND broken at once. For critical checks use `obsidian eval` on `metadataCache` (see `references/gotchas.md`). Treat counts as advisory if notes were created this session.
 - **Do not auto-fix anything** — only report. User decides what to clean up.
-- Step 5 uses filesystem grep (1800x faster than per-file reads) — safe on any vault size.
+- Step 5 uses filesystem grep (~3600x faster than per-file reads — 49ms vs 180s on a 999-note vault) — safe on any vault size.

@@ -84,7 +84,7 @@ Cross-reference:
 
 **Only recommend skills that appear in the auto-discovered list.** Never recommend skills that aren't installed — the user can't act on them.
 
-**Load the matching trigger matrix file explicitly.** Pick `{type}` from the session classification in Step 2 (`implementation`, `research`, `debugging`, or `universal` for refactor / documentation / configuration / planning). Always also load `triggers-universal.md`.
+**Load the matching trigger matrix file explicitly.** Pick `{type}` from the session classification in Step 2 (`implementation`, `research`, `debugging`, or `universal` for refactor / documentation / configuration / planning). Always also load `triggers-universal.md` (the snippet below skips the second cat when `type` is already `universal`).
 
 ```bash
 TYPE={implementation|research|debugging|universal}
@@ -95,8 +95,11 @@ echo "=== type-specific triggers ==="
 cat "${REF_DIR}/triggers-${TYPE}.md" 2>/dev/null || echo "(triggers file unavailable)"
 
 echo ""
-echo "=== universal triggers ==="
-cat "${REF_DIR}/triggers-universal.md" 2>/dev/null || echo "(universal file unavailable)"
+# Skip if TYPE is already 'universal' (loaded above) — avoid double-cat of the same file
+if [ "$TYPE" != "universal" ]; then
+  echo "=== universal triggers ==="
+  cat "${REF_DIR}/triggers-universal.md" 2>/dev/null || echo "(universal file unavailable)"
+fi
 
 echo ""
 echo "=== project-specific triggers (if any) ==="

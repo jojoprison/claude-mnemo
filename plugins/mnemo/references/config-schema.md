@@ -76,8 +76,7 @@ The default is Zettelkasten-inspired (atom/molecule/source). **Naming constraint
   "project":  { "prefix": "Project — ",  "tag": "project" },
   "area":     { "prefix": "Area — ",     "tag": "area" },
   "resource": { "prefix": "Resource — ", "tag": "resource" },
-  "archive":  { "prefix": "Archive — ",  "tag": "archive" },
-  "inbox":    { "prefix": "Inbox — ",    "tag": "inbox" }
+  "archive":  { "prefix": "Archive — ",  "tag": "archive" }
 }
 ```
 
